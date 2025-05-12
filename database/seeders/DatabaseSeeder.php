@@ -104,6 +104,31 @@ class DatabaseSeeder extends Seeder
             ProgressMouSeeder::class, 
             
         ]);
+
+        $this->call([
+            UserSeeder::class, // Panggil UserSeeder
+            // Panggil seeder lain yang sudah ada
+            UnitKerjaEselonISeeder::class,
+            SatuanKerjaSeeder::class,
+            ProgressTemuanBpkSeeder::class,
+            ProgressTemuanInternalSeeder::class,
+            ProgressMouSeeder::class,
+            JumlahRegulasiBaruSeeder::class,
+            JumlahPenangananKasusSeeder::class,
+            PenyelesaianBmnSeeder::class,
+            PersentaseKehadiranSeeder::class,
+            MonevMonitoringMediaSeeder::class,
+            LulusanPolteknakerBekerjaSeeder::class,
+            SdmMengikutiPelatihanSeeder::class,
+            PelaporanWlkpOnlineSeeder::class,
+            PengaduanPelanggaranNormaSeeder::class,
+            PenerapanSmk3Seeder::class,
+            SelfAssessmentNorma100Seeder::class,
+            JumlahPhkSeeder::class,
+            PerselisihanDitindaklanjutiSeeder::class,
+            MediasiBerhasilSeeder::class,
+            PerusahaanMenerapkanSusuSeeder::class,
+        ]);
     }
     
 }

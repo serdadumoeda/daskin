@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
+    {{-- ... head content sama seperti sebelumnya ... --}}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Kemnaker Dashboard')</title>
@@ -11,8 +12,8 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#3b82f6', // biru
-                        secondary: '#64748b', // abu-abu
+                        primary: '#3b82f6', 
+                        secondary: '#64748b',
                     },
                     borderRadius: {'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}
                 }
@@ -25,10 +26,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.min.css">
+    <script src="https://unpkg.com/@superset-ui/embedded-sdk"></script>  {{-- Superset SDK --}}
+
 
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f9fafb; }
-        
         .sidebar-parent-button.active-parent,
         .sidebar-parent-button.expanded {
              background-color: rgba(59, 130, 246, 0.05);
@@ -42,7 +44,6 @@
          .sidebar-parent-button.expanded > div > span:first-child {
             font-weight: 600;
         }
-
         .sidebar-submenu-item.active {
             background-color: rgba(59, 130, 246, 0.1);
             color: #3b82f6;
@@ -63,15 +64,26 @@
             max-height: 1000px; /* Adjust as needed */
         }
         .form-input {
-             border-width: 1px; /* Ensure border is visible */
-             border-color: #d1d5db; /* border-gray-300 */
-             border-radius: theme('borderRadius.button'); /* 8px */
+             border-width: 1px; 
+             border-color: #d1d5db; 
+             border-radius: theme('borderRadius.button'); 
              box-shadow: theme('boxShadow.sm');
         }
         .form-input:focus {
             border-color: theme('colors.primary');
             --tw-ring-color: theme('colors.primary');
             box-shadow: 0 0 0 2px theme('ringOpacity.50', 'colors.primary');
+        }
+        .chart-container { 
+            width: 100%;
+            height: 200px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f3f4f6; 
+            border-radius: theme('borderRadius.DEFAULT');
+            color: #9ca3af; 
+            font-size: theme('fontSize.xs');
         }
     </style>
     @stack('styles')
@@ -84,8 +96,9 @@
                                 transition-transform duration-300 ease-in-out
                                 lg:relative">
             <div class="p-4 flex items-center justify-between border-b border-gray-100">
-                <a href="{{ url('/') }}" class="font-['Pacifico'] text-xl text-primary" style="font-family: 'Pacifico', cursive;">
-                     Kemnaker </a>
+                <a href="{{ route('dashboard') }}" class="font-['Pacifico'] text-xl text-primary" style="font-family: 'Pacifico', cursive;">
+                     Kemnaker
+                </a>
                 <button id="closeSidebar" class="lg:hidden text-gray-500 hover:text-primary">
                     <i class="ri-close-line text-2xl"></i>
                 </button>
@@ -94,6 +107,7 @@
                 <nav class="py-2">
                     @php
                         $currentRouteName = Route::currentRouteName();
+                        $user = Auth::user(); 
 
                         if (!function_exists('isSubmenuActive')) {
                             function isSubmenuActive($submenu, $currentRouteName) {
@@ -102,31 +116,44 @@
                                     // Cek jika route saat ini adalah bagian dari resource controller submenu
                                     // atau cocok dengan active_on_prefixes jika ada
                                     $baseRouteForResource = explode('.index', $submenu['route'])[0];
-                                    if (str_starts_with($currentRouteName ?? '', $baseRouteForResource . '.')) return true;
-                                    
-                                    if (isset($submenu['active_on_prefixes']) && is_array($submenu['active_on_prefixes'])) {
-                                        foreach($submenu['active_on_prefixes'] as $prefix){
-                                            if(str_starts_with($currentRouteName ?? '', $prefix)) return true;
-                                        }
+                                     // Tambahkan pengecekan untuk route dashboard juga
+                                    $baseRouteForDashboard = isset($submenu['active_on_prefixes']) && is_array($submenu['active_on_prefixes']) ? $submenu['active_on_prefixes'] : [$baseRouteForResource];
+
+                                    foreach($baseRouteForDashboard as $prefixToCheck){
+                                        if (str_starts_with($currentRouteName ?? '', $prefixToCheck . '.')) return true;
                                     }
                                 }
                                 return false;
                             }
                         }
                         
-                        // Definisikan menu Anda di sini
-                        // Pastikan nama route ('route') sudah benar dan lengkap sesuai definisi di web.php
                         $sidebarMenu = [
+                            'Dashboard Utama' => [ // Menu Dashboard Utama
+                                'icon' => 'ri-dashboard-3-line',
+                                'route' => 'dashboard', // Link ke dashboard utama aplikasi
+                                'roles' => [ // Semua peran yang login bisa lihat ini
+                                    App\Models\User::ROLE_SUPERADMIN, App\Models\User::ROLE_ITJEN, App\Models\User::ROLE_SEKJEN,
+                                    App\Models\User::ROLE_BINAPENTA, App\Models\User::ROLE_BINALAVOTAS, App\Models\User::ROLE_BINWASNAKER,
+                                    App\Models\User::ROLE_PHI, App\Models\User::ROLE_BARENBANG, App\Models\User::ROLE_USER
+                                ], 
+                                'submenus' => [] // Tidak ada submenu langsung di bawah ini, atau bisa juga diisi dashboard departemen
+                            ],
                             'Inspektorat Jenderal' => [
                                 'icon' => 'ri-government-line',
+                                'route' => 'inspektorat.dashboard', 
+                                'roles' => [App\Models\User::ROLE_ITJEN, App\Models\User::ROLE_SUPERADMIN],
                                 'submenus' => [
+                                    ['name' => 'Dashboard Itjen', 'route' => 'inspektorat.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['inspektorat.dashboard']],
                                     ['name' => '% Progres Tindak Lanjut temuan BPK', 'route' => 'inspektorat.progress-temuan-bpk.index', 'icon' => 'ri-file-chart-line'],
                                     ['name' => '% Progres Tindak Lanjut temuan internal', 'route' => 'inspektorat.progress-temuan-internal.index', 'icon' => 'ri-file-search-line'],
                                 ]
                             ],
                             'Sekretariat Jenderal' => [
                                 'icon' => 'ri-building-4-line',
+                                'route' => 'sekretariat-jenderal.dashboard',
+                                'roles' => [App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN],
                                 'submenus' => [
+                                    ['name' => 'Dashboard Sekjen', 'route' => 'sekretariat-jenderal.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['sekretariat-jenderal.dashboard']],
                                     ['name' => 'Jumlah MoU', 'route' => 'sekretariat-jenderal.progress-mou.index', 'icon' => 'ri-honour-line'],
                                     ['name' => 'Jumlah regulasi baru', 'route' => 'sekretariat-jenderal.jumlah-regulasi-baru.index', 'icon' => 'ri-file-list-3-line'],
                                     ['name' => 'Jumlah penanganan kasus', 'route' => 'sekretariat-jenderal.jumlah-penanganan-kasus.index', 'icon' => 'ri-scales-2-line'],
@@ -139,8 +166,11 @@
                             ],
                             'Binapenta' => [ 
                                 'icon' => 'ri-user-search-line',
+                                'route' => 'binapenta.dashboard',
+                                'roles' => [App\Models\User::ROLE_BINAPENTA, App\Models\User::ROLE_SUPERADMIN],
                                 'submenus' => [
-                                    ['name' => 'Jml Penempatan oleh Kemnaker', 'route' => '#', 'icon' => 'ri-user-add-line'], // Ganti '#' dengan route name yang benar
+                                    ['name' => 'Dashboard Binapenta', 'route' => 'binapenta.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['binapenta.dashboard']],
+                                    ['name' => 'Jml Penempatan oleh Kemnaker', 'route' => '#', 'icon' => 'ri-user-add-line'],
                                     ['name' => 'Jml Lowongan Kerja Baru (Pasker)', 'route' => '#', 'icon' => 'ri-briefcase-4-line'],
                                     ['name' => 'Jml TKA Disetujui', 'route' => '#', 'icon' => 'ri-user-shared-line'],
                                     ['name' => 'Jml TKA Tidak Disetujui', 'route' => '#', 'icon' => 'ri-user-unfollow-line'],
@@ -149,7 +179,10 @@
                             ],
                             'Binalavotas' => [ 
                                 'icon' => 'ri-graduation-cap-line',
+                                'route' => 'binalavotas.dashboard',
+                                'roles' => [App\Models\User::ROLE_BINALAVOTAS, App\Models\User::ROLE_SUPERADMIN],
                                 'submenus' => [
+                                    ['name' => 'Dashboard Binalavotas', 'route' => 'binalavotas.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['binalavotas.dashboard']],
                                     ['name' => 'Jml Lulus Pelatihan Internal', 'route' => '#', 'icon' => 'ri-medal-line'],
                                     ['name' => 'Jml Lulus Pelatihan Eksternal', 'route' => '#', 'icon' => 'ri-award-line'],
                                     ['name' => 'Jml Sertifikasi Kompetensi', 'route' => '#', 'icon' => 'ri-shield-star-line'],
@@ -157,7 +190,10 @@
                             ],
                             'Binwasnaker' => [ 
                                 'icon' => 'ri-shield-check-line',
+                                'route' => 'binwasnaker.dashboard',
+                                'roles' => [App\Models\User::ROLE_BINWASNAKER, App\Models\User::ROLE_SUPERADMIN],
                                 'submenus' => [
+                                    ['name' => 'Dashboard Binwasnaker', 'route' => 'binwasnaker.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['binwasnaker.dashboard']],
                                     ['name' => 'Laporan WLKP Online', 'route' => 'binwasnaker.pelaporan-wlkp-online.index', 'icon' => 'ri-computer-line'],
                                     ['name' => 'Pengaduan Pelanggaran Norma (TL)', 'route' => 'binwasnaker.pengaduan-pelanggaran-norma.index', 'icon' => 'ri-alert-line'],
                                     ['name' => 'Penerapan SMK3', 'route' => 'binwasnaker.penerapan-smk3.index', 'icon' => 'ri-shield-keyhole-line'],
@@ -166,7 +202,10 @@
                             ],
                             'PHI' => [ 
                                 'icon' => 'ri-scales-3-line',
+                                'route' => 'phi.dashboard',
+                                'roles' => [App\Models\User::ROLE_PHI, App\Models\User::ROLE_SUPERADMIN],
                                 'submenus' => [
+                                    ['name' => 'Dashboard PHI', 'route' => 'phi.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['phi.dashboard']],
                                     ['name' => 'Jumlah PHK', 'route' => 'phi.jumlah-phk.index', 'icon' => 'ri-user-unfollow-fill'],
                                     ['name' => 'Perselisihan (TL)', 'route' => 'phi.perselisihan-ditindaklanjuti.index', 'icon' => 'ri-auction-line'],
                                     ['name' => 'Mediasi Berhasil', 'route' => 'phi.mediasi-berhasil.index', 'icon' => 'ri-shake-hands-line'],
@@ -175,9 +214,12 @@
                             ],
                             'Barenbang' => [ 
                                 'icon' => 'ri-bar-chart-box-line',
+                                'route' => 'barenbang.dashboard',
+                                'roles' => [App\Models\User::ROLE_BARENBANG, App\Models\User::ROLE_SUPERADMIN],
                                 'submenus' => [
+                                    ['name' => 'Dashboard Barenbang', 'route' => 'barenbang.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['barenbang.dashboard']],
                                     ['name' => 'Jml Kajian & Rekomendasi', 'route' => '#', 'icon' => 'ri-lightbulb-flash-line'],
-                                    ['name' => 'Data Ketenagakerjaan', 'route' => null, 'is_header' => true], // Ini akan jadi sub-judul
+                                    ['name' => 'Data Ketenagakerjaan', 'route' => null, 'is_header' => true],
                                     ['name' => 'Jumlah Tenaga Kerja', 'route' => '#', 'icon' => 'ri-group-line', 'is_sub_item' => true],
                                     ['name' => 'Jml Lowongan Kerja Baru (Agg.)', 'route' => '#', 'icon' => 'ri-briefcase-line', 'is_sub_item' => true],
                                     ['name' => 'Jml Aplikasi Terintegrasi SiapKerja', 'route' => '#', 'icon' => 'ri-link-m', 'is_sub_item' => true],
@@ -186,79 +228,117 @@
                         ];
                     @endphp
 
-                    @foreach ($sidebarMenu as $deptName => $deptDetails)
-                        @php
-                            $parentSlug = Str::slug($deptName);
-                            $hasActiveChild = false; // Cek apakah ada submenu yang aktif di bawah parent ini
-                            if (!empty($deptDetails['submenus'])) {
-                                foreach ($deptDetails['submenus'] as $submenu) {
-                                    if (isSubmenuActive($submenu, $currentRouteName)) {
-                                        $hasActiveChild = true;
-                                        break;
+                    @if (Auth::check())
+                        @foreach ($sidebarMenu as $deptName => $deptDetails)
+                            @php
+                                $canAccessParent = false;
+                                if ($user && $user->isSuperAdmin()) { 
+                                    $canAccessParent = true;
+                                } else {
+                                    if ($user && isset($deptDetails['roles']) && is_array($deptDetails['roles'])) { 
+                                        foreach ($deptDetails['roles'] as $role) {
+                                            if ($user->hasRole($role)) {
+                                                $canAccessParent = true;
+                                                break;
+                                            }
+                                        }
                                     }
                                 }
-                            }
-                        @endphp
-                        <div class="mb-1 sidebar-parent-item {{ $hasActiveChild ? 'expanded active-parent' : '' }}">
-                            <button type="button" 
-                                    class="sidebar-parent-button flex items-center justify-between w-full px-4 py-2.5 text-gray-700 focus:outline-none"
-                                    onclick="toggleSubmenu('{{ $parentSlug }}')">
-                                <div class="flex items-center">
-                                    <div class="w-6 h-6 flex items-center justify-center mr-2 main-menu-icon"><i class="{{ $deptDetails['icon'] }}"></i></div>
-                                    <span class="text-sm">{{ $deptName }}</span>
-                                </div>
-                                @if (!empty($deptDetails['submenus']))
-                                    <i id="arrow-{{ $parentSlug }}" class="arrow-icon ri-arrow-right-s-line text-lg text-gray-500 transition-transform duration-300 {{ $hasActiveChild ? 'transform rotate-90' : '' }}"></i>
-                                @endif
-                            </button>
-                            
-                            @if (!empty($deptDetails['submenus']))
-                                <div class="submenu-list {{ $hasActiveChild ? 'expanded' : '' }}" id="submenu-{{ $parentSlug }}">
-                                    <div class="pt-1 pb-2">
-                                        @foreach ($deptDetails['submenus'] as $submenu)
-                                            @if(isset($submenu['is_header']) && $submenu['is_header'])
-                                                <div class="px-6 py-1 text-xs font-semibold text-gray-400 uppercase mt-1">{{ $submenu['name'] }}</div>
-                                            @else
-                                                <a href="{{ $submenu['route'] === '#' ? '#' : (Route::has($submenu['route']) ? route($submenu['route']) : '#!') }}" 
-                                                   class="sidebar-submenu-item flex items-center w-full py-1.5 pr-4 
-                                                          {{ (isset($submenu['is_sub_item']) && $submenu['is_sub_item']) ? 'pl-10' : 'pl-6' }}
-                                                          text-xs text-gray-600 hover:text-primary 
-                                                          {{ isSubmenuActive($submenu, $currentRouteName) ? 'active' : '' }}">
-                                                    @if(isset($submenu['icon']))
-                                                    <div class="w-5 h-5 flex items-center justify-center mr-2 opacity-75"><i class="{{ $submenu['icon'] }}"></i></div>
+                            @endphp
+
+                            @if ($canAccessParent)
+                                @php
+                                    $parentSlug = Str::slug($deptName);
+                                    $hasActiveChild = false; 
+                                    // Cek apakah parent route (dashboard departemen) aktif
+                                    if (isset($deptDetails['route']) && Route::has($deptDetails['route']) && $currentRouteName == $deptDetails['route']) {
+                                        $hasActiveChild = true;
+                                    }
+                                    // Cek apakah salah satu submenu aktif
+                                    if (!$hasActiveChild && !empty($deptDetails['submenus'])) {
+                                        foreach ($deptDetails['submenus'] as $submenu) {
+                                            if (isSubmenuActive($submenu, $currentRouteName)) {
+                                                $hasActiveChild = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                @endphp
+                                <div class="mb-1 sidebar-parent-item {{ $hasActiveChild ? 'expanded active-parent' : '' }}">
+                                    <a href="{{ isset($deptDetails['route']) && Route::has($deptDetails['route']) ? route($deptDetails['route']) : '#' }}" 
+                                       onclick="{{ !empty($deptDetails['submenus']) && (!isset($deptDetails['route']) || $deptDetails['route'] === '#') ? "event.preventDefault(); toggleSubmenu('".$parentSlug."');" : ((!empty($deptDetails['submenus'])) ? "toggleSubmenu('".$parentSlug."');" : "") }}"
+                                       class="sidebar-parent-button flex items-center justify-between w-full px-4 py-2.5 text-gray-700 focus:outline-none">
+                                        <div class="flex items-center">
+                                            <div class="w-6 h-6 flex items-center justify-center mr-2 main-menu-icon"><i class="{{ $deptDetails['icon'] }}"></i></div>
+                                            <span class="text-sm">{{ $deptName }}</span>
+                                        </div>
+                                        @if (!empty($deptDetails['submenus']))
+                                            <i id="arrow-{{ $parentSlug }}" class="arrow-icon ri-arrow-right-s-line text-lg text-gray-500 transition-transform duration-300 {{ $hasActiveChild ? 'transform rotate-90' : '' }}"></i>
+                                        @endif
+                                    </a>
+                                    
+                                    @if (!empty($deptDetails['submenus']))
+                                        <div class="submenu-list {{ $hasActiveChild ? 'expanded' : '' }}" id="submenu-{{ $parentSlug }}">
+                                            <div class="pt-1 pb-2">
+                                                @foreach ($deptDetails['submenus'] as $submenu)
+                                                    @if(isset($submenu['is_header']) && $submenu['is_header'])
+                                                        <div class="px-6 py-1 text-xs font-semibold text-gray-400 uppercase mt-1">{{ $submenu['name'] }}</div>
                                                     @else
-                                                    <div class="w-5 h-5 mr-2"></div> @endif
-                                                    <span>{{ $submenu['name'] }}</span>
-                                                </a>
-                                            @endif
-                                        @endforeach
-                                    </div>
+                                                        <a href="{{ $submenu['route'] === '#' ? '#' : (Route::has($submenu['route']) ? route($submenu['route']) : '#!') }}" 
+                                                           class="sidebar-submenu-item flex items-center w-full py-1.5 pr-4 
+                                                                  {{ (isset($submenu['is_sub_item']) && $submenu['is_sub_item']) ? 'pl-10' : 'pl-6' }}
+                                                                  text-xs text-gray-600 hover:text-primary 
+                                                                  {{ isSubmenuActive($submenu, $currentRouteName) ? 'active' : '' }}">
+                                                            @if(isset($submenu['icon']))
+                                                            <div class="w-5 h-5 flex items-center justify-center mr-2 opacity-75"><i class="{{ $submenu['icon'] }}"></i></div>
+                                                            @else
+                                                            <div class="w-5 h-5 mr-2"></div>
+                                                            @endif
+                                                            <span>{{ $submenu['name'] }}</span>
+                                                        </a>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
                             @endif
-                        </div>
-                    @endforeach
+                        @endforeach
+                    @endif
                 </nav>
             </div>
+            {{-- User Info & Logout (sama seperti sebelumnya) --}}
             <div class="p-4 border-t border-gray-100 mt-auto">
-                <div class="flex items-center">
-                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                        <i class="ri-user-line text-gray-600"></i>
+                @if (Auth::check())
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                            <i class="ri-user-line text-gray-600"></i>
+                        </div>
+                        <div class="ml-2">
+                            <div class="text-sm font-medium text-gray-700">{{ Auth::user()->name }}</div>
+                            <div class="text-xs text-gray-500">{{ Str::ucfirst(Auth::user()->role) }}</div>
+                        </div>
+                        <div class="ml-auto">
+                            <form id="logout-form" method="POST" action="{{ route('logout') }}" style="display: inline;">
+                                @csrf
+                                <button type="button" onclick="confirmLogout()" 
+                                        class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-primary" title="Logout">
+                                    <i class="ri-logout-box-r-line"></i>
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                    <div class="ml-2">
-                        <div class="text-sm font-medium text-gray-700">{{ Auth::check() ? Auth::user()->name : 'Pengguna Tamu' }}</div>
-                        <div class="text-xs text-gray-500">{{ Auth::check() && Auth::user()->role ? Auth::user()->role : 'Role Pengguna' }}</div>
-                    </div>
-                    <div class="ml-auto">
-                         <button class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-primary" title="Settings">
-                            <i class="ri-settings-3-line"></i>
-                        </button>
-                    </div>
-                </div>
+                @else
+                     <a href="{{ route('login') }}" class="block w-full text-center px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium">
+                        Login
+                    </a>
+                @endif
             </div>
         </div>
 
         <div class="flex-1 flex flex-col overflow-hidden">
             <header class="bg-white shadow-sm z-10 sticky top-0">
+                {{-- Konten Header (sama seperti sebelumnya) --}}
                 <div class="flex items-center justify-between h-16 px-4 sm:px-6">
                     <div class="flex items-center">
                         <button id="sidebarToggle" class="lg:hidden text-gray-500 hover:text-primary focus:outline-none mr-3">
@@ -291,6 +371,7 @@
             </header>
 
             <main class="flex-1 overflow-y-auto p-4 sm:p-6 bg-gray-50">
+                 {{-- Notifikasi (sama seperti sebelumnya) --}}
                  @if (session('success'))
                     <div class="mb-4 p-3 bg-green-100 border border-green-300 text-green-700 rounded-md text-sm">
                         {{ session('success') }}
@@ -327,6 +408,7 @@
         <div id="mainContentOverlay" class="fixed inset-0 bg-black bg-opacity-25 z-20 hidden lg:hidden"></div>
     </div>
     <script>
+        // JavaScript untuk toggle sidebar mobile & submenu (sama seperti sebelumnya)
         document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('sidebar');
             const sidebarToggle = document.getElementById('sidebarToggle');
@@ -382,6 +464,12 @@
                 }
             }
         });
+
+        function confirmLogout() {
+            if (confirm("Anda ingin keluar?")) {
+                document.getElementById('logout-form').submit();
+            }
+        }
     </script>
     @stack('scripts')
 </body>
