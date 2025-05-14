@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    {{-- ... head content sama seperti sebelumnya ... --}}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Kemnaker Dashboard')</title>
@@ -26,7 +25,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.min.css">
-    <script src="https://unpkg.com/@superset-ui/embedded-sdk"></script>  
+    {{-- Superset Embedded SDK jika Anda berencana menggunakannya nanti --}}
+    {{-- <script src="https://unpkg.com/@superset-ui/embedded-sdk"></script> --}} 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
 
 
     <style>
@@ -103,7 +104,6 @@
                     <i class="ri-close-line text-2xl"></i>
                 </button>
             </div>
-            {{-- ... (Bagian atas layout sama seperti sebelumnya) ... --}}
             <div class="overflow-y-auto flex-1">
                 <nav class="py-2">
                     @php
@@ -127,7 +127,6 @@
                         }
                         
                         $sidebarMenu = [
-                            // ... (Menu Inspektorat Jenderal, Sekretariat Jenderal) ...
                             'Inspektorat Jenderal' => [
                                 'icon' => 'ri-government-line',
                                 'route' => 'inspektorat.dashboard', 
@@ -162,22 +161,20 @@
                                     ['name' => 'Dashboard Binapenta', 'route' => 'binapenta.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['binapenta.dashboard']],
                                     ['name' => 'Jml Penempatan oleh Kemnaker', 'route' => 'binapenta.jumlah-penempatan-kemnaker.index', 'icon' => 'ri-user-add-line'],
                                     ['name' => 'Jml Lowongan Kerja Baru (Pasker)', 'route' => 'binapenta.jumlah-lowongan-pasker.index', 'icon' => 'ri-briefcase-4-line'], 
-                                    // TAMBAHKAN MENU BARU DI SINI:
                                     ['name' => 'Jml TKA Disetujui', 'route' => 'binapenta.jumlah-tka-disetujui.index', 'icon' => 'ri-user-shared-line'],
-                                    ['name' => 'Jml TKA Tidak Disetujui', 'route' => '#', 'icon' => 'ri-user-unfollow-line'], // Ganti '#' nanti
-                                    ['name' => 'Jml Penempatan Disabilitas', 'route' => '#', 'icon' => 'ri-wheelchair-line'], // Ganti '#' nanti
+                                    ['name' => 'Jml TKA Tidak Disetujui', 'route' => '#', 'icon' => 'ri-user-unfollow-line'], 
+                                    ['name' => 'Jml Penempatan Disabilitas', 'route' => '#', 'icon' => 'ri-wheelchair-line'], 
                                 ]
                             ],
-                            // ... (Menu Binalavotas, Binwasnaker, PHI, Barenbang) ...
-                             'Binalavotas' => [ 
+                            'Binalavotas' => [ 
                                 'icon' => 'ri-graduation-cap-line',
                                 'route' => 'binalavotas.dashboard',
                                 'roles' => [App\Models\User::ROLE_BINALAVOTAS, App\Models\User::ROLE_SUPERADMIN],
                                 'submenus' => [
                                     ['name' => 'Dashboard Binalavotas', 'route' => 'binalavotas.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['binalavotas.dashboard']],
-                                    ['name' => 'Jml Lulus Pelatihan Internal', 'route' => '#', 'icon' => 'ri-medal-line'],
-                                    ['name' => 'Jml Lulus Pelatihan Eksternal', 'route' => '#', 'icon' => 'ri-award-line'],
-                                    ['name' => 'Jml Sertifikasi Kompetensi', 'route' => '#', 'icon' => 'ri-shield-star-line'],
+                                    // PERUBAHAN DI SINI: Menggabungkan dua submenu menjadi satu
+                                    ['name' => 'Jumlah Kepesertaan Pelatihan', 'route' => 'binalavotas.jumlah-kepesertaan-pelatihan.index', 'icon' => 'ri-group-line'], // Contoh ikon, bisa diganti
+                                    ['name' => 'Jml Sertifikasi Kompetensi', 'route' => 'binalavotas.jumlah-sertifikasi-kompetensi.index', 'icon' => 'ri-shield-star-line'], // Ganti '#' dengan route yang benar nanti
                                 ]
                             ],
                             'Binwasnaker' => [ 
@@ -297,7 +294,7 @@
                     @endif
                 </nav>
             </div>
-            {{-- ... (User Info & Footer Sidebar sama seperti sebelumnya) ... --}}
+            {{-- User Info & Logout (sama seperti sebelumnya) --}}
             <div class="p-4 border-t border-gray-100 mt-auto">
                 @if (Auth::check())
                     <div class="flex items-center">

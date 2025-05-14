@@ -24,9 +24,11 @@ use App\Http\Controllers\PerselisihanDitindaklanjutiController;
 use App\Http\Controllers\MediasiBerhasilController;
 use App\Http\Controllers\PerusahaanMenerapkanSusuController;
 use App\Http\Controllers\JumlahPenempatanKemnakerController;
-use App\Http\Controllers\JumlahLowonganPaskerController; // Jika sudah dibuat
-use App\Http\Controllers\JumlahTkaDisetujuiController; // <-- TAMBAHKAN IMPORT CONTROLLER INI
-// use App\Http\Controllers\PersetujuanRptkaController; // Jika ada untuk TKA ditolak
+use App\Http\Controllers\JumlahLowonganPaskerController; 
+use App\Http\Controllers\JumlahTkaDisetujuiController; 
+// use App\Http\Controllers\PersetujuanRptkaController; // 
+use App\Http\Controllers\JumlahKepesertaanPelatihanController; 
+use App\Http\Controllers\JumlahSertifikasiKompetensiController; 
 
 
 // Import controller dashboard departemen
@@ -155,6 +157,31 @@ Route::prefix('binapenta')->name('binapenta.')->middleware(['auth', 'role:'.User
 // Binalavotas
 Route::prefix('binalavotas')->name('binalavotas.')->middleware(['auth', 'role:'.User::ROLE_BINALAVOTAS.','.User::ROLE_SUPERADMIN])->group(function () {
     Route::get('/', [BinalavotasDashboardController::class, 'index'])->name('dashboard');
+
+    // Jumlah Kepesertaan Pelatihan
+    Route::prefix('jumlah-kepesertaan-pelatihan')->name('jumlah-kepesertaan-pelatihan.')->group(function(){
+        Route::get('/', [JumlahKepesertaanPelatihanController::class, 'index'])->name('index');
+        Route::get('/create', [JumlahKepesertaanPelatihanController::class, 'create'])->name('create');
+        Route::post('/', [JumlahKepesertaanPelatihanController::class, 'store'])->name('store');
+        Route::get('/{jumlahKepesertaanPelatihan}', [JumlahKepesertaanPelatihanController::class, 'show'])->name('show');
+        Route::get('/{jumlahKepesertaanPelatihan}/edit', [JumlahKepesertaanPelatihanController::class, 'edit'])->name('edit');
+        Route::put('/{jumlahKepesertaanPelatihan}', [JumlahKepesertaanPelatihanController::class, 'update'])->name('update');
+        Route::delete('/{jumlahKepesertaanPelatihan}', [JumlahKepesertaanPelatihanController::class, 'destroy'])->name('destroy');
+        Route::post('/import', [JumlahKepesertaanPelatihanController::class, 'importExcel'])->name('import');
+    });
+
+    // Jumlah Sertifikasi Kompetensi (BARU)
+    Route::prefix('jumlah-sertifikasi-kompetensi')->name('jumlah-sertifikasi-kompetensi.')->group(function(){
+        Route::get('/', [JumlahSertifikasiKompetensiController::class, 'index'])->name('index');
+        Route::get('/create', [JumlahSertifikasiKompetensiController::class, 'create'])->name('create');
+        Route::post('/', [JumlahSertifikasiKompetensiController::class, 'store'])->name('store');
+        Route::get('/{jumlahSertifikasiKompetensi}', [JumlahSertifikasiKompetensiController::class, 'show'])->name('show');
+        Route::get('/{jumlahSertifikasiKompetensi}/edit', [JumlahSertifikasiKompetensiController::class, 'edit'])->name('edit');
+        Route::put('/{jumlahSertifikasiKompetensi}', [JumlahSertifikasiKompetensiController::class, 'update'])->name('update');
+        Route::delete('/{jumlahSertifikasiKompetensi}', [JumlahSertifikasiKompetensiController::class, 'destroy'])->name('destroy');
+        Route::post('/import', [JumlahSertifikasiKompetensiController::class, 'importExcel'])->name('import');
+    });
+    // Tambahkan rute CRUD lain untuk Binalavotas di sini
 });
 
 // Binwasnaker

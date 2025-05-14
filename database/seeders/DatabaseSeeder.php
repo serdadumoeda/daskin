@@ -50,8 +50,11 @@ class DatabaseSeeder extends Seeder
             JumlahLowonganPaskerSeeder::class, 
             JumlahTkaDisetujuiSeeder::class, 
 
-            // Tambahkan seeder untuk Tabel 3.2 (Jumlah lowongan pekerjaan baru di Pasker) dan Tabel 3.3 (Persetujuan RPTKA) di sini jika sudah dibuat.
-            // Contoh:
+            // Seeder  Binalavotas
+            JumlahKepesertaanPelatihanSeeder::class, 
+            JumlahSertifikasiKompetensiSeeder::class, 
+            
+            
             // JumlahLowonganPaskerSeeder::class,
             // PersetujuanRptkaSeeder::class,
         ]); // Akhir dari array $this->call
