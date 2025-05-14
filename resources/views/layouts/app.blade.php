@@ -338,7 +338,7 @@
                         <div class="text-lg font-semibold text-gray-800 lg:ml-0">@yield('page_title', 'Dashboard')</div>
                     </div>
                     <div class="flex items-center space-x-2 sm:space-x-4">
-                        <div class="relative hidden md:block">
+                        <!-- <div class="relative hidden md:block">
                             <div class="flex items-center bg-gray-100 rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-primary focus-within:ring-opacity-50">
                                 <div class="w-4 h-4 flex items-center justify-center text-gray-500"><i class="ri-search-line"></i></div>
                                 <input type="text" placeholder="Search..." class="ml-2 bg-transparent border-none outline-none text-sm text-gray-700 placeholder-gray-500 w-32 md:w-48">
@@ -349,7 +349,7 @@
                                 <i class="ri-notification-3-line text-xl"></i>
                                 <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
                             </button>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                  @hasSection('header_filters')
