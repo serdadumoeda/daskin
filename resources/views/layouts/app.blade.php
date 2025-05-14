@@ -129,6 +129,11 @@
                         }
                         
                         $sidebarMenu = [
+                            'Dashboard Utama' => [
+                                'icon' => ' ri-home-smile-line',
+                                'route' => 'dashboard', 
+                                'roles' => [App\Models\User::ROLE_SUPERADMIN],
+                            ],
                             'Inspektorat Jenderal' => [
                                 'icon' => 'ri-government-line',
                                 'route' => 'inspektorat.dashboard', 
