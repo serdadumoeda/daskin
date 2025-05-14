@@ -26,7 +26,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.min.css">
-    <script src="https://unpkg.com/@superset-ui/embedded-sdk"></script>  {{-- Superset SDK --}}
+    <script src="https://unpkg.com/@superset-ui/embedded-sdk"></script>  
 
 
     <style>
@@ -103,6 +103,7 @@
                     <i class="ri-close-line text-2xl"></i>
                 </button>
             </div>
+            {{-- ... (Bagian atas layout sama seperti sebelumnya) ... --}}
             <div class="overflow-y-auto flex-1">
                 <nav class="py-2">
                     @php
@@ -113,14 +114,12 @@
                             function isSubmenuActive($submenu, $currentRouteName) {
                                 if (isset($submenu['route']) && $submenu['route'] !== '#') {
                                     if ($currentRouteName == $submenu['route']) return true;
-                                    // Cek jika route saat ini adalah bagian dari resource controller submenu
-                                    // atau cocok dengan active_on_prefixes jika ada
-                                    $baseRouteForResource = explode('.index', $submenu['route'])[0];
-                                     // Tambahkan pengecekan untuk route dashboard juga
-                                    $baseRouteForDashboard = isset($submenu['active_on_prefixes']) && is_array($submenu['active_on_prefixes']) ? $submenu['active_on_prefixes'] : [$baseRouteForResource];
-
-                                    foreach($baseRouteForDashboard as $prefixToCheck){
-                                        if (str_starts_with($currentRouteName ?? '', $prefixToCheck . '.')) return true;
+                                    $baseRoute = explode('.index', $submenu['route'])[0];
+                                    if (str_starts_with($currentRouteName ?? '', $baseRoute . '.')) return true;
+                                     if (isset($submenu['active_on_prefixes']) && is_array($submenu['active_on_prefixes'])) {
+                                        foreach($submenu['active_on_prefixes'] as $prefix){
+                                            if(str_starts_with($currentRouteName ?? '', $prefix)) return true;
+                                        }
                                     }
                                 }
                                 return false;
@@ -128,16 +127,7 @@
                         }
                         
                         $sidebarMenu = [
-                            'Dashboard Utama' => [ // Menu Dashboard Utama
-                                'icon' => 'ri-dashboard-3-line',
-                                'route' => 'dashboard', // Link ke dashboard utama aplikasi
-                                'roles' => [ // Semua peran yang login bisa lihat ini
-                                    App\Models\User::ROLE_SUPERADMIN, App\Models\User::ROLE_ITJEN, App\Models\User::ROLE_SEKJEN,
-                                    App\Models\User::ROLE_BINAPENTA, App\Models\User::ROLE_BINALAVOTAS, App\Models\User::ROLE_BINWASNAKER,
-                                    App\Models\User::ROLE_PHI, App\Models\User::ROLE_BARENBANG, App\Models\User::ROLE_USER
-                                ], 
-                                'submenus' => [] // Tidak ada submenu langsung di bawah ini, atau bisa juga diisi dashboard departemen
-                            ],
+                            // ... (Menu Inspektorat Jenderal, Sekretariat Jenderal) ...
                             'Inspektorat Jenderal' => [
                                 'icon' => 'ri-government-line',
                                 'route' => 'inspektorat.dashboard', 
@@ -166,18 +156,20 @@
                             ],
                             'Binapenta' => [ 
                                 'icon' => 'ri-user-search-line',
-                                'route' => 'binapenta.dashboard',
+                                'route' => 'binapenta.dashboard', 
                                 'roles' => [App\Models\User::ROLE_BINAPENTA, App\Models\User::ROLE_SUPERADMIN],
                                 'submenus' => [
                                     ['name' => 'Dashboard Binapenta', 'route' => 'binapenta.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['binapenta.dashboard']],
-                                    ['name' => 'Jml Penempatan oleh Kemnaker', 'route' => '#', 'icon' => 'ri-user-add-line'],
-                                    ['name' => 'Jml Lowongan Kerja Baru (Pasker)', 'route' => '#', 'icon' => 'ri-briefcase-4-line'],
-                                    ['name' => 'Jml TKA Disetujui', 'route' => '#', 'icon' => 'ri-user-shared-line'],
-                                    ['name' => 'Jml TKA Tidak Disetujui', 'route' => '#', 'icon' => 'ri-user-unfollow-line'],
-                                    ['name' => 'Jml Penempatan Disabilitas', 'route' => '#', 'icon' => 'ri-wheelchair-line'],
+                                    ['name' => 'Jml Penempatan oleh Kemnaker', 'route' => 'binapenta.jumlah-penempatan-kemnaker.index', 'icon' => 'ri-user-add-line'],
+                                    ['name' => 'Jml Lowongan Kerja Baru (Pasker)', 'route' => 'binapenta.jumlah-lowongan-pasker.index', 'icon' => 'ri-briefcase-4-line'], 
+                                    // TAMBAHKAN MENU BARU DI SINI:
+                                    ['name' => 'Jml TKA Disetujui', 'route' => 'binapenta.jumlah-tka-disetujui.index', 'icon' => 'ri-user-shared-line'],
+                                    ['name' => 'Jml TKA Tidak Disetujui', 'route' => '#', 'icon' => 'ri-user-unfollow-line'], // Ganti '#' nanti
+                                    ['name' => 'Jml Penempatan Disabilitas', 'route' => '#', 'icon' => 'ri-wheelchair-line'], // Ganti '#' nanti
                                 ]
                             ],
-                            'Binalavotas' => [ 
+                            // ... (Menu Binalavotas, Binwasnaker, PHI, Barenbang) ...
+                             'Binalavotas' => [ 
                                 'icon' => 'ri-graduation-cap-line',
                                 'route' => 'binalavotas.dashboard',
                                 'roles' => [App\Models\User::ROLE_BINALAVOTAS, App\Models\User::ROLE_SUPERADMIN],
@@ -227,7 +219,7 @@
                             ],
                         ];
                     @endphp
-
+                    {{-- ... (Looping sidebar menu sama seperti sebelumnya) ... --}}
                     @if (Auth::check())
                         @foreach ($sidebarMenu as $deptName => $deptDetails)
                             @php
@@ -250,11 +242,9 @@
                                 @php
                                     $parentSlug = Str::slug($deptName);
                                     $hasActiveChild = false; 
-                                    // Cek apakah parent route (dashboard departemen) aktif
                                     if (isset($deptDetails['route']) && Route::has($deptDetails['route']) && $currentRouteName == $deptDetails['route']) {
                                         $hasActiveChild = true;
                                     }
-                                    // Cek apakah salah satu submenu aktif
                                     if (!$hasActiveChild && !empty($deptDetails['submenus'])) {
                                         foreach ($deptDetails['submenus'] as $submenu) {
                                             if (isSubmenuActive($submenu, $currentRouteName)) {
@@ -307,7 +297,7 @@
                     @endif
                 </nav>
             </div>
-            {{-- User Info & Logout (sama seperti sebelumnya) --}}
+            {{-- ... (User Info & Footer Sidebar sama seperti sebelumnya) ... --}}
             <div class="p-4 border-t border-gray-100 mt-auto">
                 @if (Auth::check())
                     <div class="flex items-center">
@@ -336,9 +326,9 @@
             </div>
         </div>
 
+        {{-- ... (Main Content Area sama seperti sebelumnya) ... --}}
         <div class="flex-1 flex flex-col overflow-hidden">
             <header class="bg-white shadow-sm z-10 sticky top-0">
-                {{-- Konten Header (sama seperti sebelumnya) --}}
                 <div class="flex items-center justify-between h-16 px-4 sm:px-6">
                     <div class="flex items-center">
                         <button id="sidebarToggle" class="lg:hidden text-gray-500 hover:text-primary focus:outline-none mr-3">
@@ -371,7 +361,6 @@
             </header>
 
             <main class="flex-1 overflow-y-auto p-4 sm:p-6 bg-gray-50">
-                 {{-- Notifikasi (sama seperti sebelumnya) --}}
                  @if (session('success'))
                     <div class="mb-4 p-3 bg-green-100 border border-green-300 text-green-700 rounded-md text-sm">
                         {{ session('success') }}

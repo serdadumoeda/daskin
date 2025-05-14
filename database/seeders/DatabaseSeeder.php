@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -13,122 +12,48 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
-
-
-        $this->call(KemnakerDataSeeder::class); 
-
-
         $this->call([
+            // Master Data Awal
             UnitKerjaEselonISeeder::class,
             SatuanKerjaSeeder::class,
-            // Tambahkan seeder baru di sini:
-            ProgressTemuanBpkSeeder::class,
-            ProgressTemuanInternalSeeder::class,
-        ]);
+            UserSeeder::class, // Seeder untuk pengguna dan peran
 
-        $this->call([
-            // Seeder yang sudah ada
-            UnitKerjaEselonISeeder::class,
-            SatuanKerjaSeeder::class,
+            // Seeder (Temuan BPK & Internal) - Inspektorat Jenderal
             ProgressTemuanBpkSeeder::class,
             ProgressTemuanInternalSeeder::class,
 
-            // Seeder baru dari PDF ini
+            // Seeder (MoU, Regulasi, Kasus, BMN, Kehadiran, dll.) - Sekretariat Jenderal
             ProgressMouSeeder::class,
             JumlahRegulasiBaruSeeder::class,
             JumlahPenangananKasusSeeder::class,
             PenyelesaianBmnSeeder::class,
-            // IKPA Seeder (dilewati)
-            PersentaseKehadiranSeeder::class,
-            MonevMonitoringMediaSeeder::class,
-            LulusanPolteknakerBekerjaSeeder::class,
-            SdmMengikutiPelatihanSeeder::class,
-        ]);
-
-        $this->call([
-            // Seeder yang sudah ada sebelumnya
-            UnitKerjaEselonISeeder::class,
-            SatuanKerjaSeeder::class,
-            ProgressTemuanBpkSeeder::class,
-            ProgressTemuanInternalSeeder::class,
-            ProgressMouSeeder::class,
-            JumlahRegulasiBaruSeeder::class,
-            JumlahPenangananKasusSeeder::class,
-            PenyelesaianBmnSeeder::class,
+            // IKPASeeder::class, // Dilewati
             PersentaseKehadiranSeeder::class,
             MonevMonitoringMediaSeeder::class,
             LulusanPolteknakerBekerjaSeeder::class,
             SdmMengikutiPelatihanSeeder::class,
 
-            // Seeder baru dari PDF ini
-            PelaporanWlkpOnlineSeeder::class,
-            PengaduanPelanggaranNormaSeeder::class,
-            PenerapanSmk3Seeder::class,
-            SelfAssessmentNorma100Seeder::class,
-        ]);
-
-        $this->call([
-            // Seeder yang sudah ada sebelumnya
-            UnitKerjaEselonISeeder::class,
-            SatuanKerjaSeeder::class,
-            ProgressTemuanBpkSeeder::class,
-            ProgressTemuanInternalSeeder::class,
-            ProgressMouSeeder::class,
-            JumlahRegulasiBaruSeeder::class,
-            JumlahPenangananKasusSeeder::class,
-            PenyelesaianBmnSeeder::class,
-            PersentaseKehadiranSeeder::class,
-            MonevMonitoringMediaSeeder::class,
-            LulusanPolteknakerBekerjaSeeder::class,
-            SdmMengikutiPelatihanSeeder::class,
+            // Seeder (WLKP, Pengaduan Norma, SMK3, Self Assessment) - Binwasnaker
             PelaporanWlkpOnlineSeeder::class,
             PengaduanPelanggaranNormaSeeder::class,
             PenerapanSmk3Seeder::class,
             SelfAssessmentNorma100Seeder::class,
 
-            // Seeder baru dari PDF ini
+            // Seeder (PHK, Perselisihan TL, Mediasi Berhasil, SUSU) - PHI
             JumlahPhkSeeder::class,
             PerselisihanDitindaklanjutiSeeder::class,
             MediasiBerhasilSeeder::class,
             PerusahaanMenerapkanSusuSeeder::class,
-        ]);
 
-        $this->call([
-            
-            ProgressMouSeeder::class, 
-            
-        ]);
+            // Seeder  Binapenta
+            JumlahPenempatanKemnakerSeeder::class, 
+            JumlahLowonganPaskerSeeder::class, 
+            JumlahTkaDisetujuiSeeder::class, 
 
-        $this->call([
-            UserSeeder::class, // Panggil UserSeeder
-            // Panggil seeder lain yang sudah ada
-            UnitKerjaEselonISeeder::class,
-            SatuanKerjaSeeder::class,
-            ProgressTemuanBpkSeeder::class,
-            ProgressTemuanInternalSeeder::class,
-            ProgressMouSeeder::class,
-            JumlahRegulasiBaruSeeder::class,
-            JumlahPenangananKasusSeeder::class,
-            PenyelesaianBmnSeeder::class,
-            PersentaseKehadiranSeeder::class,
-            MonevMonitoringMediaSeeder::class,
-            LulusanPolteknakerBekerjaSeeder::class,
-            SdmMengikutiPelatihanSeeder::class,
-            PelaporanWlkpOnlineSeeder::class,
-            PengaduanPelanggaranNormaSeeder::class,
-            PenerapanSmk3Seeder::class,
-            SelfAssessmentNorma100Seeder::class,
-            JumlahPhkSeeder::class,
-            PerselisihanDitindaklanjutiSeeder::class,
-            MediasiBerhasilSeeder::class,
-            PerusahaanMenerapkanSusuSeeder::class,
-        ]);
-    }
-    
-}
+            // Tambahkan seeder untuk Tabel 3.2 (Jumlah lowongan pekerjaan baru di Pasker) dan Tabel 3.3 (Persetujuan RPTKA) di sini jika sudah dibuat.
+            // Contoh:
+            // JumlahLowonganPaskerSeeder::class,
+            // PersetujuanRptkaSeeder::class,
+        ]); // Akhir dari array $this->call
+    } // Akhir dari method run()
+} // Akhir dari class DatabaseSeeder
