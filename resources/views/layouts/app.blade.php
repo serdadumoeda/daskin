@@ -97,8 +97,10 @@
                                 transition-transform duration-300 ease-in-out
                                 lg:relative">
             <div class="p-4 flex items-center justify-between border-b border-gray-100">
-                <a href="{{ route('dashboard') }}" class="font-['Pacifico'] text-xl text-primary" style="font-family: 'Pacifico', cursive;">
-                     Kemnaker
+                <a href="{{ route('dashboard') }}" class="flex items-center">
+                        <img src="{{ asset('image/logo/logo_daskin.png') }}" alt="Logo Kemnaker" class="h-13 mr-5"> {{-- Sesuaikan h-10 dengan tinggi yang diinginkan --}}
+                        {{-- Jika masih ingin ada teks "Kemnaker" di samping logo: --}}
+                        {{-- <span class="font-['Pacifico'] text-xl text-primary" style="font-family: 'Pacifico', cursive;">Kemnaker</span> --}}
                 </a>
                 <button id="closeSidebar" class="lg:hidden text-gray-500 hover:text-primary">
                     <i class="ri-close-line text-2xl"></i>
