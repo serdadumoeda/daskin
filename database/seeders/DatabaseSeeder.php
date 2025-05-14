@@ -53,6 +53,11 @@ class DatabaseSeeder extends Seeder
             // Seeder  Binalavotas
             JumlahKepesertaanPelatihanSeeder::class, 
             JumlahSertifikasiKompetensiSeeder::class, 
+
+            // Seeder  Barenbang
+            JumlahKajianRekomendasiSeeder::class,
+            AplikasiIntegrasiSiapkerjaSeeder::class,
+            DataKetenagakerjaanSeeder::class,
             
             
             // JumlahLowonganPaskerSeeder::class,

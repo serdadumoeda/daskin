@@ -207,11 +207,11 @@
                                 'roles' => [App\Models\User::ROLE_BARENBANG, App\Models\User::ROLE_SUPERADMIN],
                                 'submenus' => [
                                     ['name' => 'Dashboard Barenbang', 'route' => 'barenbang.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['barenbang.dashboard']],
-                                    ['name' => 'Jml Kajian & Rekomendasi', 'route' => '#', 'icon' => 'ri-lightbulb-flash-line'],
-                                    ['name' => 'Data Ketenagakerjaan', 'route' => null, 'is_header' => true],
-                                    ['name' => 'Jumlah Tenaga Kerja', 'route' => '#', 'icon' => 'ri-group-line', 'is_sub_item' => true],
-                                    ['name' => 'Jml Lowongan Kerja Baru (Agg.)', 'route' => '#', 'icon' => 'ri-briefcase-line', 'is_sub_item' => true],
-                                    ['name' => 'Jml Aplikasi Terintegrasi SiapKerja', 'route' => '#', 'icon' => 'ri-link-m', 'is_sub_item' => true],
+                                    ['name' => 'Jml Kajian & Rekomendasi', 'route' => 'barenbang.jumlah-kajian-rekomendasi.index', 'icon' => 'ri-lightbulb-flash-line'],
+                                    // PERUBAHAN DI SINI:
+                                    ['name' => 'Data Ketenagakerjaan', 'route' => 'barenbang.data-ketenagakerjaan.index', 'icon' => 'ri-database-2-line'], 
+                                    // Submenu 'Jumlah Tenaga Kerja' dan 'Jml Lowongan Kerja Baru (Agg.)' dihapus
+                                    ['name' => 'Jml Aplikasi Terintegrasi SiapKerja', 'route' => 'barenbang.aplikasi-integrasi-siapkerja.index', 'icon' => 'ri-link-m'],
                                 ]
                             ],
                         ];

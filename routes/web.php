@@ -29,6 +29,10 @@ use App\Http\Controllers\JumlahTkaDisetujuiController;
 // use App\Http\Controllers\PersetujuanRptkaController; // 
 use App\Http\Controllers\JumlahKepesertaanPelatihanController; 
 use App\Http\Controllers\JumlahSertifikasiKompetensiController; 
+use App\Http\Controllers\JumlahKajianRekomendasiController; 
+use App\Http\Controllers\DataKetenagakerjaanController;
+use App\Http\Controllers\AplikasiIntegrasiSiapkerjaController;
+
 
 
 // Import controller dashboard departemen
@@ -213,6 +217,41 @@ Route::prefix('phi')->name('phi.')->middleware(['auth', 'role:'.User::ROLE_PHI.'
 // Barenbang
 Route::prefix('barenbang')->name('barenbang.')->middleware(['auth', 'role:'.User::ROLE_BARENBANG.','.User::ROLE_SUPERADMIN])->group(function () {
     Route::get('/', [BarenbangDashboardController::class, 'index'])->name('dashboard');
+    
+    // Jumlah Kajian dan Rekomendasi
+    Route::prefix('jumlah-kajian-rekomendasi')->name('jumlah-kajian-rekomendasi.')->group(function(){
+        Route::get('/', [JumlahKajianRekomendasiController::class, 'index'])->name('index');
+        Route::get('/create', [JumlahKajianRekomendasiController::class, 'create'])->name('create');
+        Route::post('/', [JumlahKajianRekomendasiController::class, 'store'])->name('store');
+        Route::get('/{jumlahKajianRekomendasi}', [JumlahKajianRekomendasiController::class, 'show'])->name('show');
+        Route::get('/{jumlahKajianRekomendasi}/edit', [JumlahKajianRekomendasiController::class, 'edit'])->name('edit');
+        Route::put('/{jumlahKajianRekomendasi}', [JumlahKajianRekomendasiController::class, 'update'])->name('update');
+        Route::delete('/{jumlahKajianRekomendasi}', [JumlahKajianRekomendasiController::class, 'destroy'])->name('destroy');
+        Route::post('/import', [JumlahKajianRekomendasiController::class, 'importExcel'])->name('import');
+    });
+    // Jumlah Aplikasi Lintas K/L/D yang Terintegrasi ke SiapKerja (BARU)
+    Route::prefix('aplikasi-integrasi-siapkerja')->name('aplikasi-integrasi-siapkerja.')->group(function(){
+        Route::get('/', [AplikasiIntegrasiSiapkerjaController::class, 'index'])->name('index');
+        Route::get('/create', [AplikasiIntegrasiSiapkerjaController::class, 'create'])->name('create');
+        Route::post('/', [AplikasiIntegrasiSiapkerjaController::class, 'store'])->name('store');
+        Route::get('/{aplikasiIntegrasiSiapkerja}', [AplikasiIntegrasiSiapkerjaController::class, 'show'])->name('show');
+        Route::get('/{aplikasiIntegrasiSiapkerja}/edit', [AplikasiIntegrasiSiapkerjaController::class, 'edit'])->name('edit');
+        Route::put('/{aplikasiIntegrasiSiapkerja}', [AplikasiIntegrasiSiapkerjaController::class, 'update'])->name('update');
+        Route::delete('/{aplikasiIntegrasiSiapkerja}', [AplikasiIntegrasiSiapkerjaController::class, 'destroy'])->name('destroy');
+        Route::post('/import', [AplikasiIntegrasiSiapkerjaController::class, 'importExcel'])->name('import');
+    });
+
+    Route::prefix('data-ketenagakerjaan')->name('data-ketenagakerjaan.')->group(function(){
+        Route::get('/', [DataKetenagakerjaanController::class, 'index'])->name('index');
+        Route::get('/create', [DataKetenagakerjaanController::class, 'create'])->name('create');
+        Route::post('/', [DataKetenagakerjaanController::class, 'store'])->name('store');
+        Route::get('/{dataKetenagakerjaan}', [DataKetenagakerjaanController::class, 'show'])->name('show'); // Parameter disesuaikan
+        Route::get('/{dataKetenagakerjaan}/edit', [DataKetenagakerjaanController::class, 'edit'])->name('edit');
+        Route::put('/{dataKetenagakerjaan}', [DataKetenagakerjaanController::class, 'update'])->name('update');
+        Route::delete('/{dataKetenagakerjaan}', [DataKetenagakerjaanController::class, 'destroy'])->name('destroy');
+        Route::post('/import', [DataKetenagakerjaanController::class, 'importExcel'])->name('import');
+    });
+    // Tambahkan rute CRUD lain untuk Barenbang di sini
 });
 
 
