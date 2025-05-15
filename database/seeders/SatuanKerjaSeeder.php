@@ -33,16 +33,15 @@ class SatuanKerjaSeeder extends Seeder
         //======================================================================
         $kodeUKE1Sekjen = 'UKE1-001';
         $dataSekjen = [
-            ['kode_unit_kerja_eselon_i' => $kodeUKE1Sekjen, 'kode_sk' => 'SK-001', 'nama_satuan_kerja' => 'Biro Perencanaan dan Anggaran', 'created_at' => $now, 'updated_at' => $now],
+            ['kode_unit_kerja_eselon_i' => $kodeUKE1Sekjen, 'kode_sk' => 'SK-001', 'nama_satuan_kerja' => 'Biro Perencanaan dan Manajemen Kinerja', 'created_at' => $now, 'updated_at' => $now],
             ['kode_unit_kerja_eselon_i' => $kodeUKE1Sekjen, 'kode_sk' => 'SK-002', 'nama_satuan_kerja' => 'Biro Keuangan dan Barang Milik Negara', 'created_at' => $now, 'updated_at' => $now],
             ['kode_unit_kerja_eselon_i' => $kodeUKE1Sekjen, 'kode_sk' => 'SK-003', 'nama_satuan_kerja' => 'Biro Organisasi dan Sumber Daya Manusia Aparatur', 'created_at' => $now, 'updated_at' => $now],
             ['kode_unit_kerja_eselon_i' => $kodeUKE1Sekjen, 'kode_sk' => 'SK-004', 'nama_satuan_kerja' => 'Biro Hukum', 'created_at' => $now, 'updated_at' => $now],
-            ['kode_unit_kerja_eselon_i' => $kodeUKE1Sekjen, 'kode_sk' => 'SK-005', 'nama_satuan_kerja' => 'Biro Umum dan Pengadaan Barang/Jasa', 'created_at' => $now, 'updated_at' => $now],
-            ['kode_unit_kerja_eselon_i' => $kodeUKE1Sekjen, 'kode_sk' => 'SK-006', 'nama_satuan_kerja' => 'Biro Kerja Sama Luar Negeri', 'created_at' => $now, 'updated_at' => $now],
+            ['kode_unit_kerja_eselon_i' => $kodeUKE1Sekjen, 'kode_sk' => 'SK-005', 'nama_satuan_kerja' => 'Biro Umum', 'created_at' => $now, 'updated_at' => $now],
+            ['kode_unit_kerja_eselon_i' => $kodeUKE1Sekjen, 'kode_sk' => 'SK-006', 'nama_satuan_kerja' => 'Biro Kerja Sama', 'created_at' => $now, 'updated_at' => $now],
             ['kode_unit_kerja_eselon_i' => $kodeUKE1Sekjen, 'kode_sk' => 'SK-007', 'nama_satuan_kerja' => 'Biro Hubungan Masyarakat', 'created_at' => $now, 'updated_at' => $now],
-            ['kode_unit_kerja_eselon_i' => $kodeUKE1Sekjen, 'kode_sk' => 'SK-008', 'nama_satuan_kerja' => 'Pusat Data dan Informasi Ketenagakerjaan', 'created_at' => $now, 'updated_at' => $now],
-            ['kode_unit_kerja_eselon_i' => $kodeUKE1Sekjen, 'kode_sk' => 'SK-009', 'nama_satuan_kerja' => 'Pusat Pelatihan Sumber Daya Manusia Ketenagakerjaan', 'created_at' => $now, 'updated_at' => $now],
-            ['kode_unit_kerja_eselon_i' => $kodeUKE1Sekjen, 'kode_sk' => 'SK-010', 'nama_satuan_kerja' => 'Pusat Pengembangan Kebijakan Ketenagakerjaan', 'created_at' => $now, 'updated_at' => $now],
+            ['kode_unit_kerja_eselon_i' => $kodeUKE1Sekjen, 'kode_sk' => 'SK-008', 'nama_satuan_kerja' => 'Pusat Pelatihan Sumber Daya Manusia Ketenagakerjaan', 'created_at' => $now, 'updated_at' => $now],
+            ['kode_unit_kerja_eselon_i' => $kodeUKE1Sekjen, 'kode_sk' => 'SK-009', 'nama_satuan_kerja' => 'Pusat Pasar Kerja', 'created_at' => $now, 'updated_at' => $now],
         ];
         $satuanKerjaData = array_merge($satuanKerjaData, $dataSekjen);
 
@@ -79,6 +78,7 @@ class SatuanKerjaSeeder extends Seeder
             ['kode_unit_kerja_eselon_i' => $kodeUKE1Binalavotas, 'kode_sk' => 'SK-124', 'nama_satuan_kerja' => 'Balai Pelatihan Vokasi dan Produktivitas Ternate', 'created_at' => $now, 'updated_at' => $now],
             ['kode_unit_kerja_eselon_i' => $kodeUKE1Binalavotas, 'kode_sk' => 'SK-125', 'nama_satuan_kerja' => 'Balai Pelatihan Vokasi dan Produktivitas Ambon', 'created_at' => $now, 'updated_at' => $now],
             ['kode_unit_kerja_eselon_i' => $kodeUKE1Binalavotas, 'kode_sk' => 'SK-126', 'nama_satuan_kerja' => 'Balai Pelatihan Vokasi dan Produktivitas Sorong', 'created_at' => $now, 'updated_at' => $now],
+            ['kode_unit_kerja_eselon_i' => $kodeUKE1Binalavotas, 'kode_sk' => 'SK-127', 'nama_satuan_kerja' => 'Sekretariat Badan Nasional Sertifikasi Profesi', 'created_at' => $now, 'updated_at' => $now],
         ];
         $satuanKerjaData = array_merge($satuanKerjaData, $dataDitjenBinalavotas);
 
@@ -122,12 +122,11 @@ class SatuanKerjaSeeder extends Seeder
             ['kode_unit_kerja_eselon_i' => $kodeUKE1Binwasnaker, 'kode_sk' => 'SK-403', 'nama_satuan_kerja' => 'Direktorat Bina Pengujian Keselamatan dan Kesehatan Kerja', 'created_at' => $now, 'updated_at' => $now],
             ['kode_unit_kerja_eselon_i' => $kodeUKE1Binwasnaker, 'kode_sk' => 'SK-404', 'nama_satuan_kerja' => 'Direktorat Bina Kelembagaan Keselamatan dan Kesehatan Kerja', 'created_at' => $now, 'updated_at' => $now],
             ['kode_unit_kerja_eselon_i' => $kodeUKE1Binwasnaker, 'kode_sk' => 'SK-405', 'nama_satuan_kerja' => 'Direktorat Bina Pengawasan Norma Kerja Perempuan dan Anak', 'created_at' => $now, 'updated_at' => $now],
-            ['kode_unit_kerja_eselon_i' => $kodeUKE1Binwasnaker, 'kode_sk' => 'SK-406', 'nama_satuan_kerja' => 'Balai Keselamatan dan Kesehatan Kerja Jakarta', 'created_at' => $now, 'updated_at' => $now],
+            ['kode_unit_kerja_eselon_i' => $kodeUKE1Binwasnaker, 'kode_sk' => 'SK-406', 'nama_satuan_kerja' => 'Balai Besar Keselamatan dan Kesehatan Kerja Jakarta', 'created_at' => $now, 'updated_at' => $now],
             ['kode_unit_kerja_eselon_i' => $kodeUKE1Binwasnaker, 'kode_sk' => 'SK-407', 'nama_satuan_kerja' => 'Balai Keselamatan dan Kesehatan Kerja Medan', 'created_at' => $now, 'updated_at' => $now],
             ['kode_unit_kerja_eselon_i' => $kodeUKE1Binwasnaker, 'kode_sk' => 'SK-408', 'nama_satuan_kerja' => 'Balai Keselamatan dan Kesehatan Kerja Bandung', 'created_at' => $now, 'updated_at' => $now],
-            ['kode_unit_kerja_eselon_i' => $kodeUKE1Binwasnaker, 'kode_sk' => 'SK-409', 'nama_satuan_kerja' => 'Balai Keselamatan dan Kesehatan Kerja Surabaya', 'created_at' => $now, 'updated_at' => $now],
-            ['kode_unit_kerja_eselon_i' => $kodeUKE1Binwasnaker, 'kode_sk' => 'SK-410', 'nama_satuan_kerja' => 'Balai Keselamatan dan Kesehatan Kerja Samarinda', 'created_at' => $now, 'updated_at' => $now],
-            ['kode_unit_kerja_eselon_i' => $kodeUKE1Binwasnaker, 'kode_sk' => 'SK-411', 'nama_satuan_kerja' => 'Balai Keselamatan dan Kesehatan Kerja Makassar', 'created_at' => $now, 'updated_at' => $now],
+            ['kode_unit_kerja_eselon_i' => $kodeUKE1Binwasnaker, 'kode_sk' => 'SK-409', 'nama_satuan_kerja' => 'Balai Keselamatan dan Kesehatan Kerja Samarinda', 'created_at' => $now, 'updated_at' => $now],
+            ['kode_unit_kerja_eselon_i' => $kodeUKE1Binwasnaker, 'kode_sk' => 'SK-410', 'nama_satuan_kerja' => 'Balai Besar Pengembangan Keselamatan dan Kesehatan Kerja Makassar', 'created_at' => $now, 'updated_at' => $now],
         ];
         $satuanKerjaData = array_merge($satuanKerjaData, $dataDitjenBinwasnaker);
         
@@ -138,9 +137,8 @@ class SatuanKerjaSeeder extends Seeder
         $dataBarenbang = [
             ['kode_unit_kerja_eselon_i' => $kodeUKE1Barenbang, 'kode_sk' => 'SK-500', 'nama_satuan_kerja' => 'Sekretariat Badan Perencanaan dan Pengembangan Ketenagakerjaan', 'created_at' => $now, 'updated_at' => $now],
             ['kode_unit_kerja_eselon_i' => $kodeUKE1Barenbang, 'kode_sk' => 'SK-501', 'nama_satuan_kerja' => 'Pusat Perencanaan Ketenagakerjaan', 'created_at' => $now, 'updated_at' => $now],
-            ['kode_unit_kerja_eselon_i' => $kodeUKE1Barenbang, 'kode_sk' => 'SK-502', 'nama_satuan_kerja' => 'Pusat Analisis Data dan Informasi Ketenagakerjaan', 'created_at' => $now, 'updated_at' => $now],
+            ['kode_unit_kerja_eselon_i' => $kodeUKE1Barenbang, 'kode_sk' => 'SK-502', 'nama_satuan_kerja' => 'Pusat Data dan Teknologi Informasi Ketenagakerjaan', 'created_at' => $now, 'updated_at' => $now],
             ['kode_unit_kerja_eselon_i' => $kodeUKE1Barenbang, 'kode_sk' => 'SK-503', 'nama_satuan_kerja' => 'Pusat Pengembangan Kebijakan Ketenagakerjaan', 'created_at' => $now, 'updated_at' => $now],
-            ['kode_unit_kerja_eselon_i' => $kodeUKE1Barenbang, 'kode_sk' => 'SK-504', 'nama_satuan_kerja' => 'Pusat Penelitian dan Pengembangan Ketenagakerjaan', 'created_at' => $now, 'updated_at' => $now],
         ];
         $satuanKerjaData = array_merge($satuanKerjaData, $dataBarenbang);
 
@@ -154,20 +152,10 @@ class SatuanKerjaSeeder extends Seeder
             ['kode_unit_kerja_eselon_i' => $kodeUKE1Itjen, 'kode_sk' => 'SK-602', 'nama_satuan_kerja' => 'Inspektorat II', 'created_at' => $now, 'updated_at' => $now],
             ['kode_unit_kerja_eselon_i' => $kodeUKE1Itjen, 'kode_sk' => 'SK-603', 'nama_satuan_kerja' => 'Inspektorat III', 'created_at' => $now, 'updated_at' => $now],
             ['kode_unit_kerja_eselon_i' => $kodeUKE1Itjen, 'kode_sk' => 'SK-604', 'nama_satuan_kerja' => 'Inspektorat IV', 'created_at' => $now, 'updated_at' => $now],
-            ['kode_unit_kerja_eselon_i' => $kodeUKE1Itjen, 'kode_sk' => 'SK-605', 'nama_satuan_kerja' => 'Inspektorat V', 'created_at' => $now, 'updated_at' => $now],
+
         ];
         $satuanKerjaData = array_merge($satuanKerjaData, $dataItjen);
 
-        //======================================================================
-        // 8. STAF AHLI (UKE1-008 s/d UKE1-011)
-        //======================================================================
-        $stafAhliData = [
-            ['kode_unit_kerja_eselon_i' => 'UKE1-008', 'kode_sk' => 'SK-701', 'nama_satuan_kerja' => 'Sekretariat Staf Ahli Bidang Ekonomi Ketenagakerjaan', 'created_at' => $now, 'updated_at' => $now],
-            ['kode_unit_kerja_eselon_i' => 'UKE1-009', 'kode_sk' => 'SK-702', 'nama_satuan_kerja' => 'Sekretariat Staf Ahli Bidang Hubungan Internasional', 'created_at' => $now, 'updated_at' => $now],
-            ['kode_unit_kerja_eselon_i' => 'UKE1-010', 'kode_sk' => 'SK-703', 'nama_satuan_kerja' => 'Sekretariat Staf Ahli Bidang Hubungan Antar Lembaga', 'created_at' => $now, 'updated_at' => $now],
-            ['kode_unit_kerja_eselon_i' => 'UKE1-011', 'kode_sk' => 'SK-704', 'nama_satuan_kerja' => 'Sekretariat Staf Ahli Bidang Sosial, Politik, dan Kebijakan Publik', 'created_at' => $now, 'updated_at' => $now],
-        ];
-        $satuanKerjaData = array_merge($satuanKerjaData, $stafAhliData);
         
         if (!empty($satuanKerjaData)) {
             foreach (array_chunk($satuanKerjaData, 200) as $chunk) {
