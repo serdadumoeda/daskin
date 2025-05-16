@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\JumlahKajianRekomendasi;
-use App\Models\DataKetenagakerjaan; // Pastikan model ini benar dan tabelnya ada
-use App\Models\AplikasiIntegrasiSiapkerja;
+use App\Models\AplikasiIntegrasiSiapkerja; // Pastikan model ini benar
+use App\Models\DataKetenagakerjaan; 
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -14,122 +14,131 @@ class BarenbangDashboardController extends Controller
     public function index(Request $request)
     {
         $currentYear = date('Y');
-        $selectedYear = $request->input('year_filter', $currentYear);
-        $selectedMonth = $request->input('month_filter'); 
+        $selectedYearMain = $request->input('year_filter_main', $currentYear);
+        $selectedMonthMain = $request->input('month_filter_main');
+        $selectedYearSakernas = $request->input('year_filter_sakernas', $currentYear);
 
-        // --- Data untuk Kartu Ringkasan ---
-        $totalKajian = JumlahKajianRekomendasi::query()
-            ->where('jenis_output', 1) // 1: Kajian
-            ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
-            ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
-            ->sum('jumlah');
+        // --- Data untuk Kartu Ringkasan Barenbang (Kajian & Aplikasi) ---
+        $totalKajianRekomendasi = JumlahKajianRekomendasi::query()
+            ->when($selectedYearMain, fn($q) => $q->where('tahun', $selectedYearMain))
+            ->when($selectedMonthMain, fn($q) => $q->where('bulan', $selectedMonthMain))
+            ->sum('jumlah'); // Sudah diperbaiki menjadi 'jumlah'
 
-        $totalRekomendasi = JumlahKajianRekomendasi::query()
-            ->where('jenis_output', 2) // 2: Rekomendasi
-            ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
-            ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
-            ->sum('jumlah');
-        
-        $latestKetenagakerjaan = DataKetenagakerjaan::query()
-            ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
-            ->when($selectedMonth, 
-                fn($q) => $q->where('bulan', $selectedMonth), 
-                // Jika bulan tidak dipilih, ambil data bulan terakhir di tahun terpilih
-                fn($q) => $q->where('tahun', $selectedYear)->orderBy('bulan', 'desc')
-            )
-            ->orderBy('tahun', 'desc')->orderBy('bulan', 'desc') 
-            ->first();
-
+        // *** PERBAIKAN DI SINI untuk Aplikasi Terintegrasi ***
+        // Jika setiap baris adalah 1 aplikasi yang terintegrasi (status_integrasi = 1)
         $totalAplikasiTerintegrasi = AplikasiIntegrasiSiapkerja::query()
-            ->where('status_integrasi', 1) // 1: Terintegrasi
-            ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
-            ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
-            ->count(); 
+            ->where('status_integrasi', 1) // Asumsi 1 = Terintegrasi
+            ->when($selectedYearMain, fn($q) => $q->where('tahun', $selectedYearMain))
+            ->when($selectedMonthMain, fn($q) => $q->where('bulan', $selectedMonthMain))
+            ->count(); // Menggunakan count() karena setiap baris adalah satu aplikasi
 
-        // --- Data untuk Chart ---
-        $chartLabelsBulan = [];
-        for ($m=1; $m <= 12 ; $m++) { 
-            $chartLabelsBulan[] = Carbon::create()->month($m)->format('M');
-        }
-
-        // 1. Tren Kajian vs Rekomendasi per Bulan
-        $kajianPerBulan = JumlahKajianRekomendasi::select('bulan', DB::raw('SUM(jumlah) as total'))
-            ->where('tahun', $selectedYear)->where('jenis_output', 1) // Kajian
-            ->groupBy('bulan')->orderBy('bulan')->pluck('total', 'bulan');
-        $rekomendasiPerBulan = JumlahKajianRekomendasi::select('bulan', DB::raw('SUM(jumlah) as total'))
-            ->where('tahun', $selectedYear)->where('jenis_output', 2) // Rekomendasi
-            ->groupBy('bulan')->orderBy('bulan')->pluck('total', 'bulan');
+        // --- Data Ketenagakerjaan (Sakernas - TPAK & TPT) ---
+        // (Kode Sakernas tetap sama seperti sebelumnya)
+        $latestSakernasForYear = DataKetenagakerjaan::where('tahun', $selectedYearSakernas)
+                                ->whereIn('bulan', [2, 8])
+                                ->orderBy('bulan', 'desc')
+                                ->first();
         
-        $kajianChartData = [];
-        $rekomendasiChartData = [];
-        for ($m=1; $m <= 12 ; $m++) { 
-            $kajianChartData[] = $kajianPerBulan->get($m, 0); 
-            $rekomendasiChartData[] = $rekomendasiPerBulan->get($m, 0);
+        $latestTpak = $latestSakernasForYear->tingkat_partisipasi_angkatan_kerja ?? null;
+        $latestTpt = $latestSakernasForYear->tingkat_pengangguran_terbuka ?? null;
+        $latestSakernasPeriod = '';
+        if ($latestSakernasForYear) {
+            $latestSakernasPeriod = ($latestSakernasForYear->bulan == 2 ? 'Februari' : 'Agustus') . ' ' . $latestSakernasForYear->tahun;
         }
 
-        // 2. Tren TPAK dan TPT per Bulan
-        // Menggunakan nama kolom yang sudah direvisi di migrasi dan model
-        $ketenagakerjaanTrend = DataKetenagakerjaan::select(
-                'bulan', 
-                'tpak',  // Nama kolom yang benar
-                'tpt'       // Nama kolom yang benar
-            )
-            ->where('tahun', $selectedYear)
-            ->orderBy('bulan')
+        $sakernasDataForChart = DataKetenagakerjaan::where('tahun', $selectedYearSakernas)
+            ->whereIn('bulan', [2, 8])
+            ->orderBy('bulan', 'asc')
             ->get();
-        
+        $tpakTptChartLabels = [];
         $tpakChartData = [];
         $tptChartData = [];
-        $ketenagakerjaanBulanLabels = []; // Label bulan untuk chart ini
-
-        $dataBulanKetenagakerjaan = []; // Untuk menyimpan data per bulan
-        for ($m=1; $m <= 12 ; $m++) {
-            $ketenagakerjaanBulanLabels[] = Carbon::create()->month($m)->format('M');
-            // Inisialisasi dengan null agar chart tidak menggambar garis jika tidak ada data
-            $dataBulanKetenagakerjaan[$m] = ['tpak' => null, 'tpt' => null]; 
+        foreach ($sakernasDataForChart as $data) {
+            $label = ($data->bulan == 2 ? 'Feb' : 'Agu') . ' ' . $data->tahun;
+            $tpakTptChartLabels[] = $label;
+            $tpakChartData[] = $data->tingkat_partisipasi_angkatan_kerja;
+            $tptChartData[] = $data->tingkat_pengangguran_terbuka;
         }
-        foreach($ketenagakerjaanTrend as $data) {
-            // Menggunakan nama kolom yang benar dari model/database
-            $dataBulanKetenagakerjaan[$data->bulan]['tpak'] = $data->tingkat_partisipasi_angkatan_kerja; 
-            $dataBulanKetenagakerjaan[$data->bulan]['tpt'] = $data->tingkat_pengangguran_terbuka;   
-        }
-        foreach($dataBulanKetenagakerjaan as $data) {
-            $tpakChartData[] = $data['tpak'];
-            $tptChartData[] = $data['tpt'];
-        }
-
-
-        // 3. Komposisi Aplikasi Terintegrasi per Jenis Instansi
-        $aplikasiPerJenisInstansi = AplikasiIntegrasiSiapkerja::select('jenis_instansi', DB::raw('COUNT(*) as total'))
-            ->where('status_integrasi', 1) // Hanya yang terintegrasi
-            ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
-            ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
-            ->groupBy('jenis_instansi')
-            ->get()
-            ->map(function ($item) {
-                $jenisText = (new AplikasiIntegrasiSiapkerja(['jenis_instansi' => $item->jenis_instansi]))->jenis_instansi_text;
-                return ['name' => $jenisText, 'value' => $item->total];
-            });
-
-
-        $availableYears = DataKetenagakerjaan::select('tahun')->distinct() 
-                            ->orderBy('tahun', 'desc')->pluck('tahun');
         
+        $startYearForTrend = $currentYear - 2; 
+        $sakernasMultiYearTrend = DataKetenagakerjaan::where('tahun', '>=', $startYearForTrend)
+            ->where('tahun', '<=', $currentYear)
+            ->whereIn('bulan', [2, 8])
+            ->orderBy('tahun', 'asc')->orderBy('bulan', 'asc')
+            ->get();
+        $tpakMultiYearLabels = [];
+        $tpakMultiYearValues = [];
+        $tptMultiYearValues = [];
+        foreach($sakernasMultiYearTrend as $data){
+            $tpakMultiYearLabels[] = ($data->bulan == 2 ? 'Feb' : 'Agu') . ' ' . $data->tahun;
+            $tpakMultiYearValues[] = $data->tingkat_partisipasi_angkatan_kerja;
+            $tptMultiYearValues[] = $data->tingkat_pengangguran_terbuka;
+        }
+
+        // --- Chart untuk Kajian & Aplikasi ---
+        $kajianPerBulan = JumlahKajianRekomendasi::select('bulan', DB::raw('SUM(jumlah) as total'))
+            ->where('tahun', $selectedYearMain)
+            ->groupBy('bulan')
+            ->orderBy('bulan')
+            ->pluck('total', 'bulan');
+        $kajianChartLabels = [];
+        $kajianChartDataValues = [];
+        for ($m=1; $m <= 12 ; $m++) { 
+            $kajianChartLabels[] = Carbon::create()->month($m)->isoFormat('MMM');
+            $kajianChartDataValues[] = $kajianPerBulan->get($m, 0); 
+        }
+
+        // *** PERBAIKAN DI SINI untuk Aplikasi Terintegrasi ***
+        // Jika setiap baris adalah 1 aplikasi, maka kita count per bulan
+        $aplikasiPerBulan = AplikasiIntegrasiSiapkerja::select('bulan', DB::raw('COUNT(*) as total'))
+            ->where('status_integrasi', 1) // Asumsi 1 = Terintegrasi
+            ->where('tahun', $selectedYearMain)
+            ->groupBy('bulan')
+            ->orderBy('bulan')
+            ->pluck('total', 'bulan');
+        $aplikasiChartLabels = [];
+        $aplikasiChartDataValues = [];
+        for ($m=1; $m <= 12 ; $m++) { 
+            $aplikasiChartLabels[] = Carbon::create()->month($m)->isoFormat('MMM');
+            $aplikasiChartDataValues[] = $aplikasiPerBulan->get($m, 0); 
+        }
+
+        $availableYearsMain = JumlahKajianRekomendasi::select('tahun')->distinct()
+                            ->union(AplikasiIntegrasiSiapkerja::select('tahun')->distinct())
+                            ->orderBy('tahun', 'desc')->pluck('tahun');
+        if ($availableYearsMain->isEmpty() && !$availableYearsMain->contains($currentYear)) {
+            $availableYearsMain->push($currentYear);
+            $availableYearsMain = $availableYearsMain->sortDesc();
+        }
+        
+        $availableYearsSakernas = DataKetenagakerjaan::select('tahun')->distinct()
+                                    ->orderBy('tahun', 'desc')->pluck('tahun');
+        if ($availableYearsSakernas->isEmpty() && !$availableYearsSakernas->contains($currentYear)) {
+            $availableYearsSakernas->push($currentYear);
+            $availableYearsSakernas = $availableYearsSakernas->sortDesc();
+        }
+
         return view('dashboards.barenbang', compact(
-            'totalKajian',
-            'totalRekomendasi',
-            'latestKetenagakerjaan',
+            'totalKajianRekomendasi',
             'totalAplikasiTerintegrasi',
-            'chartLabelsBulan', // Untuk chart Kajian & Rekomendasi
-            'kajianChartData',
-            'rekomendasiChartData',
-            'ketenagakerjaanBulanLabels', // Untuk chart TPAK & TPT
+            'latestTpak',
+            'latestTpt',
+            'latestSakernasPeriod',
+            'tpakTptChartLabels',
             'tpakChartData',
             'tptChartData',
-            'aplikasiPerJenisInstansi',
-            'availableYears',
-            'selectedYear',
-            'selectedMonth'
+            'tpakMultiYearLabels',
+            'tpakMultiYearValues',
+            'tptMultiYearValues',
+            'kajianChartLabels',
+            'kajianChartDataValues',
+            'aplikasiChartLabels',
+            'aplikasiChartDataValues',
+            'availableYearsMain',
+            'availableYearsSakernas',
+            'selectedYearMain',
+            'selectedMonthMain',
+            'selectedYearSakernas'
         ));
     }
 }

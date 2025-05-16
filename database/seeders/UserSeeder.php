@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Super Admin',
             'email' => 'superadmin@kemnaker.go.id',
-            'password' => Hash::make('password'), // Ganti dengan password yang aman
+            'password' => Hash::make('password'), // 
             'role' => User::ROLE_SUPERADMIN,
             'email_verified_at' => now(),
         ]);
@@ -84,7 +84,7 @@ class UserSeeder extends Seeder
             'name' => 'Pengguna Biasa',
             'email' => 'user@kemnaker.go.id',
             'password' => Hash::make('password'),
-            'role' => User::ROLE_USER, // Peran default
+            'role' => User::ROLE_USER, // 
             'email_verified_at' => now(),
         ]);
     }
