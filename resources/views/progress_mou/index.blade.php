@@ -164,9 +164,9 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'search_judul
                                         <i class="ri-delete-bin-line text-base"></i>
                                     </button>
                                 </form>
-                                 <a href="{{ route('sekretariat-jenderal.progress-mou.show', $item->id) }}" class="text-gray-500 hover:text-gray-700" title="Lihat Detail">
+                                 <!-- <a href="{{ route('sekretariat-jenderal.progress-mou.show', $item->id) }}" class="text-gray-500 hover:text-gray-700" title="Lihat Detail">
                                     <i class="ri-eye-line text-base"></i>
-                                </a>
+                                </a> -->
                             </div>
                         </td>
                     </tr>

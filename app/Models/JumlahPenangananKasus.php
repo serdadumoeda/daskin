@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+// BelongsTo tidak lagi digunakan untuk SatuanKerja secara langsung di sini
+// use Illuminate\Database\Eloquent\Relations\BelongsTo; 
 
 class JumlahPenangananKasus extends Model
 {
@@ -15,7 +16,7 @@ class JumlahPenangananKasus extends Model
     protected $fillable = [
         'tahun',
         'bulan',
-        'kode_satuan_kerja', // Foreign key ke tabel satuan_kerja
+        'substansi', // Menggantikan kode_satuan_kerja
         'jenis_perkara',
         'jumlah_perkara',
     ];
@@ -31,15 +32,15 @@ class JumlahPenangananKasus extends Model
         'jumlah_perkara' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        // 'substansi' akan menjadi string by default, tidak perlu cast khusus kecuali ada kebutuhan lain
     ];
 
     /**
-     * Relasi ke Satuan Kerja.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Relasi ke Satuan Kerja dihapus karena kolom kode_satuan_kerja diganti substansi (string).
+     * Jika 'substansi' nantinya merujuk ke tabel lain, relasi baru bisa ditambahkan di sini.
      */
-    public function satuanKerja(): BelongsTo
-    {
-        return $this->belongsTo(SatuanKerja::class, 'kode_satuan_kerja', 'kode_sk');
-    }
+    // public function satuanKerja(): BelongsTo
+    // {
+    //     return $this->belongsTo(SatuanKerja::class, 'kode_satuan_kerja', 'kode_sk');
+    // }
 }

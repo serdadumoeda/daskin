@@ -1,10 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Jumlah Penanganan Kasus')
+@section('title', 'Daftar Penanganan Kasus')
 @section('page_title', 'Manajemen Jumlah Penanganan Kasus')
 
 @php
-// Helper function untuk link sorting (spesifik untuk modul ini)
 if (!function_exists('sortableLinkKasus')) {
     function sortableLinkKasus(string $column, string $label, string $currentSortBy, string $currentSortDirection, array $requestFilters) {
         $newDirection = ($currentSortBy == $column && $currentSortDirection == 'asc') ? 'desc' : 'asc';
@@ -20,7 +19,7 @@ if (!function_exists('sortableLinkKasus')) {
         return '<a href="' . route('sekretariat-jenderal.jumlah-penanganan-kasus.index', $queryParams) . '" class="flex items-center hover:text-primary">' . e($label) . $iconHtml . '</a>';
     }
 }
-$requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja_filter', 'jenis_perkara_filter']);
+$requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'substansi_filter', 'jenis_perkara_filter']);
 @endphp
 
 @section('header_filters')
@@ -45,15 +44,8 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja
                 </select>
             </div>
             <div class="flex-grow">
-                <label for="satuan_kerja_filter_kasus" class="text-sm text-gray-600 whitespace-nowrap">Satuan Kerja:</label>
-                 <select name="satuan_kerja_filter" id="satuan_kerja_filter_kasus" class="form-input mt-1 w-full bg-white">
-                    <option value="">Semua Satuan Kerja</option>
-                    @foreach($satuanKerjas as $satker)
-                        <option value="{{ $satker->kode_sk }}" {{ request('satuan_kerja_filter') == $satker->kode_sk ? 'selected' : '' }}>
-                            {{ $satker->nama_satuan_kerja }}
-                        </option>
-                    @endforeach
-                </select>
+                <label for="substansi_filter_kasus" class="text-sm text-gray-600 whitespace-nowrap">Substansi:</label>
+                <input type="text" name="substansi_filter" id="substansi_filter_kasus" value="{{ request('substansi_filter') }}" placeholder="Cari substansi..." class="form-input mt-1 w-full bg-white">
             </div>
             <div class="flex-grow">
                 <label for="jenis_perkara_filter_kasus" class="text-sm text-gray-600 whitespace-nowrap">Jenis Perkara:</label>
@@ -76,6 +68,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja
 @section('content')
 <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
     <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+        <div></div>
         <div class="w-full sm:w-auto sm:ml-auto flex flex-col sm:flex-row items-start sm:items-center gap-2">
             <form action="{{ route('sekretariat-jenderal.jumlah-penanganan-kasus.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                 @csrf
@@ -91,7 +84,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja
                     <i class="ri-upload-2-line mr-1"></i> Impor Data
                 </button>
             </form>
-             <a href="MASUKKAN_LINK_ONEDRIVE_FORMAT_KASUS_DISINI" 
+             <a href="MASUKKAN_LINK_ONEDRIVE_FORMAT_KASUS_DISINI"
                target="_blank"
                class="px-3 py-2 bg-blue-500 text-white rounded-button hover:bg-blue-600 text-sm font-medium flex items-center justify-center whitespace-nowrap w-full sm:w-auto mt-2 sm:mt-0">
                 <i class="ri-download-2-line mr-1"></i> Unduh Format
@@ -102,6 +95,8 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja
         </div>
     </div>
 
+    {{-- Notifikasi session('success') dan session('error') sekarang ditangani oleh layouts.app.blade.php --}}
+    {{-- Hanya 'import_errors' yang spesifik mungkin perlu dipertahankan di sini jika formatnya berbeda --}}
     @if (session('import_errors'))
         <div class="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-md text-sm">
             <strong class="font-bold">Beberapa data gagal diimpor:</strong>
@@ -110,11 +105,6 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja
                     <li>{{ $error }}</li>
                 @endforeach
             </ul>
-        </div>
-    @endif
-    @if (session('error') && !session('import_errors'))
-        <div class="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-md text-sm">
-            {{ session('error') }}
         </div>
     @endif
     
@@ -130,13 +120,13 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja
                         {!! sortableLinkKasus('bulan', 'Bulan', $sortBy, $sortDirection, $requestFilters) !!}
                     </th>
                     <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkKasus('kode_satuan_kerja', 'Satuan Kerja', $sortBy, $sortDirection, $requestFilters) !!}
+                        {!! sortableLinkKasus('substansi', 'Substansi', $sortBy, $sortDirection, $requestFilters) !!}
                     </th>
                     <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         {!! sortableLinkKasus('jenis_perkara', 'Jenis Perkara', $sortBy, $sortDirection, $requestFilters) !!}
                     </th>
                     <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkKasus('jumlah_perkara', 'Jumlah Perkara', $sortBy, $sortDirection, $requestFilters) !!}
+                        {!! sortableLinkKasus('jumlah_perkara', 'Jumlah', $sortBy, $sortDirection, $requestFilters) !!}
                     </th>
                     <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
@@ -147,11 +137,12 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $jumlahPenangananKasuses->firstItem() + $index }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->tahun }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ \Carbon\Carbon::create()->month($item->bulan)->isoFormat('MMMM') }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->satuanKerja->nama_satuan_kerja ?? $item->kode_satuan_kerja }}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">{{ $item->jenis_perkara }}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700 max-w-xs truncate" title="{{ $item->substansi }}">{{ Str::limit($item->substansi, 50) }}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700 max-w-xs truncate" title="{{ $item->jenis_perkara }}">{{ Str::limit($item->jenis_perkara, 50) }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 text-right">{{ number_format($item->jumlah_perkara) }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-center">
                             <div class="flex items-center justify-center space-x-2">
+                               
                                 <a href="{{ route('sekretariat-jenderal.jumlah-penanganan-kasus.edit', $item->id) }}" class="text-blue-600 hover:text-blue-800" title="Edit">
                                     <i class="ri-pencil-line text-base"></i>
                                 </a>
@@ -162,7 +153,9 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja
                                         <i class="ri-delete-bin-line text-base"></i>
                                     </button>
                                 </form>
-                                {{-- Tidak ada show view untuk modul ini berdasarkan Route::resource kecuali show --}}
+                                <!-- <a href="{{ route('sekretariat-jenderal.jumlah-penanganan-kasus.show', $item->id) }}" class="text-gray-500 hover:text-gray-700" title="Lihat">
+                                    <i class="ri-eye-line text-base"></i>
+                                </a> -->
                             </div>
                         </td>
                     </tr>

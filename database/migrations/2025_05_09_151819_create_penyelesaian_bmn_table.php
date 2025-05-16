@@ -12,24 +12,24 @@ return new class extends Migration
             $table->id();
             $table->year('tahun');
             $table->tinyInteger('bulan')->comment('1-12');
-            $table->string('kode_satuan_kerja');
-            $table->tinyInteger('status_penggunaan_aset')->comment('1: Aset Digunakan, 2: Aset Tetap Tidak Digunakan');
-            $table->tinyInteger('status_aset_digunakan')->nullable()->comment('Jika status_penggunaan_aset=1; 1: Sudah PSP, 2: Belum PSP');
-            $table->string('nup')->nullable()->comment('Nomor Urut Pendaftaran, wajib jika status_aset_digunakan=2');
-            $table->integer('kuantitas')->default(0);
-            $table->decimal('nilai_aset_rp', 19, 2)->default(0.00);
-            $table->decimal('total_aset_rp', 19, 2)->default(0.00)->comment('Untuk Aset Tidak Digunakan, atau bisa juga Kuantitas*Nilai Aset');
+            
+            // Mengganti 'unit_kerja' string dengan foreign key ke tabel 'satuan_kerja'
+            $table->string('kode_satuan_kerja'); // Pastikan tipe data ini sama dengan 'kode_sk' di tabel 'satuan_kerja'
+            $table->foreign('kode_satuan_kerja')
+                  ->references('kode_sk')->on('satuan_kerja') // Mengacu pada tabel 'satuan_kerja' dan kolom 'kode_sk'
+                  ->onUpdate('cascade')->onDelete('restrict'); // atau onDelete('cascade') sesuai kebutuhan
+
+            $table->tinyInteger('jenis_bmn')->comment('Refers to predefined list');
+            $table->boolean('henti_guna')->comment('1: Ya, 0: Tidak');
+            $table->tinyInteger('status_penggunaan')->comment('Refers to predefined list');
+            $table->string('penetapan_status_penggunaan')->nullable();
+            $table->integer('kuantitas');
+            $table->decimal('nilai_aset', 15, 2);
             $table->timestamps();
 
-            $table->foreign('kode_satuan_kerja')
-                  ->references('kode_sk')
-                  ->on('satuan_kerja')
-                  ->onDelete('cascade')
-                  ->onUpdate('cascade');
-
             $table->index(['tahun', 'bulan']);
-            $table->index('kode_satuan_kerja');
-            $table->index('status_penggunaan_aset');
+            $table->index('kode_satuan_kerja'); // Index untuk foreign key
+            $table->index('jenis_bmn');
         });
     }
 

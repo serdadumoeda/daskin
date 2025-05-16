@@ -3,7 +3,8 @@
 namespace App\Imports;
 
 use App\Models\JumlahPenangananKasus;
-use App\Models\SatuanKerja; // Untuk validasi kode_satuan_kerja
+// SatuanKerja tidak lagi diperlukan untuk validasi substansi sebagai string
+// use App\Models\SatuanKerja; 
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
@@ -14,11 +15,12 @@ class JumlahPenangananKasusImport implements ToModel, WithHeadingRow, WithValida
 {
     use Importable;
 
-    private $satuanKerjaKodes;
+    // $satuanKerjaKodes tidak lagi diperlukan
+    // private $satuanKerjaKodes;
 
     public function __construct()
     {
-        $this->satuanKerjaKodes = SatuanKerja::pluck('kode_sk')->toArray();
+        // $this->satuanKerjaKodes = SatuanKerja::pluck('kode_sk')->toArray(); // Dihapus
     }
 
     /**
@@ -28,9 +30,13 @@ class JumlahPenangananKasusImport implements ToModel, WithHeadingRow, WithValida
     */
     public function model(array $row)
     {
-        $kodeSk = $row['kode_satuan_kerja'] ?? null;
-        if (empty($kodeSk) || !in_array($kodeSk, $this->satuanKerjaKodes)) {
-            Log::warning("Import JumlahPenangananKasus: Kode Satuan Kerja '{$kodeSk}' tidak valid atau tidak ditemukan. Baris dilewati: " . json_encode($row));
+        // Mengambil 'substansi' dari Excel, menggantikan 'kode_satuan_kerja'
+        $substansi = $row['substansi'] ?? null; 
+
+        // Validasi sederhana untuk substansi jika diperlukan (misal tidak boleh kosong)
+        // Jika 'substansi' punya daftar nilai tetap, validasi lebih lanjut bisa ditambahkan di sini atau di rules()
+        if (empty($substansi)) {
+            Log::warning("Import JumlahPenangananKasus: Kolom 'substansi' kosong. Baris dilewati: " . json_encode($row));
             return null;
         }
 
@@ -58,7 +64,7 @@ class JumlahPenangananKasusImport implements ToModel, WithHeadingRow, WithValida
         return new JumlahPenangananKasus([
             'tahun'             => $row['tahun'],
             'bulan'             => $bulan,
-            'kode_satuan_kerja' => $kodeSk,
+            'substansi'         => $substansi, // Menggunakan $substansi dari Excel
             'jenis_perkara'     => $row['jenis_perkara'] ?? null,
             'jumlah_perkara'    => (int)($row['jumlah_perkara'] ?? 0),
         ]);
@@ -69,7 +75,8 @@ class JumlahPenangananKasusImport implements ToModel, WithHeadingRow, WithValida
         return [
             '*.tahun' => 'required|integer|digits:4|min:1900|max:' . (date('Y') + 5),
             '*.bulan' => 'required',
-            '*.kode_satuan_kerja' => 'required|string',
+            // Mengganti validasi kode_satuan_kerja menjadi substansi
+            '*.substansi' => 'required|string|max:255', 
             '*.jenis_perkara' => 'required|string|max:255',
             '*.jumlah_perkara' => 'required|integer|min:0',
         ];
@@ -80,7 +87,10 @@ class JumlahPenangananKasusImport implements ToModel, WithHeadingRow, WithValida
         return [
             '*.tahun.required' => 'Kolom tahun wajib diisi.',
             '*.bulan.required' => 'Kolom bulan wajib diisi atau formatnya tidak valid.',
-            '*.kode_satuan_kerja.required' => 'Kolom kode_satuan_kerja wajib diisi.',
+            // Pesan validasi untuk substansi
+            '*.substansi.required' => 'Kolom substansi wajib diisi.',
+            '*.substansi.string' => 'Kolom substansi harus berupa teks.',
+            '*.substansi.max' => 'Kolom substansi tidak boleh lebih dari 255 karakter.',
             '*.jenis_perkara.required' => 'Kolom jenis_perkara wajib diisi.',
             '*.jumlah_perkara.required' => 'Kolom jumlah_perkara wajib diisi.',
             '*.jumlah_perkara.integer' => 'Kolom jumlah_perkara harus berupa angka.',

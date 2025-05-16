@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\ProgressMou;
 use App\Models\JumlahRegulasiBaru;
 use App\Models\JumlahPenangananKasus;
-use App\Models\PenyelesaianBmn;
+use App\Models\PenyelesaianBmn; // Pastikan ini di-use
 use App\Models\PersentaseKehadiran;
 use App\Models\MonevMonitoringMedia;
 use App\Models\LulusanPolteknakerBekerja;
@@ -38,19 +38,18 @@ class SekjenDashboardController extends Controller
             ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
             ->sum('jumlah_perkara');
         
+        // === PERBAIKAN DI SINI ===
+        // Menggunakan kolom 'nilai_aset' sesuai dengan struktur tabel penyelesaian_bmn
         $totalNilaiPenyelesaianBmn = PenyelesaianBmn::query()
             ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
             ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
-            ->sum('total_aset_rp'); // Asumsi ini adalah nilai yang ingin ditampilkan
+            ->sum('nilai_aset'); // Diubah dari 'total_aset_rp' menjadi 'nilai_aset'
+        // === AKHIR PERBAIKAN ===
 
-        // Rata-rata % Kehadiran (WFO)
-        // Ini memerlukan logika lebih kompleks jika ingin rata-rata persentase sebenarnya.
-        // Untuk sederhana, kita hitung total orang WFO dibagi total orang (jika ada data total pegawai per satker)
-        // Atau, tampilkan jumlah orang WFO.
         $totalWFO = PersentaseKehadiran::query()
             ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
             ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
-            ->where('status_kehadiran', 1) // 1: WFO
+            ->where('status_kehadiran', 1) 
             ->sum('jumlah_orang');
         
         $totalBeritaMonev = MonevMonitoringMedia::query()
@@ -91,7 +90,6 @@ class SekjenDashboardController extends Controller
             ->groupBy('jenis_regulasi')
             ->get()
             ->map(function ($item) {
-                // Menggunakan accessor dari model
                 $jenisText = (new JumlahRegulasiBaru(['jenis_regulasi' => $item->jenis_regulasi]))->jenis_regulasi_text;
                 return ['name' => $jenisText, 'value' => $item->total];
             });
@@ -109,12 +107,16 @@ class SekjenDashboardController extends Controller
             $kasusChartDataValues[] = $kasusPerBulan->get($m, 0);
         }
 
+        // === PERBAIKAN DI SINI ===
         // 4. Tren Penyelesaian BMN (Total Nilai Aset) per Bulan
-        $bmnPerBulan = PenyelesaianBmn::select('bulan', DB::raw('SUM(total_aset_rp) as total_nilai'))
+        // Menggunakan kolom 'nilai_aset'
+        $bmnPerBulan = PenyelesaianBmn::select('bulan', DB::raw('SUM(nilai_aset) as total_nilai')) // Diubah dari 'total_aset_rp' menjadi 'nilai_aset'
             ->where('tahun', $selectedYear)
             ->groupBy('bulan')
             ->orderBy('bulan')
             ->pluck('total_nilai', 'bulan');
+        // === AKHIR PERBAIKAN ===
+        
         $bmnChartLabels = [];
         $bmnChartDataValues = [];
         for ($m=1; $m <= 12 ; $m++) { 
@@ -122,7 +124,7 @@ class SekjenDashboardController extends Controller
             $bmnChartDataValues[] = $bmnPerBulan->get($m, 0);
         }
         
-        // 5. Kehadiran (Contoh: Jumlah WFO vs Non-WFO (Cuti, DL, Sakit, dll) per bulan)
+        // 5. Kehadiran
         $kehadiranData = PersentaseKehadiran::select('bulan', 'status_kehadiran', DB::raw('SUM(jumlah_orang) as total_orang'))
             ->where('tahun', $selectedYear)
             ->groupBy('bulan', 'status_kehadiran')
@@ -131,7 +133,7 @@ class SekjenDashboardController extends Controller
         
         $kehadiranChartLabels = [];
         $kehadiranWFOData = [];
-        $kehadiranLainData = []; // Cuti, DL, Sakit, dll.
+        $kehadiranLainData = [];
         $tempKehadiran = [];
 
         for ($m=1; $m <= 12 ; $m++) { 
@@ -139,7 +141,7 @@ class SekjenDashboardController extends Controller
             $tempKehadiran[$m] = ['wfo' => 0, 'lain' => 0];
         }
         foreach($kehadiranData as $data) {
-            if ($data->status_kehadiran == 1) { // WFO
+            if ($data->status_kehadiran == 1) {
                 $tempKehadiran[$data->bulan]['wfo'] += $data->total_orang;
             } else {
                 $tempKehadiran[$data->bulan]['lain'] += $data->total_orang;
@@ -150,22 +152,29 @@ class SekjenDashboardController extends Controller
             $kehadiranLainData[] = $dataBulan['lain'];
         }
 
-
-        $availableYears = ProgressMou::select('tahun')->distinct() // Ambil dari salah satu tabel utama Sekjen
-                            ->orderBy('tahun', 'desc')->pluck('tahun');
+        $availableYearsQuery = PenyelesaianBmn::select('tahun')->distinct();
+        $otherTablesYears = [
+            ProgressMou::select('tahun')->distinct(),
+            JumlahRegulasiBaru::select('tahun')->distinct(),
+            // Tambahkan model lain jika perlu
+        ];
+        foreach ($otherTablesYears as $tableQuery) {
+            $availableYearsQuery->union($tableQuery);
+        }
+        $availableYears = $availableYearsQuery->orderBy('tahun', 'desc')->pluck('tahun');
         
         return view('dashboards.sekjen', compact(
             'totalMoU',
             'totalRegulasi',
             'totalKasusDitangani',
             'totalNilaiPenyelesaianBmn',
-            'totalWFO', // Kirim total WFO untuk kartu
+            'totalWFO',
             'totalBeritaMonev',
             'totalLulusanBekerja',
             'totalSdmPelatihan',
             'mouChartLabels',
             'mouChartDataValues',
-            'regulasiPerJenis', // Ini sudah array of objects {name: ..., value: ...}
+            'regulasiPerJenis',
             'kasusChartLabels',
             'kasusChartDataValues',
             'bmnChartLabels',

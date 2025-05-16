@@ -1,10 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Jumlah Penyelesaian BMN')
-@section('page_title', 'Manajemen Jumlah Penyelesaian BMN')
+@section('title', 'Daftar Penyelesaian BMN')
+@section('page_title', 'Manajemen Penyelesaian BMN')
 
 @php
-// Helper function untuk link sorting (spesifik untuk modul ini)
 if (!function_exists('sortableLinkBmn')) {
     function sortableLinkBmn(string $column, string $label, string $currentSortBy, string $currentSortDirection, array $requestFilters) {
         $newDirection = ($currentSortBy == $column && $currentSortDirection == 'asc') ? 'desc' : 'asc';
@@ -20,7 +19,8 @@ if (!function_exists('sortableLinkBmn')) {
         return '<a href="' . route('sekretariat-jenderal.penyelesaian-bmn.index', $queryParams) . '" class="flex items-center hover:text-primary">' . e($label) . $iconHtml . '</a>';
     }
 }
-$requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja_filter', 'status_penggunaan_aset_filter']);
+// Sesuaikan filter dengan field baru kode_satuan_kerja
+$requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'kode_satuan_kerja_filter', 'jenis_bmn_filter']); 
 @endphp
 
 @section('header_filters')
@@ -29,7 +29,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja
             <div class="flex-grow">
                 <label for="tahun_filter_bmn" class="text-sm text-gray-600 whitespace-nowrap">Tahun:</label>
                 <select name="tahun_filter" id="tahun_filter_bmn" class="form-input mt-1 w-full bg-white">
-                    <option value="">Semua</option>
+                    <option value="">Semua Tahun</option>
                     @foreach($availableYears as $year)
                         <option value="{{ $year }}" {{ request('tahun_filter') == $year ? 'selected' : '' }}>{{ $year }}</option>
                     @endforeach
@@ -38,29 +38,30 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja
             <div class="flex-grow">
                 <label for="bulan_filter_bmn" class="text-sm text-gray-600 whitespace-nowrap">Bulan:</label>
                 <select name="bulan_filter" id="bulan_filter_bmn" class="form-input mt-1 w-full bg-white">
-                    <option value="">Semua</option>
+                    <option value="">Semua Bulan</option>
                     @for ($i = 1; $i <= 12; $i++)
                         <option value="{{ $i }}" {{ request('bulan_filter') == $i ? 'selected' : '' }}>{{ \Carbon\Carbon::create()->month($i)->isoFormat('MMMM') }}</option>
                     @endfor
                 </select>
             </div>
+            {{-- Filter untuk Satuan Kerja --}}
             <div class="flex-grow">
-                <label for="satuan_kerja_filter_bmn" class="text-sm text-gray-600 whitespace-nowrap">Satuan Kerja:</label>
-                 <select name="satuan_kerja_filter" id="satuan_kerja_filter_bmn" class="form-input mt-1 w-full bg-white">
-                    <option value="">Semua Satuan Kerja</option>
-                    @foreach($satuanKerjas as $satker)
-                        <option value="{{ $satker->kode_sk }}" {{ request('satuan_kerja_filter') == $satker->kode_sk ? 'selected' : '' }}>
-                            {{ $satker->nama_satuan_kerja }}
+                <label for="kode_satuan_kerja_filter_bmn" class="text-sm text-gray-600 whitespace-nowrap">Unit/Satuan Kerja:</label>
+                <select name="kode_satuan_kerja_filter" id="kode_satuan_kerja_filter_bmn" class="form-input mt-1 w-full bg-white">
+                    <option value="">Semua Unit/Satuan Kerja</option>
+                    @foreach($satuanKerjaOptions as $kode_sk => $nama_satuan_kerja)
+                        <option value="{{ $kode_sk }}" {{ request('kode_satuan_kerja_filter') == $kode_sk ? 'selected' : '' }}>
+                            {{ $nama_satuan_kerja }}
                         </option>
                     @endforeach
                 </select>
             </div>
             <div class="flex-grow">
-                <label for="status_penggunaan_aset_filter_bmn" class="text-sm text-gray-600 whitespace-nowrap">Status Penggunaan:</label>
-                 <select name="status_penggunaan_aset_filter" id="status_penggunaan_aset_filter_bmn" class="form-input mt-1 w-full bg-white">
-                    <option value="">Semua Status</option>
-                    @foreach($statusPenggunaanOptions as $key => $value)
-                        <option value="{{ $key }}" {{ request('status_penggunaan_aset_filter') == $key ? 'selected' : '' }}>
+                <label for="jenis_bmn_filter_bmn" class="text-sm text-gray-600 whitespace-nowrap">Jenis BMN:</label>
+                 <select name="jenis_bmn_filter" id="jenis_bmn_filter_bmn" class="form-input mt-1 w-full bg-white">
+                    <option value="">Semua Jenis BMN</option>
+                    @foreach($jenisBmnOptions as $key => $value)
+                        <option value="{{ $key }}" {{ request('jenis_bmn_filter') == $key ? 'selected' : '' }}>
                             {{ $value }}
                         </option>
                     @endforeach
@@ -83,11 +84,12 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja
 @section('content')
 <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
     <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+        <div></div>
         <div class="w-full sm:w-auto sm:ml-auto flex flex-col sm:flex-row items-start sm:items-center gap-2">
             <form action="{{ route('sekretariat-jenderal.penyelesaian-bmn.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                 @csrf
                 <div class="flex-grow">
-                    <input type="file" name="excel_file" id="excel_file_bmn" required 
+                    <input type="file" name="excel_file" id="excel_file_bmn" required
                            class="block w-full text-sm text-gray-500
                                   file:mr-2 file:py-1.5 file:px-3 file:rounded-button
                                   file:border-0 file:text-sm file:font-semibold
@@ -98,7 +100,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja
                     <i class="ri-upload-2-line mr-1"></i> Impor Data
                 </button>
             </form>
-             <a href="MASUKKAN_LINK_ONEDRIVE_FORMAT_BMN_DISINI" 
+             <a href="MASUKKAN_LINK_FORMAT_EXCEL_BMN_DISINI"
                target="_blank"
                class="px-3 py-2 bg-blue-500 text-white rounded-button hover:bg-blue-600 text-sm font-medium flex items-center justify-center whitespace-nowrap w-full sm:w-auto mt-2 sm:mt-0">
                 <i class="ri-download-2-line mr-1"></i> Unduh Format
@@ -119,39 +121,23 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja
             </ul>
         </div>
     @endif
-    @if (session('error') && !session('import_errors'))
-        <div class="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-md text-sm">
-            {{ session('error') }}
-        </div>
-    @endif
-    
+
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 border border-gray-200">
             <thead class="bg-gray-50">
                 <tr>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkBmn('tahun', 'Tahun', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkBmn('bulan', 'Bulan', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkBmn('kode_satuan_kerja', 'Satuan Kerja', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkBmn('status_penggunaan_aset', 'Status Penggunaan', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status Aset Digunakan</th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NUP</th>
-                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkBmn('kuantitas', 'Kuantitas', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai Aset (Rp)</th>
-                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkBmn('total_aset_rp', 'Total Aset (Rp)', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{!! sortableLinkBmn('tahun', 'Tahun', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{!! sortableLinkBmn('bulan', 'Bulan', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    {{-- Menggunakan kode_satuan_kerja untuk sorting, tapi menampilkan nama satuan kerja --}}
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{!! sortableLinkBmn('kode_satuan_kerja', 'Unit/Satuan Kerja', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{!! sortableLinkBmn('jenis_bmn', 'Jenis BMN', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Henti Guna</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status Penggunaan</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Penetapan Status</th>
+                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{!! sortableLinkBmn('kuantitas', 'Kuantitas', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{!! sortableLinkBmn('nilai_aset', 'Nilai Aset (Rp)', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -160,26 +146,29 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $penyelesaianBmns->firstItem() + $index }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->tahun }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ \Carbon\Carbon::create()->month($item->bulan)->isoFormat('MMMM') }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->satuanKerja->nama_satuan_kerja ?? $item->kode_satuan_kerja }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->status_penggunaan_aset_text }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->status_aset_digunakan_text ?? '-' }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->nup ?? '-' }}</td>
+                        {{-- Menampilkan nama satuan kerja dari relasi --}}
+                        <td class="px-4 py-3 text-sm text-gray-700 max-w-xs truncate" title="{{ $item->satuanKerja->nama_satuan_kerja ?? $item->kode_satuan_kerja }}">{{ Str::limit($item->satuanKerja->nama_satuan_kerja ?? $item->kode_satuan_kerja, 30) }}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700 max-w-xs truncate" title="{{ $item->jenis_bmn_text }}">{{ Str::limit($item->jenis_bmn_text, 30) }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->henti_guna_text }}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700 max-w-xs truncate" title="{{ $item->status_penggunaan_text }}">{{ Str::limit($item->status_penggunaan_text, 30) }}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700 max-w-xs truncate" title="{{ $item->penetapan_status_penggunaan }}">{{ Str::limit($item->penetapan_status_penggunaan ?? '-', 30) }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 text-right">{{ number_format($item->kuantitas) }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 text-right">{{ number_format($item->nilai_aset_rp, 2, ',', '.') }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 text-right">{{ number_format($item->total_aset_rp, 2, ',', '.') }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 text-right">{{ number_format($item->nilai_aset, 2, ',', '.') }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-center">
                             <div class="flex items-center justify-center space-x-2">
+                                <a href="{{ route('sekretariat-jenderal.penyelesaian-bmn.show', $item->id) }}" class="text-gray-500 hover:text-gray-700" title="Lihat">
+                                    <i class="ri-eye-line text-base"></i>
+                                </a>
                                 <a href="{{ route('sekretariat-jenderal.penyelesaian-bmn.edit', $item->id) }}" class="text-blue-600 hover:text-blue-800" title="Edit">
                                     <i class="ri-pencil-line text-base"></i>
                                 </a>
-                                <form action="{{ route('sekretariat-jenderal.penyelesaian-bmn.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data BMN ini?');" style="display: inline;">
+                                <form action="{{ route('sekretariat-jenderal.penyelesaian-bmn.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');" style="display: inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-600 hover:text-red-800" title="Hapus">
                                         <i class="ri-delete-bin-line text-base"></i>
                                     </button>
                                 </form>
-                                {{-- Tidak ada show view untuk modul ini berdasarkan Route::resource kecuali show --}}
                             </div>
                         </td>
                     </tr>

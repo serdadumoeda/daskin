@@ -6,17 +6,19 @@
 @section('content')
 <div class="bg-white p-6 rounded-lg shadow-md">
     <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-semibold text-gray-800">Formulir Tambah Data BMN</h2>
+        <h2 class="text-xl font-semibold text-gray-800">Formulir Tambah Data Penyelesaian BMN</h2>
         <a href="{{ route('sekretariat-jenderal.penyelesaian-bmn.index') }}" class="text-sm text-primary hover:text-primary/80 flex items-center">
             <i class="ri-arrow-left-line mr-1"></i> Kembali ke Daftar
         </a>
     </div>
     <form action="{{ route('sekretariat-jenderal.penyelesaian-bmn.store') }}" method="POST">
         @include('penyelesaian_bmn._form', [
-            'penyelesaianBmn' => $penyelesaianBmn, 
-            'satuanKerjas' => $satuanKerjas,
+            'penyelesaianBmn' => $penyelesaianBmn,
+            'jenisBmnOptions' => $jenisBmnOptions,
+            'hentiGunaOptions' => $hentiGunaOptions,
             'statusPenggunaanOptions' => $statusPenggunaanOptions,
-            'statusAsetDigunakanOptions' => $statusAsetDigunakanOptions
+            'satuanKerjas' => $satuanKerjas, // Pastikan ini ada
+            'routeNamePrefix' => 'sekretariat-jenderal.penyelesaian-bmn.' 
         ])
     </form>
 </div>

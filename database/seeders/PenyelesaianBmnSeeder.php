@@ -4,64 +4,50 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\PenyelesaianBmn;
-use App\Models\SatuanKerja;
+use App\Models\SatuanKerja; // Tambahkan ini
 use Illuminate\Support\Carbon;
 
 class PenyelesaianBmnSeeder extends Seeder
 {
     public function run(): void
     {
-        $satuanKerjaBiroUmum = SatuanKerja::where('kode_sk', 'SK-005')->first(); // Biro Umum
         $now = Carbon::now();
-        $bmnData = [];
+        $data = [];
 
-        if ($satuanKerjaBiroUmum) {
-            // Contoh Aset Digunakan, Sudah PSP
-            $bmnData[] = [
-                'tahun' => 2023,
-                'bulan' => 8,
-                'kode_satuan_kerja' => $satuanKerjaBiroUmum->kode_sk,
-                'status_penggunaan_aset' => 1, // Aset Digunakan
-                'status_aset_digunakan' => 1, // Sudah PSP
-                'nup' => '10012345',
-                'kuantitas' => 10,
-                'nilai_aset_rp' => 5000000,
-                'total_aset_rp' => 50000000, // Bisa juga dihitung
-                'created_at' => $now,
-                'updated_at' => $now,
-            ];
-            // Contoh Aset Digunakan, Belum PSP
-            $bmnData[] = [
-                'tahun' => 2023,
-                'bulan' => 8,
-                'kode_satuan_kerja' => $satuanKerjaBiroUmum->kode_sk,
-                'status_penggunaan_aset' => 1, // Aset Digunakan
-                'status_aset_digunakan' => 2, // Belum PSP
-                'nup' => '20023456', // Wajib isi NUP
-                'kuantitas' => 5,
-                'nilai_aset_rp' => 10000000, // Wajib isi Nilai Aset
-                'total_aset_rp' => 50000000,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ];
-            // Contoh Aset Tidak Digunakan
-            $bmnData[] = [
-                'tahun' => 2023,
-                'bulan' => 9,
-                'kode_satuan_kerja' => $satuanKerjaBiroUmum->kode_sk,
-                'status_penggunaan_aset' => 2, // Aset Tidak Digunakan
-                'status_aset_digunakan' => null,
-                'nup' => null,
-                'kuantitas' => 2,
-                'nilai_aset_rp' => 75000000,
-                'total_aset_rp' => 150000000,
+        // Ambil beberapa kode satuan kerja yang valid
+        $satuanKerjaKodes = SatuanKerja::inRandomOrder()->limit(5)->pluck('kode_sk')->toArray();
+        if (empty($satuanKerjaKodes)) {
+            // Jika tidak ada Satuan Kerja, buat satu dummy atau hentikan seeder
+            // Untuk contoh ini, kita bisa membuat SatuanKerja dummy jika tabelnya kosong
+            // atau Anda bisa memastikan SatuanKerjaSeeder sudah dijalankan sebelumnya.
+            // SatuanKerja::factory()->create(['kode_sk' => 'SK-DUMMY', 'nama_satuan_kerja' => 'Satuan Kerja Dummy']);
+            // $satuanKerjaKodes = ['SK-DUMMY'];
+            echo "Tidak ada data Satuan Kerja untuk PenyelesaianBmnSeeder. Harap jalankan SatuanKerjaSeeder terlebih dahulu.\n";
+            return;
+        }
+
+
+        $jenisBmnKeys = array_keys(PenyelesaianBmn::JENIS_BMN_OPTIONS);
+        $statusPenggunaanKeys = array_keys(PenyelesaianBmn::STATUS_PENGGUNAAN_OPTIONS);
+
+        for ($i = 0; $i < 5; $i++) {
+            $data[] = [
+                'tahun' => 2023 + $i % 2,
+                'bulan' => rand(1, 12),
+                'kode_satuan_kerja' => $satuanKerjaKodes[array_rand($satuanKerjaKodes)], // Gunakan kode_sk yang valid
+                'jenis_bmn' => $jenisBmnKeys[array_rand($jenisBmnKeys)],
+                'henti_guna' => (bool)rand(0, 1),
+                'status_penggunaan' => $statusPenggunaanKeys[array_rand($statusPenggunaanKeys)],
+                'penetapan_status_penggunaan' => 'SK-' . rand(100, 999) . '/PSP/' . (2023 + $i % 2),
+                'kuantitas' => rand(1, 20),
+                'nilai_aset' => rand(1000000, 500000000) / 100,
                 'created_at' => $now,
                 'updated_at' => $now,
             ];
         }
 
-        if (!empty($bmnData)) {
-            PenyelesaianBmn::insert($bmnData);
+        if (!empty($data)) {
+            PenyelesaianBmn::insert($data);
         }
     }
 }

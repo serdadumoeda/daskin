@@ -99,11 +99,11 @@ Route::prefix('sekretariat-jenderal')->name('sekretariat-jenderal.')->middleware
         Route::delete('/{progressMou}', [ProgressMouController::class, 'destroy'])->name('destroy');
         Route::post('/import', [ProgressMouController::class, 'importExcel'])->name('import');
     });
-    Route::resource('jumlah-regulasi-baru', JumlahRegulasiBaruController::class)->except(['show']);
+    Route::resource('jumlah-regulasi-baru', JumlahRegulasiBaruController::class);
     Route::post('jumlah-regulasi-baru/import', [JumlahRegulasiBaruController::class, 'importExcel'])->name('jumlah-regulasi-baru.import');
-    Route::resource('jumlah-penanganan-kasus', JumlahPenangananKasusController::class)->except(['show']);
+    Route::resource('jumlah-penanganan-kasus', JumlahPenangananKasusController::class);
     Route::post('jumlah-penanganan-kasus/import', [JumlahPenangananKasusController::class, 'importExcel'])->name('jumlah-penanganan-kasus.import');
-    Route::resource('penyelesaian-bmn', PenyelesaianBmnController::class)->except(['show']);
+    Route::resource('penyelesaian-bmn', PenyelesaianBmnController::class);
     Route::post('penyelesaian-bmn/import', [PenyelesaianBmnController::class, 'importExcel'])->name('penyelesaian-bmn.import');
     Route::resource('persentase-kehadiran', PersentaseKehadiranController::class)->except(['show']);
     Route::post('persentase-kehadiran/import', [PersentaseKehadiranController::class, 'importExcel'])->name('persentase-kehadiran.import');

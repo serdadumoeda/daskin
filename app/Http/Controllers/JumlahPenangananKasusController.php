@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\JumlahPenangananKasus;
-use App\Models\SatuanKerja;
+// SatuanKerja tidak lagi digunakan secara langsung untuk form/filter substansi (kecuali jika substansi punya tabel sendiri)
+// use App\Models\SatuanKerja; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Imports\JumlahPenangananKasusImport;
@@ -17,7 +18,8 @@ class JumlahPenangananKasusController extends Controller
 
     public function index(Request $request)
     {
-        $query = JumlahPenangananKasus::with('satuanKerja');
+        // Menghapus with('satuanKerja') karena relasi diubah
+        $query = JumlahPenangananKasus::query(); 
 
         if ($request->filled('tahun_filter')) {
             $query->where('tahun', $request->tahun_filter);
@@ -25,8 +27,9 @@ class JumlahPenangananKasusController extends Controller
         if ($request->filled('bulan_filter')) {
             $query->where('bulan', $request->bulan_filter);
         }
-        if ($request->filled('satuan_kerja_filter')) {
-            $query->where('kode_satuan_kerja', $request->satuan_kerja_filter);
+        // Mengganti filter satuan_kerja_filter menjadi substansi_filter
+        if ($request->filled('substansi_filter')) { 
+            $query->where('substansi', 'like', '%' . $request->substansi_filter . '%');
         }
         if ($request->filled('jenis_perkara_filter')) {
             $query->where('jenis_perkara', 'like', '%' . $request->jenis_perkara_filter . '%');
@@ -34,7 +37,8 @@ class JumlahPenangananKasusController extends Controller
 
         $sortBy = $request->input('sort_by', 'tahun');
         $sortDirection = $request->input('sort_direction', 'desc');
-        $sortableColumns = ['tahun', 'bulan', 'kode_satuan_kerja', 'jenis_perkara', 'jumlah_perkara'];
+        // Mengganti kode_satuan_kerja dengan substansi di sortable columns
+        $sortableColumns = ['tahun', 'bulan', 'substansi', 'jenis_perkara', 'jumlah_perkara']; 
 
         if (in_array($sortBy, $sortableColumns) && in_array(strtolower($sortDirection), ['asc', 'desc'])) {
             $query->orderBy($sortBy, $sortDirection);
@@ -44,12 +48,13 @@ class JumlahPenangananKasusController extends Controller
 
         $jumlahPenangananKasuses = $query->paginate(10)->appends($request->except('page'));
         $availableYears = JumlahPenangananKasus::select('tahun')->distinct()->orderBy('tahun', 'desc')->pluck('tahun');
-        $satuanKerjas = SatuanKerja::orderBy('nama_satuan_kerja')->get();
+        // $satuanKerjas tidak lagi diperlukan di sini
+        // $satuanKerjas = SatuanKerja::orderBy('nama_satuan_kerja')->get();
 
         return view('jumlah_penanganan_kasus.index', compact(
             'jumlahPenangananKasuses',
             'availableYears',
-            'satuanKerjas',
+            // 'satuanKerjas', // Dihapus
             'sortBy',
             'sortDirection'
         ));
@@ -57,9 +62,11 @@ class JumlahPenangananKasusController extends Controller
 
     public function create()
     {
-        $satuanKerjas = SatuanKerja::orderBy('nama_satuan_kerja')->get();
+        // $satuanKerjas tidak lagi diperlukan
+        // $satuanKerjas = SatuanKerja::orderBy('nama_satuan_kerja')->get();
         $jumlahPenangananKasus = new JumlahPenangananKasus();
-        return view('jumlah_penanganan_kasus.create', compact('jumlahPenangananKasus', 'satuanKerjas'));
+        // return view('jumlah_penanganan_kasus.create', compact('jumlahPenangananKasus', 'satuanKerjas'));
+        return view('jumlah_penanganan_kasus.create', compact('jumlahPenangananKasus'));
     }
 
     public function store(Request $request)
@@ -67,7 +74,8 @@ class JumlahPenangananKasusController extends Controller
         $validator = Validator::make($request->all(), [
             'tahun' => 'required|integer|digits:4|min:2000|max:' . (date('Y') + 5),
             'bulan' => 'required|integer|min:1|max:12',
-            'kode_satuan_kerja' => 'required|string|exists:satuan_kerja,kode_sk',
+            // Validasi untuk substansi (menggantikan kode_satuan_kerja)
+            'substansi' => 'required|string|max:255', 
             'jenis_perkara' => 'required|string|max:255',
             'jumlah_perkara' => 'required|integer|min:0',
         ]);
@@ -84,26 +92,29 @@ class JumlahPenangananKasusController extends Controller
                          ->with('success', 'Data Jumlah Penanganan Kasus berhasil ditambahkan.');
     }
 
-    // Show method is excluded by Route::resource except('show')
-    // public function show(JumlahPenangananKasus $jumlahPenangananKasus)
-    // {
-    //     $jumlahPenangananKasus->load('satuanKerja');
-    //     return view('jumlah_penanganan_kasus.show', compact('jumlahPenangananKasus'));
-    // }
-
-    public function edit(JumlahPenangananKasus $jumlahPenangananKasu) // Parameter name should match model
+    // Mengaktifkan dan mengimplementasikan metode show()
+    public function show(JumlahPenangananKasus $jumlahPenangananKasu) // Nama parameter disesuaikan dengan route model binding
     {
-        $satuanKerjas = SatuanKerja::orderBy('nama_satuan_kerja')->get();
-        // Correct variable name for route model binding
-        return view('jumlah_penanganan_kasus.edit', ['jumlahPenangananKasus' => $jumlahPenangananKasu, 'satuanKerjas' => $satuanKerjas]);
+        // Tidak perlu load relasi satuanKerja lagi
+        // $jumlahPenangananKasu->load('satuanKerja'); 
+        return view('jumlah_penanganan_kasus.show', ['jumlahPenangananKasus' => $jumlahPenangananKasu]);
     }
 
-    public function update(Request $request, JumlahPenangananKasus $jumlahPenangananKasu) // Parameter name should match model
+    public function edit(JumlahPenangananKasus $jumlahPenangananKasu)
+    {
+        // $satuanKerjas tidak lagi diperlukan
+        // $satuanKerjas = SatuanKerja::orderBy('nama_satuan_kerja')->get();
+        // return view('jumlah_penanganan_kasus.edit', ['jumlahPenangananKasus' => $jumlahPenangananKasu, 'satuanKerjas' => $satuanKerjas]);
+        return view('jumlah_penanganan_kasus.edit', ['jumlahPenangananKasus' => $jumlahPenangananKasu]);
+    }
+
+    public function update(Request $request, JumlahPenangananKasus $jumlahPenangananKasu)
     {
         $validator = Validator::make($request->all(), [
             'tahun' => 'required|integer|digits:4|min:2000|max:' . (date('Y') + 5),
             'bulan' => 'required|integer|min:1|max:12',
-            'kode_satuan_kerja' => 'required|string|exists:satuan_kerja,kode_sk',
+            // Validasi untuk substansi (menggantikan kode_satuan_kerja)
+            'substansi' => 'required|string|max:255',
             'jenis_perkara' => 'required|string|max:255',
             'jumlah_perkara' => 'required|integer|min:0',
         ]);
@@ -120,7 +131,7 @@ class JumlahPenangananKasusController extends Controller
                          ->with('success', 'Data Jumlah Penanganan Kasus berhasil diperbarui.');
     }
 
-    public function destroy(JumlahPenangananKasus $jumlahPenangananKasu) // Parameter name should match model
+    public function destroy(JumlahPenangananKasus $jumlahPenangananKasu)
     {
         try {
             $jumlahPenangananKasu->delete();

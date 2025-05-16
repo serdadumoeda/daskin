@@ -20,23 +20,16 @@
 </div>
 
 <div class="mb-6">
-    <label for="kode_satuan_kerja_kasus" class="block text-sm font-medium text-gray-700 mb-1">Satuan Kerja <span class="text-red-500">*</span></label>
-    <select name="kode_satuan_kerja" id="kode_satuan_kerja_kasus" required class="form-input w-full pr-8">
-        <option value="">Pilih Satuan Kerja</option>
-        @foreach($satuanKerjas as $satker)
-            <option value="{{ $satker->kode_sk }}" 
-                    {{ old('kode_satuan_kerja', $jumlahPenangananKasus->kode_satuan_kerja ?? '') == $satker->kode_sk ? 'selected' : '' }}>
-                {{ $satker->nama_satuan_kerja }}
-            </option>
-        @endforeach
-    </select>
-    @error('kode_satuan_kerja') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
+    <label for="substansi_kasus" class="block text-sm font-medium text-gray-700 mb-1">Substansi <span class="text-red-500">*</span></label>
+    <input type="text" name="substansi" id="substansi_kasus" value="{{ old('substansi', $jumlahPenangananKasus->substansi ?? '') }}" required 
+           class="form-input w-full" maxlength="255" placeholder="Masukkan substansi perkara">
+    @error('substansi') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
 </div>
 
 <div class="mb-6">
     <label for="jenis_perkara_kasus" class="block text-sm font-medium text-gray-700 mb-1">Jenis Perkara <span class="text-red-500">*</span></label>
     <input type="text" name="jenis_perkara" id="jenis_perkara_kasus" value="{{ old('jenis_perkara', $jumlahPenangananKasus->jenis_perkara ?? '') }}" required 
-           class="form-input w-full" maxlength="255" placeholder="Contoh: Sengketa Informasi Publik">
+           class="form-input w-full" maxlength="255" placeholder="Contoh: Putusan MA, Putusan MK">
     @error('jenis_perkara') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
 </div>
 
@@ -47,6 +40,7 @@
     @error('jumlah_perkara') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
 </div>
 
+{{-- Tombol konsisten dengan MoU _form --}}
 <div class="flex justify-end space-x-3 mt-8">
     <a href="{{ route('sekretariat-jenderal.jumlah-penanganan-kasus.index') }}" 
        class="px-4 py-2 bg-gray-200 text-gray-700 rounded-button hover:bg-gray-300 text-sm font-medium">

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\JumlahRegulasiBaru;
-// use App\Models\SatuanKerja; // Dihapus karena satuan_kerja tidak lagi digunakan
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Imports\JumlahRegulasiBaruImport;
@@ -47,7 +46,6 @@ class JumlahRegulasiBaruController extends Controller
 
     public function index(Request $request)
     {
-        // $query = JumlahRegulasiBaru::with('satuanKerja'); // Relasi satuanKerja dihapus
         $query = JumlahRegulasiBaru::query();
 
         if ($request->filled('tahun_filter')) {
@@ -56,7 +54,6 @@ class JumlahRegulasiBaruController extends Controller
         if ($request->filled('bulan_filter')) {
             $query->where('bulan', $request->bulan_filter);
         }
-        // Filter satuan_kerja_filter diganti dengan substansi_filter
         if ($request->filled('substansi_filter')) {
             $query->where('substansi', $request->substansi_filter);
         }
@@ -66,7 +63,6 @@ class JumlahRegulasiBaruController extends Controller
 
         $sortBy = $request->input('sort_by', 'tahun');
         $sortDirection = $request->input('sort_direction', 'desc');
-        // kode_satuan_kerja diganti dengan substansi
         $sortableColumns = ['tahun', 'bulan', 'substansi', 'jenis_regulasi', 'jumlah_regulasi'];
 
         if (in_array($sortBy, $sortableColumns) && in_array(strtolower($sortDirection), ['asc', 'desc'])) {
@@ -77,16 +73,14 @@ class JumlahRegulasiBaruController extends Controller
 
         $jumlahRegulasiBarus = $query->paginate(10)->appends($request->except('page'));
         $availableYears = JumlahRegulasiBaru::select('tahun')->distinct()->orderBy('tahun', 'desc')->pluck('tahun');
-        // $satuanKerjas = SatuanKerja::orderBy('nama_satuan_kerja')->get(); // Dihapus
-
-        $substansiOptions = $this->getSubstansiOptions(); // Baru
-        $jenisRegulasiOptions = $this->getJenisRegulasiOptions(); // Diperbarui
+        
+        $substansiOptions = $this->getSubstansiOptions();
+        $jenisRegulasiOptions = $this->getJenisRegulasiOptions();
 
         return view('jumlah_regulasi_baru.index', compact(
             'jumlahRegulasiBarus',
             'availableYears',
-            // 'satuanKerjas', // Dihapus
-            'substansiOptions', // Baru
+            'substansiOptions',
             'jenisRegulasiOptions',
             'sortBy',
             'sortDirection'
@@ -95,9 +89,8 @@ class JumlahRegulasiBaruController extends Controller
 
     public function create()
     {
-        // $satuanKerjas = SatuanKerja::orderBy('nama_satuan_kerja')->get(); // Dihapus
-        $substansiOptions = $this->getSubstansiOptions(); // Baru
-        $jenisRegulasiOptions = $this->getJenisRegulasiOptions(); // Diperbarui
+        $substansiOptions = $this->getSubstansiOptions();
+        $jenisRegulasiOptions = $this->getJenisRegulasiOptions();
         $jumlahRegulasiBaru = new JumlahRegulasiBaru();
         return view('jumlah_regulasi_baru.create', compact('jumlahRegulasiBaru', 'substansiOptions', 'jenisRegulasiOptions'));
     }
@@ -107,9 +100,8 @@ class JumlahRegulasiBaruController extends Controller
         $validator = Validator::make($request->all(), [
             'tahun' => 'required|integer|digits:4|min:2000|max:' . (date('Y') + 5),
             'bulan' => 'required|integer|min:1|max:12',
-            // 'kode_satuan_kerja' => 'required|string|exists:satuan_kerja,kode_sk', // Dihapus
-            'substansi' => 'required|integer|in:' . implode(',', array_keys($this->getSubstansiOptions())), // Baru
-            'jenis_regulasi' => 'required|integer|in:' . implode(',', array_keys($this->getJenisRegulasiOptions())), // Diperbarui
+            'substansi' => 'required|integer|in:' . implode(',', array_keys($this->getSubstansiOptions())),
+            'jenis_regulasi' => 'required|integer|in:' . implode(',', array_keys($this->getJenisRegulasiOptions())),
             'jumlah_regulasi' => 'required|integer|min:0',
         ]);
 
@@ -125,11 +117,25 @@ class JumlahRegulasiBaruController extends Controller
                          ->with('success', 'Data Jumlah Regulasi Baru berhasil ditambahkan.');
     }
 
+    // == AWAL METODE SHOW ==
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\JumlahRegulasiBaru  $jumlahRegulasiBaru
+     * @return \Illuminate\View\View
+     */
+    public function show(JumlahRegulasiBaru $jumlahRegulasiBaru)
+    {
+        // Model instance sudah otomatis di-resolve oleh Laravel (Route Model Binding)
+        // Tidak perlu eager loading khusus karena kita akan menggunakan accessor di model
+        return view('jumlah_regulasi_baru.show', compact('jumlahRegulasiBaru'));
+    }
+    // == AKHIR METODE SHOW ==
+
     public function edit(JumlahRegulasiBaru $jumlahRegulasiBaru)
     {
-        // $satuanKerjas = SatuanKerja::orderBy('nama_satuan_kerja')->get(); // Dihapus
-        $substansiOptions = $this->getSubstansiOptions(); // Baru
-        $jenisRegulasiOptions = $this->getJenisRegulasiOptions(); // Diperbarui
+        $substansiOptions = $this->getSubstansiOptions();
+        $jenisRegulasiOptions = $this->getJenisRegulasiOptions();
         return view('jumlah_regulasi_baru.edit', compact('jumlahRegulasiBaru', 'substansiOptions', 'jenisRegulasiOptions'));
     }
 
@@ -138,9 +144,8 @@ class JumlahRegulasiBaruController extends Controller
         $validator = Validator::make($request->all(), [
             'tahun' => 'required|integer|digits:4|min:2000|max:' . (date('Y') + 5),
             'bulan' => 'required|integer|min:1|max:12',
-            // 'kode_satuan_kerja' => 'required|string|exists:satuan_kerja,kode_sk', // Dihapus
-            'substansi' => 'required|integer|in:' . implode(',', array_keys($this->getSubstansiOptions())), // Baru
-            'jenis_regulasi' => 'required|integer|in:' . implode(',', array_keys($this->getJenisRegulasiOptions())), // Diperbarui
+            'substansi' => 'required|integer|in:' . implode(',', array_keys($this->getSubstansiOptions())),
+            'jenis_regulasi' => 'required|integer|in:' . implode(',', array_keys($this->getJenisRegulasiOptions())),
             'jumlah_regulasi' => 'required|integer|min:0',
         ]);
 
@@ -184,9 +189,7 @@ class JumlahRegulasiBaruController extends Controller
         $file = $request->file('excel_file');
 
         try {
-            // Perlu penyesuaian pada App\Imports\JumlahRegulasiBaruImport
-            // agar sesuai dengan kolom baru (terutama mapping substansi dan jenis_regulasi)
-            Excel::import(new JumlahRegulasiBaruImport, $file);
+            Excel::import(new JumlahRegulasiBaruImport($this->getSubstansiOptions(), $this->getJenisRegulasiOptions()), $file);
             return redirect()->route($this->routeNamePrefix . 'index')
                              ->with('success', 'Data Jumlah Regulasi Baru berhasil diimpor dari Excel.');
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
