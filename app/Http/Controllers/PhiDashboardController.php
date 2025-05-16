@@ -32,19 +32,20 @@ class PhiDashboardController extends Controller
             ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
             ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
             ->sum('jumlah_ditindaklanjuti');
-        $totalPerselisihan = PerselisihanDitindaklanjuti::query()
-            ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
-            ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
-            ->sum('jumlah_perselisihan');
+        // totalPerselisihan mungkin tidak perlu ditampilkan di kartu jika judulnya sudah spesifik "yang ditindaklanjuti"
+        // $totalPerselisihan = PerselisihanDitindaklanjuti::query()
+        //     ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
+        //     ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
+        //     ->sum('jumlah_perselisihan'); 
         
         $totalMediasiBerhasil = MediasiBerhasil::query()
             ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
             ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
             ->sum('jumlah_mediasi_berhasil');
-        $totalMediasi = MediasiBerhasil::query()
-            ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
-            ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
-            ->sum('jumlah_mediasi');
+        // $totalMediasi = MediasiBerhasil::query()
+        //     ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
+        //     ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
+        //     ->sum('jumlah_mediasi');
 
         $totalPerusahaanSusu = PerusahaanMenerapkanSusu::query()
             ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
@@ -62,20 +63,23 @@ class PhiDashboardController extends Controller
         $phkChartLabels = [];
         $phkChartDataValues = [];
         for ($m=1; $m <= 12 ; $m++) { 
-            $phkChartLabels[] = Carbon::create()->month($m)->format('M');
+            $phkChartLabels[] = Carbon::create()->month($m)->isoFormat('MMM');
             $phkChartDataValues[] = $phkPerBulan->get($m, 0); 
         }
 
-        // 2. Komposisi Jenis Perselisihan yang Ditindaklanjuti
-        $perselisihanPerJenis = PerselisihanDitindaklanjuti::select('jenis_perselisihan', DB::raw('SUM(jumlah_ditindaklanjuti) as total'))
+        // 2. Tren Jumlah Perselisihan yang Ditindaklanjuti per Bulan (BARU)
+        $perselisihanTlPerBulan = PerselisihanDitindaklanjuti::select('bulan', DB::raw('SUM(jumlah_ditindaklanjuti) as total'))
             ->where('tahun', $selectedYear)
-            ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
-            ->groupBy('jenis_perselisihan')
-            ->orderBy('total', 'desc')
-            ->get()
-            ->map(function ($item) {
-                return ['name' => $item->jenis_perselisihan, 'value' => $item->total];
-            });
+            ->groupBy('bulan')
+            ->orderBy('bulan')
+            ->pluck('total', 'bulan');
+        
+        $perselisihanTlChartLabels = []; // Akan sama dengan phkChartLabels
+        $perselisihanTlChartDataValues = [];
+        for ($m=1; $m <= 12 ; $m++) { 
+            $perselisihanTlChartLabels[] = Carbon::create()->month($m)->isoFormat('MMM');
+            $perselisihanTlChartDataValues[] = $perselisihanTlPerBulan->get($m, 0);
+        }
         
         // 3. Perbandingan Mediasi vs Mediasi Berhasil per Bulan
         $mediasiData = MediasiBerhasil::select(
@@ -92,7 +96,7 @@ class PhiDashboardController extends Controller
         $mediasiTotalData = [];
         $mediasiBerhasilData = [];
         for ($m=1; $m <= 12 ; $m++) { 
-            $mediasiChartLabels[] = Carbon::create()->month($m)->format('M');
+            $mediasiChartLabels[] = Carbon::create()->month($m)->isoFormat('MMM');
             $monthData = $mediasiData->firstWhere('bulan', $m);
             $mediasiTotalData[] = $monthData->total_mediasi ?? 0;
             $mediasiBerhasilData[] = $monthData->total_berhasil ?? 0;
@@ -104,31 +108,37 @@ class PhiDashboardController extends Controller
             ->groupBy('bulan')
             ->orderBy('bulan')
             ->pluck('total', 'bulan');
-        $susuChartLabels = [];
+        $susuChartLabels = []; // Akan sama dengan phkChartLabels
         $susuChartDataValues = [];
         for ($m=1; $m <= 12 ; $m++) { 
-            $susuChartLabels[] = Carbon::create()->month($m)->format('M');
+            $susuChartLabels[] = Carbon::create()->month($m)->isoFormat('MMM');
             $susuChartDataValues[] = $susuPerBulan->get($m, 0);
         }
 
-        $availableYears = JumlahPhk::select('tahun')->distinct() // Ambil dari salah satu tabel utama PHI
+        $availableYears = JumlahPhk::select('tahun')->distinct()
                             ->orderBy('tahun', 'desc')->pluck('tahun');
+        if ($availableYears->isEmpty() && !$availableYears->contains($currentYear)) {
+            $availableYears->push($currentYear);
+            $availableYears = $availableYears->sortDesc();
+        }
         
-        $jenisPerselisihanOptions = PerselisihanDitindaklanjuti::getJenisPerselisihanOptions();
-        $hasilMediasiOptions = MediasiBerhasil::getHasilMediasiOptions();
-
+        // Opsi untuk filter jika ada, tapi tidak digunakan di dashboard ini berdasarkan permintaan
+        // $jenisPerselisihanOptions = PerselisihanDitindaklanjuti::getJenisPerselisihanOptions();
+        // $hasilMediasiOptions = MediasiBerhasil::getHasilMediasiOptions();
 
         return view('dashboards.phi', compact(
             'totalTkPhk',
             'totalPerusahaanPhk',
             'totalPerselisihanDitindaklanjuti',
-            'totalPerselisihan',
+            // 'totalPerselisihan', // Dihapus dari kartu
             'totalMediasiBerhasil',
-            'totalMediasi',
+            // 'totalMediasi', // Dihapus dari kartu
             'totalPerusahaanSusu',
             'phkChartLabels',
             'phkChartDataValues',
-            'perselisihanPerJenis',
+            // 'perselisihanPerJenis', // Dihapus, diganti tren
+            'perselisihanTlChartLabels', // BARU
+            'perselisihanTlChartDataValues', // BARU
             'mediasiChartLabels',
             'mediasiTotalData',
             'mediasiBerhasilData',
@@ -136,9 +146,9 @@ class PhiDashboardController extends Controller
             'susuChartDataValues',
             'availableYears',
             'selectedYear',
-            'selectedMonth',
-            'jenisPerselisihanOptions', // Untuk filter
-            'hasilMediasiOptions' // Untuk filter
+            'selectedMonth'
+            // 'jenisPerselisihanOptions',
+            // 'hasilMediasiOptions'
         ));
     }
 }
