@@ -32,6 +32,7 @@ use App\Http\Controllers\JumlahSertifikasiKompetensiController;
 use App\Http\Controllers\JumlahKajianRekomendasiController; 
 use App\Http\Controllers\DataKetenagakerjaanController;
 use App\Http\Controllers\AplikasiIntegrasiSiapkerjaController;
+use App\Http\Controllers\PersetujuanRptkaController;
 
 
 
@@ -113,6 +114,7 @@ Route::prefix('sekretariat-jenderal')->name('sekretariat-jenderal.')->middleware
     Route::post('lulusan-polteknaker-bekerja/import', [LulusanPolteknakerBekerjaController::class, 'importExcel'])->name('lulusan-polteknaker-bekerja.import');
     Route::resource('sdm-mengikuti-pelatihan', SdmMengikutiPelatihanController::class)->except(['show']);
     Route::post('sdm-mengikuti-pelatihan/import', [SdmMengikutiPelatihanController::class, 'importExcel'])->name('sdm-mengikuti-pelatihan.import');
+    
 });
 
 // Binapenta
@@ -129,6 +131,7 @@ Route::prefix('binapenta')->name('binapenta.')->middleware(['auth', 'role:'.User
         Route::put('/{jumlahPenempatanKemnaker}', [JumlahPenempatanKemnakerController::class, 'update'])->name('update');
         Route::delete('/{jumlahPenempatanKemnaker}', [JumlahPenempatanKemnakerController::class, 'destroy'])->name('destroy');
         Route::post('/import', [JumlahPenempatanKemnakerController::class, 'importExcel'])->name('import');
+        
     });
 
     // Jumlah Lowongan Pekerjaan Baru di Pasker
@@ -155,7 +158,8 @@ Route::prefix('binapenta')->name('binapenta.')->middleware(['auth', 'role:'.User
         Route::post('/import', [JumlahTkaDisetujuiController::class, 'importExcel'])->name('import');
     });
     
-    // Tambahkan rute untuk "Jumlah TKA yang Tidak Disetujui" dan "Jumlah Penempatan Disabilitas" di sini
+    Route::resource('persetujuan-rptka', PersetujuanRptkaController::class);
+    Route::post('persetujuan-rptka/import', [PersetujuanRptkaController::class, 'importExcel'])->name('persetujuan-rptka.import');
 });
 
 // Binalavotas

@@ -49,6 +49,7 @@ class DatabaseSeeder extends Seeder
             JumlahPenempatanKemnakerSeeder::class, 
             JumlahLowonganPaskerSeeder::class, 
             JumlahTkaDisetujuiSeeder::class, 
+            PersetujuanRptkaSeeder::class, 
 
             // Seeder  Binalavotas
             JumlahKepesertaanPelatihanSeeder::class, 

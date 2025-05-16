@@ -169,9 +169,8 @@
                                     ['name' => 'Dashboard Binapenta', 'route' => 'binapenta.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['binapenta.dashboard']],
                                     ['name' => 'Jml Penempatan oleh Kemnaker', 'route' => 'binapenta.jumlah-penempatan-kemnaker.index', 'icon' => 'ri-user-add-line'],
                                     ['name' => 'Jml Lowongan Kerja Baru (Pasker)', 'route' => 'binapenta.jumlah-lowongan-pasker.index', 'icon' => 'ri-briefcase-4-line'], 
-                                    ['name' => 'Jml TKA Disetujui', 'route' => 'binapenta.jumlah-tka-disetujui.index', 'icon' => 'ri-user-shared-line'],
-                                    ['name' => 'Jml TKA Tidak Disetujui', 'route' => '#', 'icon' => 'ri-user-unfollow-line'], 
-                                    ['name' => 'Jml Penempatan Disabilitas', 'route' => '#', 'icon' => 'ri-wheelchair-line'], 
+                                    ['name' => 'Persetujuan RPTKA', 'route' => 'binapenta.persetujuan-rptka.index', 'icon' => 'ri-user-shared-line'],
+                                    
                                 ]
                             ],
                             'Binalavotas' => [ 
