@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Tambah Data Penerapan SMK3')
-@section('page_title', 'Tambah Data Penerapan SMK3')
+@section('page_title', 'Tambah Data Perusahaan yang menerapkan SMK3')
 
 @section('content')
 <div class="bg-white p-6 rounded-lg shadow-md">

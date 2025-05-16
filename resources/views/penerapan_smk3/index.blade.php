@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Penerapan SMK3')
-@section('page_title', 'Manajemen Penerapan SMK3')
+@section('page_title', 'Manajemen Perusahaan yang Menerapkan SMK3')
 
 @php
 // Helper function untuk link sorting (spesifik untuk modul ini)

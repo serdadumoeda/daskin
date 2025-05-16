@@ -40,7 +40,7 @@
     @error('jumlah_perkara') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
 </div>
 
-{{-- Tombol konsisten dengan MoU _form --}}
+
 <div class="flex justify-end space-x-3 mt-8">
     <a href="{{ route('sekretariat-jenderal.jumlah-penanganan-kasus.index') }}" 
        class="px-4 py-2 bg-gray-200 text-gray-700 rounded-button hover:bg-gray-300 text-sm font-medium">

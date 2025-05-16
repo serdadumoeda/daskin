@@ -184,7 +184,7 @@
                                     ['name' => 'Jml Sertifikasi Kompetensi', 'route' => 'binalavotas.jumlah-sertifikasi-kompetensi.index', 'icon' => 'ri-shield-star-line'], // Ganti '#' dengan route yang benar nanti
                                 ]
                             ],
-                            'Binwasnaker' => [ 
+                            'Binwasnaker & K3' => [ 
                                 'icon' => 'ri-shield-check-line',
                                 'route' => 'binwasnaker.dashboard',
                                 'roles' => [App\Models\User::ROLE_BINWASNAKER, App\Models\User::ROLE_SUPERADMIN],
@@ -196,7 +196,7 @@
                                     ['name' => 'Self-Assessment Norma 100', 'route' => 'binwasnaker.self-assessment-norma100.index', 'icon' => 'ri-check-double-line'],
                                 ]
                             ],
-                            'PHI' => [ 
+                            'PHI & JAMSOS' => [ 
                                 'icon' => 'ri-scales-3-line',
                                 'route' => 'phi.dashboard',
                                 'roles' => [App\Models\User::ROLE_PHI, App\Models\User::ROLE_SUPERADMIN],

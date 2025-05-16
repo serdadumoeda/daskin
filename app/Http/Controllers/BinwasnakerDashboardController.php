@@ -16,7 +16,7 @@ class BinwasnakerDashboardController extends Controller
     {
         $currentYear = date('Y');
         $selectedYear = $request->input('year_filter', $currentYear);
-        $selectedMonth = $request->input('month_filter'); // Bisa null untuk semua bulan
+        $selectedMonth = $request->input('month_filter');
 
         // --- Data untuk Kartu Ringkasan ---
         $totalWlkpReported = PelaporanWlkpOnline::query()
@@ -25,8 +25,8 @@ class BinwasnakerDashboardController extends Controller
             ->sum('jumlah_perusahaan_melapor');
 
         $totalPengaduanNorma = PengaduanPelanggaranNorma::query()
-            ->when($selectedYear, fn($q) => $q->where('tahun_pengaduan', $selectedYear)) // Sesuaikan kolom tahun
-            ->when($selectedMonth, fn($q) => $q->where('bulan_pengaduan', $selectedMonth)) // Sesuaikan kolom bulan
+            ->when($selectedYear, fn($q) => $q->where('tahun_pengaduan', $selectedYear))
+            ->when($selectedMonth, fn($q) => $q->where('bulan_pengaduan', $selectedMonth))
             ->sum('jumlah_kasus');
         
         $totalPenerapanSmk3 = PenerapanSmk3::query()
@@ -64,7 +64,7 @@ class BinwasnakerDashboardController extends Controller
         
         $pengaduanChartData = [];
         $othersCount = 0;
-        $limit = 4; // Tampilkan top 4 + Lainnya
+        $limit = 4; 
         foreach($pengaduanPerJenis as $index => $item){
             if($index < $limit){
                 $pengaduanChartData[] = ['name' => $item->jenis_pelanggaran, 'value' => $item->total];
@@ -76,29 +76,49 @@ class BinwasnakerDashboardController extends Controller
             $pengaduanChartData[] = ['name' => 'Lainnya', 'value' => $othersCount];
         }
         
-        // 3. Jumlah Perusahaan Menerapkan SMK3 per Kategori Penilaian
-        $smk3PerKategori = PenerapanSmk3::select('kategori_penilaian', DB::raw('SUM(jumlah_perusahaan) as total'))
+        // 3. Grafik Tren Perusahaan yang menerapkan SMK3 Tahun ... (BARU)
+        $smk3PerBulan = PenerapanSmk3::select('bulan', DB::raw('SUM(jumlah_perusahaan) as total'))
             ->where('tahun', $selectedYear)
-            ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
-            ->groupBy('kategori_penilaian')
-            ->pluck('total', 'kategori_penilaian');
+            ->groupBy('bulan')
+            ->orderBy('bulan')
+            ->pluck('total', 'bulan');
 
-        $smk3ChartLabels = $smk3PerKategori->keys()->toArray();
-        $smk3ChartDataValues = $smk3PerKategori->values()->toArray();
+        $smk3TrendChartLabels = [];
+        $smk3TrendChartDataValues = [];
+        for ($m=1; $m <= 12 ; $m++) { 
+            $smk3TrendChartLabels[] = Carbon::create()->month($m)->format('M');
+            $smk3TrendChartDataValues[] = $smk3PerBulan->get($m, 0); 
+        }
 
-        // 4. Distribusi Hasil Self Assessment Norma 100
-        $assessmentResults = SelfAssessmentNorma100::select('hasil_assessment', DB::raw('SUM(jumlah_perusahaan) as total'))
+        // 4. Grafik Tren Perusahaan yang melakukan self-assessment norma 100 Tahun ... (BARU)
+        $saPerBulan = SelfAssessmentNorma100::select('bulan', DB::raw('SUM(jumlah_perusahaan) as total'))
             ->where('tahun', $selectedYear)
-            ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
-            ->groupBy('hasil_assessment')
-            ->get()
-            ->map(function ($item) {
-                return ['name' => $item->hasil_assessment, 'value' => $item->total];
-            });
+            ->groupBy('bulan')
+            ->orderBy('bulan')
+            ->pluck('total', 'bulan');
+
+        $saTrendChartLabels = [];
+        $saTrendChartDataValues = [];
+        for ($m=1; $m <= 12 ; $m++) { 
+            $saTrendChartLabels[] = Carbon::create()->month($m)->format('M');
+            $saTrendChartDataValues[] = $saPerBulan->get($m, 0); 
+        }
+
+        // Data untuk chart tahunan WLKP (jika ingin tetap ada)
+        $wlkpAnnualTrend = PelaporanWlkpOnline::select('tahun', DB::raw('SUM(jumlah_perusahaan_melapor) as total_tahunan'))
+            ->groupBy('tahun')
+            ->orderBy('tahun', 'asc')
+            ->get();
+        $wlkpAnnualTrendLabels = $wlkpAnnualTrend->pluck('tahun')->toArray();
+        $wlkpAnnualTrendDataValues = $wlkpAnnualTrend->pluck('total_tahunan')->toArray();
 
 
-        $availableYears = PelaporanWlkpOnline::select('tahun')->distinct() // Ambil dari salah satu tabel utama
+        $availableYears = PelaporanWlkpOnline::select('tahun')->distinct()
                             ->orderBy('tahun', 'desc')->pluck('tahun');
+        if ($availableYears->isEmpty() && !$availableYears->contains($currentYear)) {
+            $availableYears->push($currentYear);
+            $availableYears = $availableYears->sortDesc();
+        }
         
         return view('dashboards.binwasnaker', compact(
             'totalWlkpReported',
@@ -108,9 +128,12 @@ class BinwasnakerDashboardController extends Controller
             'wlkpChartLabels',
             'wlkpChartDataValues',
             'pengaduanChartData',
-            'smk3ChartLabels',
-            'smk3ChartDataValues',
-            'assessmentResults',
+            'smk3TrendChartLabels', // Data baru untuk tren SMK3
+            'smk3TrendChartDataValues', // Data baru untuk tren SMK3
+            'saTrendChartLabels', // Data baru untuk tren Self Assessment
+            'saTrendChartDataValues', // Data baru untuk tren Self Assessment
+            'wlkpAnnualTrendLabels', // Untuk contoh tren tahunan WLKP
+            'wlkpAnnualTrendDataValues', // Untuk contoh tren tahunan WLKP
             'availableYears',
             'selectedYear',
             'selectedMonth'
