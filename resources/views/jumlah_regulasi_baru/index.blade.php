@@ -20,7 +20,8 @@ if (!function_exists('sortableLinkRegulasi')) {
         return '<a href="' . route('sekretariat-jenderal.jumlah-regulasi-baru.index', $queryParams) . '" class="flex items-center hover:text-primary">' . e($label) . $iconHtml . '</a>';
     }
 }
-$requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja_filter', 'jenis_regulasi_filter']);
+// satuan_kerja_filter diganti dengan substansi_filter
+$requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'substansi_filter', 'jenis_regulasi_filter']);
 @endphp
 
 @section('header_filters')
@@ -44,13 +45,13 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja
                     @endfor
                 </select>
             </div>
-            <div class="flex-grow">
-                <label for="satuan_kerja_filter_regulasi" class="text-sm text-gray-600 whitespace-nowrap">Satuan Kerja:</label>
-                 <select name="satuan_kerja_filter" id="satuan_kerja_filter_regulasi" class="form-input mt-1 w-full bg-white">
-                    <option value="">Semua Satuan Kerja</option>
-                    @foreach($satuanKerjas as $satker)
-                        <option value="{{ $satker->kode_sk }}" {{ request('satuan_kerja_filter') == $satker->kode_sk ? 'selected' : '' }}>
-                            {{ $satker->nama_satuan_kerja }}
+            <div class="flex-grow"> {{-- Filter Satuan Kerja diganti menjadi Substansi --}}
+                <label for="substansi_filter_regulasi" class="text-sm text-gray-600 whitespace-nowrap">Substansi:</label>
+                 <select name="substansi_filter" id="substansi_filter_regulasi" class="form-input mt-1 w-full bg-white">
+                    <option value="">Semua Substansi</option>
+                    @foreach($substansiOptions as $key => $value)
+                        <option value="{{ $key }}" {{ request('substansi_filter') == $key ? 'selected' : '' }}>
+                            {{ $value }}
                         </option>
                     @endforeach
                 </select>
@@ -59,7 +60,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja
                 <label for="jenis_regulasi_filter_regulasi" class="text-sm text-gray-600 whitespace-nowrap">Jenis Regulasi:</label>
                  <select name="jenis_regulasi_filter" id="jenis_regulasi_filter_regulasi" class="form-input mt-1 w-full bg-white">
                     <option value="">Semua Jenis</option>
-                    @foreach($jenisRegulasiOptions as $key => $value)
+                    @foreach($jenisRegulasiOptions as $key => $value) {{-- Menggunakan $jenisRegulasiOptions yang sudah diupdate dari controller --}}
                         <option value="{{ $key }}" {{ request('jenis_regulasi_filter') == $key ? 'selected' : '' }}>
                             {{ $value }}
                         </option>
@@ -87,7 +88,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja
             <form action="{{ route('sekretariat-jenderal.jumlah-regulasi-baru.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                 @csrf
                 <div class="flex-grow">
-                    <input type="file" name="excel_file" id="excel_file_regulasi" required 
+                    <input type="file" name="excel_file" id="excel_file_regulasi" required
                            class="block w-full text-sm text-gray-500
                                   file:mr-2 file:py-1.5 file:px-3 file:rounded-button
                                   file:border-0 file:text-sm file:font-semibold
@@ -98,7 +99,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja
                     <i class="ri-upload-2-line mr-1"></i> Impor Data
                 </button>
             </form>
-             <a href="MASUKKAN_LINK_ONEDRIVE_FORMAT_REGULASI_DISINI" 
+             <a href="MASUKKAN_LINK_ONEDRIVE_FORMAT_REGULASI_DISINI"
                target="_blank"
                class="px-3 py-2 bg-blue-500 text-white rounded-button hover:bg-blue-600 text-sm font-medium flex items-center justify-center whitespace-nowrap w-full sm:w-auto mt-2 sm:mt-0">
                 <i class="ri-download-2-line mr-1"></i> Unduh Format
@@ -124,7 +125,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja
             {{ session('error') }}
         </div>
     @endif
-    
+
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 border border-gray-200">
             <thead class="bg-gray-50">
@@ -136,8 +137,8 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja
                     <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         {!! sortableLinkRegulasi('bulan', 'Bulan', $sortBy, $sortDirection, $requestFilters) !!}
                     </th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkRegulasi('kode_satuan_kerja', 'Satuan Kerja', $sortBy, $sortDirection, $requestFilters) !!}
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"> {{-- Header Satuan Kerja diganti Substansi --}}
+                        {!! sortableLinkRegulasi('substansi', 'Substansi', $sortBy, $sortDirection, $requestFilters) !!}
                     </th>
                     <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         {!! sortableLinkRegulasi('jenis_regulasi', 'Jenis Regulasi', $sortBy, $sortDirection, $requestFilters) !!}
@@ -154,7 +155,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $jumlahRegulasiBarus->firstItem() + $index }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->tahun }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ \Carbon\Carbon::create()->month($item->bulan)->isoFormat('MMMM') }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->satuanKerja->nama_satuan_kerja ?? $item->kode_satuan_kerja }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->substansi_text }}</td> {{-- Menampilkan substansi_text --}}
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->jenis_regulasi_text }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 text-right">{{ number_format($item->jumlah_regulasi) }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-center">
@@ -169,7 +170,6 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'satuan_kerja
                                         <i class="ri-delete-bin-line text-base"></i>
                                     </button>
                                 </form>
-                                {{-- Tidak ada show view untuk modul ini berdasarkan Route::resource kecuali show --}}
                             </div>
                         </td>
                     </tr>

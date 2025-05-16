@@ -12,19 +12,13 @@ return new class extends Migration
             $table->id();
             $table->year('tahun');
             $table->tinyInteger('bulan')->comment('1-12');
-            $table->string('kode_satuan_kerja');
-            $table->tinyInteger('jenis_regulasi')->comment('1: UU, 2: Peraturan Pemerintah (bukan Perusahaan), 3: Permen, 4: Kepmen');
+            $table->tinyInteger('substansi')->comment('1: Perencanaan dan Pengembangan, 2: Pelatihan Vokasi dan Produktivitas, 3: Penempatan Tenaga Kerja dan Perluasan Kesempatan Kerja, 4: Hubungan Industrial dan Jaminan Sosial, 5: Pengawasan Ketenagakerjaan dan K3, 6: Pengawasan Internal, 7: Kesekretariatan, 8: Lainnya');
+            $table->tinyInteger('jenis_regulasi')->comment('1: UU, 2: PP, 3: Perpres, 4: Keppres, 5: Inpres, 6: Permen, 7: Kepmen, 8: SE/Instruksi Menteri, 9: Peraturan/Keputusan Pejabat Eselon I, 10: Peraturan Terkait');
             $table->integer('jumlah_regulasi')->default(0);
             $table->timestamps();
 
-            $table->foreign('kode_satuan_kerja')
-                  ->references('kode_sk')
-                  ->on('satuan_kerja')
-                  ->onDelete('cascade')
-                  ->onUpdate('cascade');
-            
             $table->index(['tahun', 'bulan']);
-            $table->index('kode_satuan_kerja');
+            $table->index('substansi');
             $table->index('jenis_regulasi');
         });
     }

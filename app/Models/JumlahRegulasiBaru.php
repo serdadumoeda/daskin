@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class JumlahRegulasiBaru extends Model
 {
@@ -15,8 +14,8 @@ class JumlahRegulasiBaru extends Model
     protected $fillable = [
         'tahun',
         'bulan',
-        'kode_satuan_kerja', // Foreign key ke tabel satuan_kerja
-        'jenis_regulasi',    // 1: UU, 2: PP, 3: Permen, 4: Kepmen
+        'substansi',         // Baru
+        'jenis_regulasi',
         'jumlah_regulasi',
     ];
 
@@ -28,6 +27,7 @@ class JumlahRegulasiBaru extends Model
     protected $casts = [
         'tahun' => 'integer',
         'bulan' => 'integer',
+        'substansi' => 'integer', // Baru
         'jenis_regulasi' => 'integer',
         'jumlah_regulasi' => 'integer',
         'created_at' => 'datetime',
@@ -35,13 +35,32 @@ class JumlahRegulasiBaru extends Model
     ];
 
     /**
-     * Relasi ke Satuan Kerja.
+     * Mendapatkan teks untuk substansi.
+     * Keterangan Substansi:
+     * 1: Perencanaan dan Pengembangan
+     * 2: Pelatihan Vokasi dan Produktivitas
+     * 3: Penempatan Tenaga Kerja dan Perluasan Kesempatan Kerja
+     * 4: Hubungan Industrial dan Jaminan Sosial
+     * 5: Pengawasan Ketenagakerjaan dan K3
+     * 6: Pengawasan Internal
+     * 7: Kesekretariatan
+     * 8: Lainnya
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return string
      */
-    public function satuanKerja(): BelongsTo
+    public function getSubstansiTextAttribute(): string
     {
-        return $this->belongsTo(SatuanKerja::class, 'kode_satuan_kerja', 'kode_sk');
+        return match ($this->substansi) {
+            1 => 'Perencanaan dan Pengembangan',
+            2 => 'Pelatihan Vokasi dan Produktivitas',
+            3 => 'Penempatan Tenaga Kerja dan Perluasan Kesempatan Kerja',
+            4 => 'Hubungan Industrial dan Jaminan Sosial',
+            5 => 'Pengawasan Ketenagakerjaan dan K3',
+            6 => 'Pengawasan Internal',
+            7 => 'Kesekretariatan',
+            8 => 'Lainnya',
+            default => 'Tidak Diketahui',
+        };
     }
 
     /**
@@ -49,8 +68,14 @@ class JumlahRegulasiBaru extends Model
      * Keterangan Jenis Regulasi:
      * 1: Undang-Undang
      * 2: Peraturan Pemerintah
-     * 3: Permen (Peraturan Menteri)
-     * 4: Kepmen (Keputusan Menteri)
+     * 3: Peraturan Presiden
+     * 4: Keputusan Presiden
+     * 5: Instruksi Presiden
+     * 6: Peraturan Menteri
+     * 7: Keputusan Menteri
+     * 8: SE/Instruksi Menteri
+     * 9: Peraturan/Keputusan Pejabat Eselon I
+     * 10: Peraturan Terkait
      *
      * @return string
      */
@@ -59,8 +84,14 @@ class JumlahRegulasiBaru extends Model
         return match ($this->jenis_regulasi) {
             1 => 'Undang-Undang',
             2 => 'Peraturan Pemerintah',
-            3 => 'Permen',
-            4 => 'Kepmen',
+            3 => 'Peraturan Presiden',
+            4 => 'Keputusan Presiden',
+            5 => 'Instruksi Presiden',
+            6 => 'Peraturan Menteri',
+            7 => 'Keputusan Menteri',
+            8 => 'SE/Instruksi Menteri',
+            9 => 'Peraturan/Keputusan Pejabat Eselon I',
+            10 => 'Peraturan Terkait',
             default => 'Tidak Diketahui',
         };
     }
