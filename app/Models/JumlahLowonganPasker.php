@@ -14,58 +14,43 @@ class JumlahLowonganPasker extends Model
     protected $fillable = [
         'tahun',
         'bulan',
-        'provinsi_perusahaan',
+        'jenis_kelamin',
+        'provinsi_penempatan',
         'lapangan_usaha_kbli',
-        'jabatan',
-        'jenis_kelamin_dibutuhkan',
-        'status_disabilitas_dibutuhkan',
-        'jumlah_lowongan',
+        'status_disabilitas',
+        'jumlah_lowongan', // Sesuai dengan controller sebelumnya
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'tahun' => 'integer',
         'bulan' => 'integer',
-        'jenis_kelamin_dibutuhkan' => 'integer',
-        'status_disabilitas_dibutuhkan' => 'integer',
+        'jenis_kelamin' => 'integer',
+        'provinsi_penempatan' => 'string',
+        'lapangan_usaha_kbli' => 'string',
+        'status_disabilitas' => 'integer',
         'jumlah_lowongan' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
 
-    // Accessor untuk Jenis Kelamin yang Dibutuhkan
-    public function getJenisKelaminDibutuhkanTextAttribute(): string
+    public const JENIS_KELAMIN_OPTIONS = [
+        1 => 'Laki-laki',
+        2 => 'Perempuan',
+    ];
+
+    public const STATUS_DISABILITAS_OPTIONS = [
+        1 => 'Ya', // Disabilitas
+        2 => 'Tidak', // Non-Disabilitas
+    ];
+
+    // Accessors
+    public function getJenisKelaminTextAttribute(): string
     {
-        return match ($this->attributes['jenis_kelamin_dibutuhkan']) {
-            1 => 'Laki-laki',
-            2 => 'Perempuan',
-            3 => 'Laki-laki/Perempuan',
-            default => 'Tidak Diketahui',
-        };
+        return self::JENIS_KELAMIN_OPTIONS[$this->jenis_kelamin] ?? 'Tidak Diketahui';
     }
 
-    // Accessor untuk Status Disabilitas yang Dibutuhkan
-    public function getStatusDisabilitasDibutuhkanTextAttribute(): string
+    public function getStatusDisabilitasTextAttribute(): string
     {
-        return match ($this->attributes['status_disabilitas_dibutuhkan']) {
-            1 => 'Ya (Disabilitas)',
-            2 => 'Tidak (Non-Disabilitas)',
-            default => 'Tidak Diketahui',
-        };
-    }
-    
-    // Opsi untuk dropdown di form/filter
-    public static function getJenisKelaminDibutuhkanOptions(): array
-    {
-        return [1 => 'Laki-laki', 2 => 'Perempuan', 3 => 'Laki-laki/Perempuan'];
-    }
-
-    public static function getStatusDisabilitasDibutuhkanOptions(): array
-    {
-        return [1 => 'Ya (Disabilitas)', 2 => 'Tidak (Non-Disabilitas)'];
+        return self::STATUS_DISABILITAS_OPTIONS[$this->status_disabilitas] ?? 'Tidak Diketahui';
     }
 }
