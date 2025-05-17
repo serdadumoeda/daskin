@@ -14,12 +14,12 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Hapus pengguna lama jika ada (opsional, hati-hati di produksi)
-        // User::truncate(); 
+        // User::truncate();
 
         User::create([
             'name' => 'Super Admin',
             'email' => 'superadmin@kemnaker.go.id',
-            'password' => Hash::make('password'), // 
+            'password' => Hash::make('password'),
             'role' => User::ROLE_SUPERADMIN,
             'email_verified_at' => now(),
         ]);
@@ -81,11 +81,37 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
-            'name' => 'Pengguna Biasa',
+            'name' => 'Pengguna Biasa', // User default
             'email' => 'user@kemnaker.go.id',
             'password' => Hash::make('password'),
-            'role' => User::ROLE_USER, // 
+            'role' => User::ROLE_USER, 
             'email_verified_at' => now(),
         ]);
+
+        // --- TAMBAHKAN SEEDER UNTUK ROLE BARU READ-ONLY ---
+        User::create([
+            'name' => 'Menteri',
+            'email' => 'menteri@kemnaker.go.id',
+            'password' => Hash::make('password'),
+            'role' => User::ROLE_MENTERI,
+            'email_verified_at' => now(),
+        ]);
+
+        User::create([
+            'name' => 'Wakil Menteri',
+            'email' => 'wamen@kemnaker.go.id',
+            'password' => Hash::make('password'),
+            'role' => User::ROLE_WAKIL_MENTERI,
+            'email_verified_at' => now(),
+        ]);
+
+        User::create([
+            'name' => 'Staff Khusus Menteri',
+            'email' => 'staffsus.menteri@kemnaker.go.id',
+            'password' => Hash::make('password'),
+            'role' => User::ROLE_STAFF_KHUSUS,
+            'email_verified_at' => now(),
+        ]);
+        // --------------------------------------------------
     }
 }

@@ -55,10 +55,16 @@ class MainDashboardController extends Controller
         $user = Auth::user();
         $currentYear = date('Y');
         $selectedYear = $request->input('year_filter', $currentYear);
-        $selectedMonth = $request->input('month_filter') ? (int)$request->input('month_filter') : null;
+        // Pastikan selectedMonth adalah integer jika ada, atau null jika tidak.
+        $selectedMonth = $request->filled('month_filter') ? (int)$request->input('month_filter') : null;
 
-        if (!$user->isSuperAdmin()) {
-            // Logika redirect tetap sama
+        // PERUBAHAN LOGIKA DIMULAI DI SINI
+        // Role Eselon I diarahkan ke dashboard masing-masing
+        // Selain Superadmin dan Read-only roles
+        if (
+            !$user->isSuperAdmin() &&
+            !$user->isReadOnlyUser() // Menggunakan helper isReadOnlyUser() dari User Model
+        ) {
             if ($user->isItjen()) return redirect()->route('inspektorat.dashboard', $request->query());
             if ($user->isSekjen()) return redirect()->route('sekretariat-jenderal.dashboard', $request->query());
             if ($user->isBinapenta()) return redirect()->route('binapenta.dashboard', $request->query());
@@ -66,9 +72,18 @@ class MainDashboardController extends Controller
             if ($user->isBinwasnaker()) return redirect()->route('binwasnaker.dashboard', $request->query());
             if ($user->isPhi()) return redirect()->route('phi.dashboard', $request->query());
             if ($user->isBarenbang()) return redirect()->route('barenbang.dashboard', $request->query());
-            if (view()->exists('dashboard.default')) { return view('dashboard.default');}
-            abort(403, 'Anda tidak memiliki dashboard yang ditetapkan.');
+            
+            // Fallback jika ada role non-Superadmin, non-ReadOnly, dan non-Eselon I
+            // (seharusnya tidak terjadi jika role didefinisikan dengan baik)
+            // atau jika view dashboard.default memang ada untuk role tertentu.
+            if (view()->exists('dashboard.default')) { // Anda mungkin punya view default untuk role lain
+                 return view('dashboard.default');
+            }
+            abort(403, 'Anda tidak memiliki dashboard yang ditetapkan untuk peran ini.');
         }
+
+        // Jika user adalah SuperAdmin atau salah satu dari ReadOnly roles (menteri, wamen, staff_khusus, user),
+        // maka lanjutkan untuk menampilkan dashboards.main
 
         $data = [];
         $availableYears = collect([]);
@@ -76,11 +91,9 @@ class MainDashboardController extends Controller
         // --- ITJEN ---
         $queryBpk = ProgressTemuanBpk::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
                                      ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth));
-        // $data['itjen']['total_temuan_bpk'] = (clone $queryBpk)->count(); // Ini adalah count record, bukan sum
         $data['itjen']['temuan_bpk_administratif'] = (clone $queryBpk)->sum('temuan_administratif_kasus');
         $data['itjen']['temuan_bpk_kerugian_negara'] = (clone $queryBpk)->sum('temuan_kerugian_negara_rp');
-
-        $data['itjen']['total_temuan_internal'] = ProgressTemuanInternal::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->count(); // Asumsi ini tetap count
+        $data['itjen']['total_temuan_internal'] = ProgressTemuanInternal::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->count();
         $availableYears = $availableYears->merge(ProgressTemuanBpk::select('tahun')->distinct()->pluck('tahun'));
         $availableYears = $availableYears->merge(ProgressTemuanInternal::select('tahun')->distinct()->pluck('tahun'));
 
@@ -89,22 +102,18 @@ class MainDashboardController extends Controller
         $data['sekjen']['total_regulasi'] = JumlahRegulasiBaru::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_regulasi');
         $data['sekjen']['total_kasus'] = JumlahPenangananKasus::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_perkara');
         $data['sekjen']['total_lulusan_bekerja'] = LulusanPolteknakerBekerja::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_lulusan_bekerja');
-        // (Tambahkan pengumpulan tahun untuk model Sekjen lainnya)
         $availableYears = $availableYears->merge(ProgressMou::select('tahun')->distinct()->pluck('tahun'));
         $availableYears = $availableYears->merge(JumlahRegulasiBaru::select('tahun')->distinct()->pluck('tahun'));
         $availableYears = $availableYears->merge(JumlahPenangananKasus::select('tahun')->distinct()->pluck('tahun'));
         $availableYears = $availableYears->merge(LulusanPolteknakerBekerja::select('tahun')->distinct()->pluck('tahun'));
 
-
         // --- BINAPENTA ---
         $data['binapenta']['total_penempatan'] = JumlahPenempatanKemnaker::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah');
         $data['binapenta']['total_lowongan_pasker'] = JumlahLowonganPasker::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_lowongan');
         $data['binapenta']['total_tka_disetujui'] = JumlahTkaDisetujui::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_tka');
-        // (Tambahkan pengumpulan tahun untuk model Binapenta lainnya)
         $availableYears = $availableYears->merge(JumlahPenempatanKemnaker::select('tahun')->distinct()->pluck('tahun'));
         $availableYears = $availableYears->merge(JumlahLowonganPasker::select('tahun')->distinct()->pluck('tahun'));
         $availableYears = $availableYears->merge(JumlahTkaDisetujui::select('tahun')->distinct()->pluck('tahun'));
-
 
         // --- BINALAVOTAS ---
         $data['binalavotas']['total_lulus_pelatihan'] = JumlahKepesertaanPelatihan::where('status_kelulusan', 1)
@@ -114,7 +123,6 @@ class MainDashboardController extends Controller
         $data['binalavotas']['total_sertifikasi'] = JumlahSertifikasiKompetensi::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
             ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
             ->sum('jumlah_sertifikasi');
-        // (Tambahkan pengumpulan tahun untuk model Binalavotas lainnya)
         $availableYears = $availableYears->merge(JumlahKepesertaanPelatihan::select('tahun')->distinct()->pluck('tahun'));
         $availableYears = $availableYears->merge(JumlahSertifikasiKompetensi::select('tahun')->distinct()->pluck('tahun'));
 
@@ -122,7 +130,6 @@ class MainDashboardController extends Controller
         $data['binwasnaker']['total_wlkp'] = PelaporanWlkpOnline::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_perusahaan_melapor');
         $data['binwasnaker']['total_pengaduan_norma'] = PengaduanPelanggaranNorma::when($selectedYear, fn($q) => $q->where('tahun_pengaduan', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan_pengaduan', $selectedMonth))->sum('jumlah_kasus');
         $data['binwasnaker']['total_smk3'] = PenerapanSmk3::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_perusahaan');
-        // (Tambahkan pengumpulan tahun untuk model Binwasnaker lainnya)
         $availableYears = $availableYears->merge(PelaporanWlkpOnline::select('tahun')->distinct()->pluck('tahun'));
         $availableYears = $availableYears->merge(PengaduanPelanggaranNorma::select('tahun_pengaduan as tahun')->distinct()->pluck('tahun'));
         $availableYears = $availableYears->merge(PenerapanSmk3::select('tahun')->distinct()->pluck('tahun'));
@@ -131,7 +138,6 @@ class MainDashboardController extends Controller
         $data['phi']['total_phk'] = JumlahPhk::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_tk_phk');
         $data['phi']['total_mediasi_berhasil'] = MediasiBerhasil::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_mediasi_berhasil');
         $data['phi']['total_susu'] = PerusahaanMenerapkanSusu::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_perusahaan_susu');
-        // (Tambahkan pengumpulan tahun untuk model PHI lainnya)
         $availableYears = $availableYears->merge(JumlahPhk::select('tahun')->distinct()->pluck('tahun'));
         $availableYears = $availableYears->merge(MediasiBerhasil::select('tahun')->distinct()->pluck('tahun'));
         $availableYears = $availableYears->merge(PerusahaanMenerapkanSusu::select('tahun')->distinct()->pluck('tahun'));
@@ -142,22 +148,18 @@ class MainDashboardController extends Controller
                                             ->orderBy('bulan', 'desc')
                                             ->first();
         $data['barenbang']['latest_tpt'] = $latestTptData ? $latestTptData->tpak : 0;
-        $data['barenbang']['latest_tpt_month'] = $latestTptData ? $latestTptData->bulan : null;
+        $data['barenbang']['latest_tpt_month'] = $latestTptData ? Carbon::create()->month((int)$latestTptData->bulan)->format('F') : null; // Format nama bulan
         $data['barenbang']['total_aplikasi_integrasi'] = AplikasiIntegrasiSiapkerja::where('status_integrasi', 1)->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->count();
-        // (Tambahkan pengumpulan tahun untuk model Barenbang lainnya)
         $availableYears = $availableYears->merge(JumlahKajianRekomendasi::select('tahun')->distinct()->pluck('tahun'));
         $availableYears = $availableYears->merge(DataKetenagakerjaan::select('tahun')->distinct()->pluck('tahun'));
         $availableYears = $availableYears->merge(AplikasiIntegrasiSiapkerja::select('tahun')->distinct()->pluck('tahun'));
-
 
         $uniqueAvailableYears = $availableYears->unique()->filter()->sortDesc();
         if ($uniqueAvailableYears->isEmpty()) {
              $uniqueAvailableYears = collect([$selectedYear ?: $currentYear]);
         }
 
-
         // Chart Data (Contoh: Total Penempatan per Bulan untuk Binapenta)
-        // Logika chart tetap sama
         $penempatanPerBulan = JumlahPenempatanKemnaker::select('bulan', DB::raw('SUM(jumlah) as total'))
             ->where('tahun', $selectedYear)
             ->groupBy('bulan')
@@ -166,8 +168,8 @@ class MainDashboardController extends Controller
 
         $chartLabelsBulan = [];
         $penempatanChartDataValues = [];
-        for ($m=1; $m <= 12 ; $m++) {
-            $chartLabelsBulan[] = Carbon::create()->month((int)$m)->format('M');
+        for ($m = 1; $m <= 12; $m++) {
+            $chartLabelsBulan[] = Carbon::create()->month($m)->format('M'); // Nama bulan singkat (Jan, Feb, dst.)
             $penempatanChartDataValues[] = $penempatanPerBulan->get($m, 0);
         }
         $data['binapenta']['charts']['penempatan_tren'] = [
@@ -175,6 +177,10 @@ class MainDashboardController extends Controller
             'values' => $penempatanChartDataValues,
         ];
 
+        // Pastikan view 'dashboards.main' ada di resources/views/dashboards/main.blade.php
+        if (!view()->exists('dashboards.main')) {
+            abort(500, 'View dashboards.main tidak ditemukan.');
+        }
 
         return view('dashboards.main', [
             'data' => $data,
@@ -182,7 +188,7 @@ class MainDashboardController extends Controller
             'selectedYear' => $selectedYear,
             'selectedMonth' => $selectedMonth,
             'tptDataMonth' => $data['barenbang']['latest_tpt_month'] ?? null,
-            'unitKerjaFullNames' => $this->getUnitKerjaFullNamesMapping(), // Kirim nama lengkap ke view
+            'unitKerjaFullNames' => $this->getUnitKerjaFullNamesMapping(),
         ]);
     }
 }

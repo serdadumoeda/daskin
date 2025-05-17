@@ -20,7 +20,13 @@ class User extends Authenticatable
     public const ROLE_BINWASNAKER = 'binwasnaker';
     public const ROLE_PHI = 'phi';
     public const ROLE_BARENBANG = 'barenbang';
-    public const ROLE_USER = 'user'; // Peran default jika ada
+
+    // --- ROLE BARU UNTUK AKSES READ-ONLY ---
+    public const ROLE_USER = 'user'; // Tetap ada, akan kita berikan akses read-only
+    public const ROLE_MENTERI = 'menteri';
+    public const ROLE_WAKIL_MENTERI = 'wakil_menteri';
+    public const ROLE_STAFF_KHUSUS = 'staff_khusus';
+    // ---------------------------------------
 
     /**
      * The attributes that are mass assignable.
@@ -31,7 +37,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role', // Tambahkan role
+        'role',
     ];
 
     /**
@@ -78,15 +84,52 @@ class User extends Authenticatable
         return $this->hasRole(self::ROLE_SUPERADMIN);
     }
 
-    // Anda bisa menambahkan helper method lain seperti ini untuk setiap peran
-    public function isItjen(): bool
+    // Helper method untuk peran Eselon I (yang bisa CRUD)
+    public function isItjen(): bool { return $this->hasRole(self::ROLE_ITJEN); }
+    public function isSekjen(): bool { return $this->hasRole(self::ROLE_SEKJEN); }
+    public function isBinapenta(): bool { return $this->hasRole(self::ROLE_BINAPENTA); }
+    public function isBinalavotas(): bool { return $this->hasRole(self::ROLE_BINALAVOTAS); }
+    public function isBinwasnaker(): bool { return $this->hasRole(self::ROLE_BINWASNAKER); }
+    public function isPhi(): bool { return $this->hasRole(self::ROLE_PHI); }
+    public function isBarenbang(): bool { return $this->hasRole(self::ROLE_BARENBANG); }
+
+
+    // --- HELPER METHOD UNTUK ROLE READ-ONLY (OPSIONAL) ---
+    public function isUserBiasa(): bool { return $this->hasRole(self::ROLE_USER); }
+    public function isMenteri(): bool { return $this->hasRole(self::ROLE_MENTERI); }
+    public function isWakilMenteri(): bool { return $this->hasRole(self::ROLE_WAKIL_MENTERI); }
+    public function isStaffKhusus(): bool { return $this->hasRole(self::ROLE_STAFF_KHUSUS); }
+
+    /**
+     * Check if the user has one of the Eselon I roles or Superadmin.
+     * These roles typically have CRUD permissions.
+     * @return bool
+     */
+    public function canPerformCRUD(): bool
     {
-        return $this->hasRole(self::ROLE_ITJEN);
+        return in_array($this->role, [
+            self::ROLE_SUPERADMIN,
+            self::ROLE_ITJEN,
+            self::ROLE_SEKJEN,
+            self::ROLE_BINAPENTA,
+            self::ROLE_BINALAVOTAS,
+            self::ROLE_BINWASNAKER,
+            self::ROLE_PHI,
+            self::ROLE_BARENBANG,
+        ]);
     }
 
-    public function isSekjen(): bool
+    /**
+     * Check if the user has one of the read-only roles.
+     * @return bool
+     */
+    public function isReadOnlyUser(): bool
     {
-        return $this->hasRole(self::ROLE_SEKJEN);
+        return in_array($this->role, [
+            self::ROLE_USER,
+            self::ROLE_MENTERI,
+            self::ROLE_WAKIL_MENTERI,
+            self::ROLE_STAFF_KHUSUS,
+        ]);
     }
-    // ... dan seterusnya untuk peran lain
 }
