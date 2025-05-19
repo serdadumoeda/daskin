@@ -54,6 +54,102 @@ class SdmMengikutiPelatihanSeeder extends Seeder
                 'updated_at' => $now,
             ];
         }
+        if ($uke1_pusdiklat && $sk_pusdiklat) {
+            $pelatihanData[] = [
+                'tahun' => 2025,
+                'bulan' => 1,
+                'kode_unit_kerja_eselon_i' => $uke1_pusdiklat->kode_uke1,
+                'kode_satuan_kerja' => $sk_pusdiklat->kode_sk,
+                'jenis_pelatihan' => 1, // Diklat Dasar
+                'jumlah_peserta' => 30,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+        if ($uke1_itjen && $sk_itjen_sekretariat) {
+             $pelatihanData[] = [
+                'tahun' => 2025,
+                'bulan' => 2,
+                'kode_unit_kerja_eselon_i' => $uke1_itjen->kode_uke1,
+                'kode_satuan_kerja' => $sk_itjen_sekretariat->kode_sk,
+                'jenis_pelatihan' => 3, // Diklat Fungsional
+                'jumlah_peserta' => 15,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+        if ($uke1_pusdiklat && $sk_pusdiklat) {
+            $pelatihanData[] = [
+                'tahun' => 2025,
+                'bulan' => 3,
+                'kode_unit_kerja_eselon_i' => $uke1_pusdiklat->kode_uke1,
+                'kode_satuan_kerja' => $sk_pusdiklat->kode_sk,
+                'jenis_pelatihan' => 1, // Diklat Dasar
+                'jumlah_peserta' => 30,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+        if ($uke1_itjen && $sk_itjen_sekretariat) {
+             $pelatihanData[] = [
+                'tahun' => 2024,
+                'bulan' => 9,
+                'kode_unit_kerja_eselon_i' => $uke1_itjen->kode_uke1,
+                'kode_satuan_kerja' => $sk_itjen_sekretariat->kode_sk,
+                'jenis_pelatihan' => 3, // Diklat Fungsional
+                'jumlah_peserta' => 15,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+        if ($uke1_pusdiklat && $sk_pusdiklat) {
+            $pelatihanData[] = [
+                'tahun' => 2024,
+                'bulan' => 10,
+                'kode_unit_kerja_eselon_i' => $uke1_pusdiklat->kode_uke1,
+                'kode_satuan_kerja' => $sk_pusdiklat->kode_sk,
+                'jenis_pelatihan' => 1, // Diklat Dasar
+                'jumlah_peserta' => 30,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+        if ($uke1_itjen && $sk_itjen_sekretariat) {
+             $pelatihanData[] = [
+                'tahun' => 2024,
+                'bulan' => 7,
+                'kode_unit_kerja_eselon_i' => $uke1_itjen->kode_uke1,
+                'kode_satuan_kerja' => $sk_itjen_sekretariat->kode_sk,
+                'jenis_pelatihan' => 3, // Diklat Fungsional
+                'jumlah_peserta' => 15,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+        if ($uke1_pusdiklat && $sk_pusdiklat) {
+            $pelatihanData[] = [
+                'tahun' => 2024,
+                'bulan' => 12,
+                'kode_unit_kerja_eselon_i' => $uke1_pusdiklat->kode_uke1,
+                'kode_satuan_kerja' => $sk_pusdiklat->kode_sk,
+                'jenis_pelatihan' => 1, // Diklat Dasar
+                'jumlah_peserta' => 30,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+        if ($uke1_itjen && $sk_itjen_sekretariat) {
+             $pelatihanData[] = [
+                'tahun' => 2024,
+                'bulan' => 6,
+                'kode_unit_kerja_eselon_i' => $uke1_itjen->kode_uke1,
+                'kode_satuan_kerja' => $sk_itjen_sekretariat->kode_sk,
+                'jenis_pelatihan' => 3, // Diklat Fungsional
+                'jumlah_peserta' => 15,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
 
 
         if (!empty($pelatihanData)) {

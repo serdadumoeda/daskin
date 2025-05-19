@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\JumlahRegulasiBaru;
 use Illuminate\Support\Carbon;
+use Faker\Factory as Faker; // Tambahkan Faker
 
 class JumlahRegulasiBaruSeeder extends Seeder
 {
@@ -13,77 +14,45 @@ class JumlahRegulasiBaruSeeder extends Seeder
      */
     public function run(): void
     {
-        $now = Carbon::now();
-
-        $regulasiData = [
-            [
-                'tahun' => 2023,
-                'bulan' => 1,
-                // (4) Substansi: 1) Perencanaan dan Pengembangan, 2) Pelatihan Vokasi dan Produktivitas, ...
-                'substansi' => 2, // Contoh: Pelatihan Vokasi dan Produktivitas
-                // (5) Jenis Regulasi: ..., 6) Peraturan Menteri, ...
-                'jenis_regulasi' => 6, // Contoh: Peraturan Menteri
-                'jumlah_regulasi' => 5, // Pastikan nama kolom 'jumlah_regulasi'
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            [
-                'tahun' => 2023,
-                'bulan' => 6,
-                'substansi' => 7, // Contoh: Kesekretariatan
-                'jenis_regulasi' => 6, // Contoh: Peraturan Menteri
-                'jumlah_regulasi' => 2,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            [
-                'tahun' => 2023,
-                'bulan' => 6,
-                'substansi' => 7, // Contoh: Kesekretariatan
-                'jenis_regulasi' => 7, // Contoh: Keputusan Menteri
-                'jumlah_regulasi' => 5,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            [
-                'tahun' => 2024,
-                'bulan' => 2,
-                'substansi' => 1, // Contoh: Perencanaan dan Pengembangan
-                'jenis_regulasi' => 1, // Contoh: Undang-Undang
-                'jumlah_regulasi' => 1,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            [
-                'tahun' => 2024,
-                'bulan' => 3,
-                'substansi' => 4, // Contoh: Hubungan Industrial dan Jaminan Sosial
-                'jenis_regulasi' => 2, // Contoh: Peraturan Pemerintah
-                'jumlah_regulasi' => 3,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            // Tambahkan data lain sesuai kebutuhan
-            // Contoh:
-            // [
-            //     'tahun' => 2024,
-            //     'bulan' => 5,
-            //     'substansi' => 8, // Lainnya
-            //     'jenis_regulasi' => 10, // Peraturan Terkait
-            //     'jumlah_regulasi' => 10,
-            //     'created_at' => $now,
-            //     'updated_at' => $now,
-            // ],
-        ];
-
-        // Hapus data lama jika diperlukan (opsional, tergantung kebutuhan)
+        // Opsional: Hapus data lama jika diperlukan.
         // JumlahRegulasiBaru::truncate(); 
 
-        // Insert data baru
-        if (!empty($regulasiData)) {
-            JumlahRegulasiBaru::insert($regulasiData);
+        $faker = Faker::create(); // Inisialisasi Faker
+        $now = Carbon::now();
+        $newData = []; // Array untuk data baru
+
+        // Opsi untuk substansi dan jenis_regulasi (berdasarkan model/migrasi)
+        // Keterangan Substansi: 1-8
+        $substansiOptions = range(1, 8); 
+        // Keterangan Jenis Regulasi: 1-10
+        $jenisRegulasiOptions = range(1, 10); 
+        
+        $tahunSekarang = (int) $now->year;
+
+        for ($i = 0; $i < 20; $i++) {
+            $tahun = rand($tahunSekarang - 2, $tahunSekarang); // Data untuk 3 tahun terakhir
+            $bulan = rand(1, 12);
+
+            $newData[] = [
+                'tahun' => $tahun,
+                'bulan' => $bulan,
+                'substansi' => $faker->randomElement($substansiOptions),
+                'jenis_regulasi' => $faker->randomElement($jenisRegulasiOptions),
+                'jumlah_regulasi' => rand(1, 7), // Jumlah regulasi baru per record
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
         }
 
-        $this->command->info('Seeder JumlahRegulasiBaru berhasil dijalankan.');
+        // Hapus data contoh statis yang ada sebelumnya ($regulasiData array)
+        // Loop $newData untuk insert menggunakan create()
+        if (!empty($newData)) {
+            foreach ($newData as $item) {
+                JumlahRegulasiBaru::create($item);
+            }
+            // Alternatif: JumlahRegulasiBaru::insert($newData); untuk bulk insert
+        }
+
+        // $this->command->info('Seeder JumlahRegulasiBaru berhasil dijalankan.'); // Bisa diaktifkan jika ingin notifikasi
     }
 }

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\JumlahKepesertaanPelatihan;
 use Illuminate\Support\Carbon;
+use Faker\Factory as Faker; // Tambahkan Faker
 
 class JumlahKepesertaanPelatihanSeeder extends Seeder
 {
@@ -13,51 +14,66 @@ class JumlahKepesertaanPelatihanSeeder extends Seeder
      */
     public function run(): void
     {
-        // JumlahKepesertaanPelatihan::truncate(); // Opsional
+        // Opsional: Hapus data lama. Aktifkan jika ingin memulai dengan tabel bersih.
+        // JumlahKepesertaanPelatihan::truncate(); 
+
+        $faker = Faker::create('id_ID'); // Inisialisasi Faker
         $now = Carbon::now();
+        $newData = []; // Array untuk data baru
 
-        $data = [
-            [
-                'tahun' => 2023, 'bulan' => 1, 'penyelenggara_pelatihan' => 1, 'tipe_lembaga' => 1, // Internal, UPTP
-                'jenis_kelamin' => 1, 'provinsi_tempat_pelatihan' => 'Jawa Barat', 'kejuruan' => 'Operator Mesin CNC',
-                'status_kelulusan' => 1, 'jumlah' => 20, 'created_at' => $now, 'updated_at' => $now
-            ],
-            [
-                'tahun' => 2023, 'bulan' => 1, 'penyelenggara_pelatihan' => 1, 'tipe_lembaga' => 1, // Internal, UPTP
-                'jenis_kelamin' => 2, 'provinsi_tempat_pelatihan' => 'Jawa Barat', 'kejuruan' => 'Operator Mesin CNC',
-                'status_kelulusan' => 1, 'jumlah' => 15, 'created_at' => $now, 'updated_at' => $now
-            ],
-            [
-                'tahun' => 2023, 'bulan' => 2, 'penyelenggara_pelatihan' => 2, 'tipe_lembaga' => 6, // Eksternal, LPK Swasta
-                'jenis_kelamin' => 1, 'provinsi_tempat_pelatihan' => 'DKI Jakarta', 'kejuruan' => 'Digital Marketing',
-                'status_kelulusan' => 1, 'jumlah' => 30, 'created_at' => $now, 'updated_at' => $now
-            ],
-            [
-                'tahun' => 2024, 'bulan' => 1, 'penyelenggara_pelatihan' => 1, 'tipe_lembaga' => 7, // Internal, BLK Komunitas
-                'jenis_kelamin' => 2, 'provinsi_tempat_pelatihan' => 'Jawa Tengah', 'kejuruan' => 'Menjahit Pakaian Wanita',
-                'status_kelulusan' => 2, 'jumlah' => 5, 'created_at' => $now, 'updated_at' => $now // Tidak Lulus
-            ],
-             [
-                'tahun' => 2024, 'bulan' => 1, 'penyelenggara_pelatihan' => 1, 'tipe_lembaga' => 7, // Internal, BLK Komunitas
-                'jenis_kelamin' => 2, 'provinsi_tempat_pelatihan' => 'Jawa Tengah', 'kejuruan' => 'Menjahit Pakaian Wanita',
-                'status_kelulusan' => 1, 'jumlah' => 25, 'created_at' => $now, 'updated_at' => $now // Lulus
-            ],
+        // Mengambil kunci (integer) dari opsi yang ada di model
+        $penyelenggaraOptions = array_keys(JumlahKepesertaanPelatihan::getPenyelenggaraPelatihanOptions());
+        $tipeLembagaOptions = array_keys(JumlahKepesertaanPelatihan::getTipeLembagaOptions());
+        $jenisKelaminOptions = array_keys(JumlahKepesertaanPelatihan::getJenisKelaminOptions());
+        $statusKelulusanOptions = array_keys(JumlahKepesertaanPelatihan::getStatusKelulusanOptions());
+
+        // Daftar contoh untuk data acak
+        $daftarProvinsi = [
+            'Aceh', 'Sumatera Utara', 'Sumatera Barat', 'Riau', 'Jambi', 'Sumatera Selatan', 
+            'Bengkulu', 'Lampung', 'Kepulauan Bangka Belitung', 'Kepulauan Riau', 
+            'DKI Jakarta', 'Jawa Barat', 'Jawa Tengah', 'DI Yogyakarta', 'Jawa Timur', 'Banten', 
+            'Bali', 'Nusa Tenggara Barat', 'Nusa Tenggara Timur', 
+            'Kalimantan Barat', 'Kalimantan Tengah', 'Kalimantan Selatan', 'Kalimantan Timur', 'Kalimantan Utara', 
+            'Sulawesi Utara', 'Sulawesi Tengah', 'Sulawesi Selatan', 'Sulawesi Tenggara', 'Gorontalo', 'Sulawesi Barat', 
+            'Maluku', 'Maluku Utara', 'Papua Barat', 'Papua'
         ];
+        
+        $kejuruanList = [
+            'Operator Mesin CNC', 'Digital Marketing', 'Menjahit Pakaian Wanita', 'Teknik Las GTAW', 
+            'Desain Grafis Multimedia', 'Tata Boga Kontinental', 'Barista Profesional', 
+            'Teknisi Jaringan Komputer', 'Bahasa Inggris untuk Perhotelan', 'Servis Sepeda Motor Injeksi', 
+            'Instalasi Listrik Bangunan Sederhana', 'Teknik Pendingin dan Tata Udara (AC Split)', 
+            'Front Office Hotel', 'Welder SMAW Posisi 3G', 'Pemrograman Web Dasar', 
+            'Mobile Programming (Android)', 'Pengelasan Pelat 2F', 'Practical Office', 'Bahasa Jepang Dasar',
+            'Tata Rias Kecantikan Rambut'
+        ];
+        
+        $tahunSekarang = (int) $now->year;
 
-        foreach ($data as $item) {
-            JumlahKepesertaanPelatihan::firstOrCreate(
-                [ // Kunci untuk firstOrCreate
-                    'tahun' => $item['tahun'],
-                    'bulan' => $item['bulan'],
-                    'penyelenggara_pelatihan' => $item['penyelenggara_pelatihan'],
-                    'tipe_lembaga' => $item['tipe_lembaga'],
-                    'jenis_kelamin' => $item['jenis_kelamin'],
-                    'provinsi_tempat_pelatihan' => $item['provinsi_tempat_pelatihan'],
-                    'kejuruan' => $item['kejuruan'],
-                    'status_kelulusan' => $item['status_kelulusan'],
-                ],
-                $item // Data lengkap untuk create atau update
-            );
+        for ($i = 0; $i < 20; $i++) {
+            $tahun = rand($tahunSekarang - 2, $tahunSekarang); // Data untuk 3 tahun terakhir
+            $bulan = rand(1, 12);
+
+            $newData[] = [
+                'tahun' => $tahun,
+                'bulan' => $bulan,
+                'penyelenggara_pelatihan' => $faker->randomElement($penyelenggaraOptions),
+                'tipe_lembaga' => $faker->randomElement($tipeLembagaOptions),
+                'jenis_kelamin' => $faker->randomElement($jenisKelaminOptions),
+                'provinsi_tempat_pelatihan' => $faker->randomElement($daftarProvinsi),
+                'kejuruan' => $faker->randomElement($kejuruanList),
+                'status_kelulusan' => $faker->randomElement($statusKelulusanOptions),
+                'jumlah' => rand(10, 45), // Jumlah peserta per pelatihan
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+
+        // Mengganti penggunaan firstOrCreate dengan create dalam loop untuk data dummy
+        if (!empty($newData)) {
+            foreach ($newData as $item) {
+                JumlahKepesertaanPelatihan::create($item);
+            }
         }
     }
 }

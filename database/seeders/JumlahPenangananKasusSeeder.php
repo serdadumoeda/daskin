@@ -4,49 +4,67 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\JumlahPenangananKasus;
-// SatuanKerja tidak lagi diperlukan untuk mengisi field substansi
-// use App\Models\SatuanKerja; 
 use Illuminate\Support\Carbon;
+use Faker\Factory as Faker; // Tambahkan Faker
 
 class JumlahPenangananKasusSeeder extends Seeder
 {
     public function run(): void
     {
-        // Contoh data SatuanKerja tidak lagi diambil dari model SatuanKerja untuk field ini
-        // $satuanKerjaBiroHukum = SatuanKerja::where('kode_sk', 'SK-004')->first(); 
-        
+        $faker = Faker::create('id_ID'); // Inisialisasi Faker
         $now = Carbon::now();
-        $kasusData = [];
+        $newData = []; // Array untuk data baru
 
-        // Jika Anda memiliki daftar substansi yang umum, Anda bisa definisikan di sini
-        $contohSubstansi1 = "Hubungan Industrial dan Jaminan Sosial"; // Contoh dari PDF Tabel 2.2
-        $contohSubstansi2 = "Pengawasan Ketenagakerjaan dan K3";  // Contoh dari PDF Tabel 2.2
+        // Daftar contoh untuk substansi dan jenis perkara
+        $substansiList = [
+            "Hubungan Industrial dan Jaminan Sosial",
+            "Pengawasan Ketenagakerjaan dan K3",
+            "Perencanaan Tenaga Kerja dan Pengembangan SDM",
+            "Pelatihan Vokasi dan Produktivitas",
+            "Penempatan Tenaga Kerja Dalam Negeri",
+            "Perlindungan Pekerja Migran Indonesia",
+            "Hukum dan Regulasi Ketenagakerjaan Umum",
+            "Kesekretariatan dan Dukungan Manajemen",
+            "Mediasi dan Penyelesaian Perselisihan"
+        ];
 
-        // if ($satuanKerjaBiroHukum) { // Kondisi ini tidak relevan lagi untuk substansi
-            $kasusData[] = [
-                'tahun' => 2023,
-                'bulan' => 7,
-                // 'kode_satuan_kerja' => $satuanKerjaBiroHukum->kode_sk, // Diganti
-                'substansi' => $contohSubstansi1, 
-                'jenis_perkara' => 'Putusan MA', // Sesuai PDF Tabel 2.3
-                'jumlah_perkara' => 3,
+        $jenisPerkaraList = [
+            'Putusan Mahkamah Agung (MA)',
+            'Putusan Mahkamah Konstitusi (MK)',
+            'Gugatan di Pengadilan Hubungan Industrial (PHI)',
+            'Laporan Pengaduan ke Mediator HI',
+            'Permohonan Uji Materiil Peraturan',
+            'Sengketa Kewenangan Lembaga Negara (SKLN) terkait Ketenagakerjaan',
+            'Banding atas Putusan PHI',
+            'Kasasi atas Putusan Banding',
+            'Peninjauan Kembali (PK) atas Putusan Kasasi',
+            'Arbitrase Ketenagakerjaan'
+        ];
+        
+        $tahunSekarang = (int) $now->year;
+
+        for ($i = 0; $i < 20; $i++) {
+            $tahun = rand($tahunSekarang - 2, $tahunSekarang); // Data untuk 3 tahun terakhir
+            $bulan = rand(1, 12);
+
+            $newData[] = [
+                'tahun' => $tahun,
+                'bulan' => $bulan,
+                'substansi' => $faker->randomElement($substansiList),
+                'jenis_perkara' => $faker->randomElement($jenisPerkaraList),
+                'jumlah_perkara' => rand(1, 12), // Jumlah perkara per record
                 'created_at' => $now,
                 'updated_at' => $now,
             ];
-            $kasusData[] = [
-                'tahun' => 2023,
-                'bulan' => 8, // Bulan berbeda untuk variasi
-                // 'kode_satuan_kerja' => $satuanKerjaBiroHukum->kode_sk, // Diganti
-                'substansi' => $contohSubstansi2,
-                'jenis_perkara' => 'Putusan MK', // Sesuai PDF Tabel 2.3
-                'jumlah_perkara' => 1,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ];
-        // }
+        }
 
-        if (!empty($kasusData)) {
-            JumlahPenangananKasus::insert($kasusData);
+        // Hapus data contoh statis yang ada sebelumnya ($kasusData array)
+        // Loop $newData untuk insert menggunakan create()
+        if (!empty($newData)) {
+            foreach ($newData as $item) {
+                JumlahPenangananKasus::create($item);
+            }
+            // Alternatif: JumlahPenangananKasus::insert($newData); untuk bulk insert
         }
     }
 }
