@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\ProgressTemuanBpk; 
-use App\Models\ProgressTemuanInternal; 
+use App\Models\ProgressTemuanBpk;
+use App\Models\ProgressTemuanInternal;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -14,7 +14,7 @@ class ItjenDashboardController extends Controller
     {
         $currentYear = date('Y');
         $selectedYear = $request->input('year_filter', $currentYear);
-        $selectedMonth = $request->input('month_filter'); 
+        $selectedMonth = $request->input('month_filter');
 
         // --- Data untuk Kartu Ringkasan ---
         $queryBpk = ProgressTemuanBpk::query()
@@ -47,7 +47,7 @@ class ItjenDashboardController extends Controller
                 DB::raw('COALESCE(SUM(tindak_lanjut_administratif_kasus),0) as total_tl_admin_kasus'),
                 DB::raw('COALESCE(SUM(tindak_lanjut_kerugian_negara_rp),0) as total_tl_kerugian_rp')
             )->first();
-        
+
         $persentaseSelesaiInternalAdmin = 0;
         if ($summaryInternal && $summaryInternal->total_temuan_admin_kasus > 0) {
             $persentaseSelesaiInternalAdmin = round(($summaryInternal->total_tl_admin_kasus / $summaryInternal->total_temuan_admin_kasus) * 100, 2);
@@ -72,13 +72,15 @@ class ItjenDashboardController extends Controller
 
         $bpkChartLabels = [];
         $bpkChartData = ['temuan_admin' => [], 'tl_admin' => [], 'temuan_kerugian' => [], 'tl_kerugian' => []];
-        for ($m=1; $m <= 12 ; $m++) { 
+        $akumulasi1 = [];
+        for ($m=1; $m <= 12 ; $m++) {
             $bpkChartLabels[] = Carbon::create()->month($m)->format('M');
             $monthData = $trendTemuanBpk->firstWhere('bulan', $m);
             $bpkChartData['temuan_admin'][] = $monthData->temuan_admin ?? 0;
             $bpkChartData['tl_admin'][] = $monthData->tl_admin ?? 0;
             $bpkChartData['temuan_kerugian'][] = $monthData->temuan_kerugian ?? 0;
             $bpkChartData['tl_kerugian'][] = $monthData->tl_kerugian ?? 0;
+            $akumulasi1[] = $monthData->temuan_admin ?? 0;
         }
 
 
@@ -94,25 +96,32 @@ class ItjenDashboardController extends Controller
             ->groupBy('bulan')
             ->orderBy('bulan')
             ->get();
-        
+
         $internalChartLabels = [];
         $internalChartData = ['temuan_admin' => [], 'tl_admin' => [], 'temuan_kerugian' => [], 'tl_kerugian' => []];
-        for ($m=1; $m <= 12 ; $m++) { 
+        $akumulasi2 = [];
+        for ($m=1; $m <= 12 ; $m++) {
             $internalChartLabels[] = Carbon::create()->month($m)->format('M');
             $monthData = $trendTemuanInternal->firstWhere('bulan', $m);
             $internalChartData['temuan_admin'][] = $monthData->temuan_admin ?? 0;
             $internalChartData['tl_admin'][] = $monthData->tl_admin ?? 0;
             $internalChartData['temuan_kerugian'][] = $monthData->temuan_kerugian ?? 0;
             $internalChartData['tl_kerugian'][] = $monthData->tl_kerugian ?? 0;
+            $akumulasi2[] = $monthData->temuan_admin ?? 0;
         }
-        
+
         $availableYears = ProgressTemuanBpk::select('tahun')->distinct()
                             ->union(ProgressTemuanInternal::select('tahun')->distinct())
                             ->orderBy('tahun', 'desc')->pluck('tahun');
 
-
+        $arrAkumulasi = [];
+        $akumulasi = 0;
+        for ($i=0; $i < count($akumulasi1); $i++) {
+            $arrAkumulasi[] = $akumulasi + $akumulasi1[$i] + $akumulasi2[$i];
+            $akumulasi = $akumulasi + $akumulasi1[$i] + $akumulasi2[$i];
+        }
         return view('dashboards.itjen', compact(
-            'summaryBpk', 
+            'summaryBpk',
             'persentaseSelesaiBpkAdmin',
             'persentaseSelesaiBpkKerugian',
             'summaryInternal',
@@ -124,7 +133,8 @@ class ItjenDashboardController extends Controller
             'internalChartData',
             'availableYears',
             'selectedYear',
-            'selectedMonth'
+            'selectedMonth',
+            'arrAkumulasi'
         ));
     }
 }
