@@ -178,6 +178,7 @@
                             App\Models\User::ROLE_USER,
                         ];
 
+<<<<<<< HEAD
                         $sidebarMenu = [ // Susunan menu tetap sama
                             'Dashboard Utama' => [
                                 'icon' => 'ri-home-smile-line',
@@ -270,6 +271,156 @@
                                 ]
                             ],
                         ];
+=======
+                        $sidebarMenu = [];
+                        if (Auth::user()->role === 'user') {
+                            $sidebarMenu = [
+                                'Dashboard Utama' => [
+                                    'icon' => 'ri-home-smile-line',
+                                    'route' => 'dashboard',
+                                    // Semua role yang terautentikasi bisa melihat Dashboard Utama
+                                    'roles' => array_merge(
+                                        [App\Models\User::ROLE_SUPERADMIN, App\Models\User::ROLE_ITJEN, App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_BINAPENTA, App\Models\User::ROLE_BINALAVOTAS, App\Models\User::ROLE_BINWASNAKER, App\Models\User::ROLE_PHI, App\Models\User::ROLE_BARENBANG],
+                                        $readOnlySpecificRoles
+                                    ),
+                                ],
+                                'Inspektorat Jenderal' => [
+                                    'icon' => 'ri-government-line',
+                                    'route' => 'inspektorat.dashboard',
+                                    // Superadmin, Itjen, dan semua ReadOnlyUser bisa melihat parent menu ini
+                                    'roles' => array_merge([App\Models\User::ROLE_ITJEN, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
+                                ],
+                                'Sekretariat Jenderal' => [
+                                    'icon' => 'ri-building-4-line',
+                                    'route' => 'sekretariat-jenderal.dashboard',
+                                    'roles' => array_merge([App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
+                                ],
+                                'Binapenta' => [
+                                    'icon' => 'ri-user-search-line',
+                                    'route' => 'binapenta.dashboard',
+                                    'roles' => array_merge([App\Models\User::ROLE_BINAPENTA, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
+                                ],
+                                'Binalavotas' => [
+                                    'icon' => 'ri-graduation-cap-line',
+                                    'route' => 'binalavotas.dashboard',
+                                    'roles' => array_merge([App\Models\User::ROLE_BINALAVOTAS, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
+                                ],
+                                'Binwasnaker & K3' => [
+                                    'icon' => 'ri-shield-check-line',
+                                    'route' => 'binwasnaker.dashboard',
+                                    'roles' => array_merge([App\Models\User::ROLE_BINWASNAKER, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
+                                ],
+                                'PHI & JAMSOS' => [
+                                    'icon' => 'ri-scales-3-line',
+                                    'route' => 'phi.dashboard',
+                                    'roles' => array_merge([App\Models\User::ROLE_PHI, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
+                                ],
+                                'Barenbang' => [
+                                    'icon' => 'ri-bar-chart-box-line',
+                                    'route' => 'barenbang.dashboard',
+                                    'roles' => array_merge([App\Models\User::ROLE_BARENBANG, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
+                                ],
+                            ];
+                        } else {
+                            $sidebarMenu = [
+                                'Dashboard Utama' => [
+                                    'icon' => 'ri-home-smile-line',
+                                    'route' => 'dashboard',
+                                    // Semua role yang terautentikasi bisa melihat Dashboard Utama
+                                    'roles' => array_merge(
+                                        [App\Models\User::ROLE_SUPERADMIN, App\Models\User::ROLE_ITJEN, App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_BINAPENTA, App\Models\User::ROLE_BINALAVOTAS, App\Models\User::ROLE_BINWASNAKER, App\Models\User::ROLE_PHI, App\Models\User::ROLE_BARENBANG],
+                                        $readOnlySpecificRoles
+                                    ),
+                                ],
+                                'Inspektorat Jenderal' => [
+                                    'icon' => 'ri-government-line',
+                                    'route' => 'inspektorat.dashboard',
+                                    // Superadmin, Itjen, dan semua ReadOnlyUser bisa melihat parent menu ini
+                                    'roles' => array_merge([App\Models\User::ROLE_ITJEN, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
+                                    'submenus' => [
+                                        // Submenu Dashboard bisa dilihat oleh Itjen, Superadmin, dan ReadOnlyUser
+                                        ['name' => 'Dashboard Itjen', 'route' => 'inspektorat.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['inspektorat.dashboard'], 'roles' => array_merge([App\Models\User::ROLE_ITJEN, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles)],
+                                        // Submenu CRUD hanya untuk Itjen dan Superadmin
+                                        ['name' => '% Progres Tindak Lanjut temuan BPK', 'route' => 'inspektorat.progress-temuan-bpk.index', 'icon' => 'ri-file-chart-line', 'roles' => [App\Models\User::ROLE_ITJEN, App\Models\User::ROLE_SUPERADMIN]],
+                                        ['name' => '% Progres Tindak Lanjut temuan internal', 'route' => 'inspektorat.progress-temuan-internal.index', 'icon' => 'ri-file-search-line', 'roles' => [App\Models\User::ROLE_ITJEN, App\Models\User::ROLE_SUPERADMIN]],
+                                    ]
+                                ],
+                                'Sekretariat Jenderal' => [
+                                    'icon' => 'ri-building-4-line',
+                                    'route' => 'sekretariat-jenderal.dashboard',
+                                    'roles' => array_merge([App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
+                                    'submenus' => [
+                                        ['name' => 'Dashboard Sekjen', 'route' => 'sekretariat-jenderal.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['sekretariat-jenderal.dashboard'], 'roles' => array_merge([App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles)],
+                                        ['name' => 'Jumlah MoU', 'route' => 'sekretariat-jenderal.progress-mou.index', 'icon' => 'ri-honour-line', 'roles' => [App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN]],
+                                        ['name' => 'Jumlah regulasi baru', 'route' => 'sekretariat-jenderal.jumlah-regulasi-baru.index', 'icon' => 'ri-file-list-3-line', 'roles' => [App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN]],
+                                        ['name' => 'Jumlah penanganan kasus', 'route' => 'sekretariat-jenderal.jumlah-penanganan-kasus.index', 'icon' => 'ri-scales-2-line', 'roles' => [App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN]],
+                                        ['name' => 'Jumlah penyelesaian BMN', 'route' => 'sekretariat-jenderal.penyelesaian-bmn.index', 'icon' => 'ri-archive-drawer-line', 'roles' => [App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN]],
+                                        ['name' => '% Kehadiran', 'route' => 'sekretariat-jenderal.persentase-kehadiran.index', 'icon' => 'ri-user-follow-line', 'roles' => [App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN]],
+                                        ['name' => 'Monev monitoring media', 'route' => 'sekretariat-jenderal.monev-monitoring-media.index', 'icon' => 'ri-rss-line', 'roles' => [App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN]],
+                                        ['name' => 'Lulusan Polteknaker bekerja', 'route' => 'sekretariat-jenderal.lulusan-polteknaker-bekerja.index', 'icon' => 'ri-user-star-line', 'roles' => [App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN]],
+                                        ['name' => 'SDM mengikuti pelatihan', 'route' => 'sekretariat-jenderal.sdm-mengikuti-pelatihan.index', 'icon' => 'ri-team-line', 'roles' => [App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN]],
+                                        ['name' => 'Indikator Kinerja Pelaksanaan Anggaran', 'route' => 'sekretariat-jenderal.ikpa.index', 'icon' => 'ri-money-dollar-circle-line', 'roles' => [App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN]],
+                                    ]
+                                ],
+                                'Binapenta' => [
+                                    'icon' => 'ri-user-search-line',
+                                    'route' => 'binapenta.dashboard',
+                                    'roles' => array_merge([App\Models\User::ROLE_BINAPENTA, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
+                                    'submenus' => [
+                                        ['name' => 'Dashboard Binapenta', 'route' => 'binapenta.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['binapenta.dashboard'], 'roles' => array_merge([App\Models\User::ROLE_BINAPENTA, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles)],
+                                        ['name' => 'Jml Penempatan oleh Kemnaker', 'route' => 'binapenta.jumlah-penempatan-kemnaker.index', 'icon' => 'ri-user-add-line', 'roles' => [App\Models\User::ROLE_BINAPENTA, App\Models\User::ROLE_SUPERADMIN]],
+                                        ['name' => 'Jml Lowongan Kerja Baru (Pasker)', 'route' => 'binapenta.jumlah-lowongan-pasker.index', 'icon' => 'ri-briefcase-4-line', 'roles' => [App\Models\User::ROLE_BINAPENTA, App\Models\User::ROLE_SUPERADMIN]],
+                                        ['name' => 'Persetujuan RPTKA', 'route' => 'binapenta.persetujuan-rptka.index', 'icon' => 'ri-user-shared-line', 'roles' => [App\Models\User::ROLE_BINAPENTA, App\Models\User::ROLE_SUPERADMIN]],
+                                    ]
+                                ],
+                                'Binalavotas' => [
+                                    'icon' => 'ri-graduation-cap-line',
+                                    'route' => 'binalavotas.dashboard',
+                                    'roles' => array_merge([App\Models\User::ROLE_BINALAVOTAS, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
+                                    'submenus' => [
+                                        ['name' => 'Dashboard Binalavotas', 'route' => 'binalavotas.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['binalavotas.dashboard'], 'roles' => array_merge([App\Models\User::ROLE_BINALAVOTAS, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles)],
+                                        ['name' => 'Jumlah Kepesertaan Pelatihan', 'route' => 'binalavotas.jumlah-kepesertaan-pelatihan.index', 'icon' => 'ri-group-line', 'roles' => [App\Models\User::ROLE_BINALAVOTAS, App\Models\User::ROLE_SUPERADMIN]],
+                                        ['name' => 'Jml Sertifikasi Kompetensi', 'route' => 'binalavotas.jumlah-sertifikasi-kompetensi.index', 'icon' => 'ri-shield-star-line', 'roles' => [App\Models\User::ROLE_BINALAVOTAS, App\Models\User::ROLE_SUPERADMIN]],
+                                    ]
+                                ],
+                                'Binwasnaker & K3' => [
+                                    'icon' => 'ri-shield-check-line',
+                                    'route' => 'binwasnaker.dashboard',
+                                    'roles' => array_merge([App\Models\User::ROLE_BINWASNAKER, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
+                                    'submenus' => [
+                                        ['name' => 'Dashboard Binwasnaker', 'route' => 'binwasnaker.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['binwasnaker.dashboard'], 'roles' => array_merge([App\Models\User::ROLE_BINWASNAKER, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles)],
+                                        ['name' => 'Laporan WLKP Online', 'route' => 'binwasnaker.pelaporan-wlkp-online.index', 'icon' => 'ri-computer-line', 'roles' => [App\Models\User::ROLE_BINWASNAKER, App\Models\User::ROLE_SUPERADMIN]],
+                                        ['name' => 'Pengaduan Pelanggaran Norma (TL)', 'route' => 'binwasnaker.pengaduan-pelanggaran-norma.index', 'icon' => 'ri-alert-line', 'roles' => [App\Models\User::ROLE_BINWASNAKER, App\Models\User::ROLE_SUPERADMIN]],
+                                        ['name' => 'Penerapan SMK3', 'route' => 'binwasnaker.penerapan-smk3.index', 'icon' => 'ri-shield-keyhole-line', 'roles' => [App\Models\User::ROLE_BINWASNAKER, App\Models\User::ROLE_SUPERADMIN]],
+                                        ['name' => 'Self-Assessment Norma 100', 'route' => 'binwasnaker.self-assessment-norma100.index', 'icon' => 'ri-check-double-line', 'roles' => [App\Models\User::ROLE_BINWASNAKER, App\Models\User::ROLE_SUPERADMIN]],
+                                    ]
+                                ],
+                                'PHI & JAMSOS' => [
+                                    'icon' => 'ri-scales-3-line',
+                                    'route' => 'phi.dashboard',
+                                    'roles' => array_merge([App\Models\User::ROLE_PHI, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
+                                    'submenus' => [
+                                        ['name' => 'Dashboard PHI', 'route' => 'phi.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['phi.dashboard'], 'roles' => array_merge([App\Models\User::ROLE_PHI, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles)],
+                                        ['name' => 'Jumlah PHK', 'route' => 'phi.jumlah-phk.index', 'icon' => 'ri-user-unfollow-fill', 'roles' => [App\Models\User::ROLE_PHI, App\Models\User::ROLE_SUPERADMIN]],
+                                        ['name' => 'Perselisihan (TL)', 'route' => 'phi.perselisihan-ditindaklanjuti.index', 'icon' => 'ri-auction-line', 'roles' => [App\Models\User::ROLE_PHI, App\Models\User::ROLE_SUPERADMIN]],
+                                        ['name' => 'Mediasi Berhasil', 'route' => 'phi.mediasi-berhasil.index', 'icon' => 'ri-shake-hands-line', 'roles' => [App\Models\User::ROLE_PHI, App\Models\User::ROLE_SUPERADMIN]],
+                                        ['name' => 'Perusahaan Penerap SUSU', 'route' => 'phi.perusahaan-menerapkan-susu.index', 'icon' => 'ri-currency-line', 'roles' => [App\Models\User::ROLE_PHI, App\Models\User::ROLE_SUPERADMIN]],
+                                    ]
+                                ],
+                                'Barenbang' => [
+                                    'icon' => 'ri-bar-chart-box-line',
+                                    'route' => 'barenbang.dashboard',
+                                    'roles' => array_merge([App\Models\User::ROLE_BARENBANG, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
+                                    'submenus' => [
+                                        ['name' => 'Dashboard Barenbang', 'route' => 'barenbang.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['barenbang.dashboard'], 'roles' => array_merge([App\Models\User::ROLE_BARENBANG, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles)],
+                                        ['name' => 'Jml Kajian & Rekomendasi', 'route' => 'barenbang.jumlah-kajian-rekomendasi.index', 'icon' => 'ri-lightbulb-flash-line', 'roles' => [App\Models\User::ROLE_BARENBANG, App\Models\User::ROLE_SUPERADMIN]],
+                                        ['name' => 'Data Ketenagakerjaan', 'route' => 'barenbang.data-ketenagakerjaan.index', 'icon' => 'ri-database-2-line', 'roles' => [App\Models\User::ROLE_BARENBANG, App\Models\User::ROLE_SUPERADMIN]],
+                                        ['name' => 'Jml Aplikasi Terintegrasi SiapKerja', 'route' => 'barenbang.aplikasi-integrasi-siapkerja.index', 'icon' => 'ri-link-m', 'roles' => [App\Models\User::ROLE_BARENBANG, App\Models\User::ROLE_SUPERADMIN]],
+                                    ]
+                                ],
+                            ];
+                        }
+>>>>>>> 806c2a6 (add ikpa features)
                     @endphp
 
                     @if (Auth::check())

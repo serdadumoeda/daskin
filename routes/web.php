@@ -43,6 +43,7 @@ use App\Http\Controllers\BinalavotasDashboardController;
 use App\Http\Controllers\BinwasnakerDashboardController;
 use App\Http\Controllers\PhiDashboardController;
 use App\Http\Controllers\BarenbangDashboardController;
+use App\Http\Controllers\IKPAController;
 use App\Http\Controllers\MainDashboardController;
 
 /*
@@ -93,7 +94,7 @@ Route::get('/dashboard', [MainDashboardController::class, 'index'])
 // Inspektorat Jenderal
 Route::prefix('inspektorat-jenderal')->name('inspektorat.')->middleware(['auth'])->group(function () use ($allEselonViewRolesItjen, $crudRolesItjen, $readOnlyRoles) {
     Route::get('/', [ItjenDashboardController::class, 'index'])->name('dashboard')->middleware('role:' . $allEselonViewRolesItjen);
-    
+
     Route::prefix('progress-temuan-bpk')->name('progress-temuan-bpk.')->group(function () use ($crudRolesItjen, $readOnlyRoles) {
         Route::get('/', [ProgressTemuanBpkController::class, 'index'])->name('index')->middleware('role:' . $crudRolesItjen . ',' . $readOnlyRoles);
         // CRUD Routes - Definisikan rute spesifik (create, import) SEBELUM rute dengan parameter
@@ -126,7 +127,7 @@ Route::prefix('inspektorat-jenderal')->name('inspektorat.')->middleware(['auth']
 // Sekretariat Jenderal
 Route::prefix('sekretariat-jenderal')->name('sekretariat-jenderal.')->middleware(['auth'])->group(function () use ($allEselonViewRolesSekjen, $crudRolesSekjen, $readOnlyRoles) {
     Route::get('/', [SekjenDashboardController::class, 'index'])->name('dashboard')->middleware('role:' . $allEselonViewRolesSekjen);
-    
+
     Route::prefix('progress-mou')->name('progress-mou.')->group(function () use ($crudRolesSekjen, $readOnlyRoles) {
         Route::get('/', [ProgressMouController::class, 'index'])->name('index')->middleware('role:' . $crudRolesSekjen . ',' . $readOnlyRoles);
         Route::middleware('role:' . $crudRolesSekjen)->group(function () {
@@ -150,8 +151,13 @@ Route::prefix('sekretariat-jenderal')->name('sekretariat-jenderal.')->middleware
         Route::put('jumlah-regulasi-baru/{jumlah_regulasi_baru}', [JumlahRegulasiBaruController::class, 'update'])->name('jumlah-regulasi-baru.update');
         Route::delete('jumlah-regulasi-baru/{jumlah_regulasi_baru}', [JumlahRegulasiBaruController::class, 'destroy'])->name('jumlah-regulasi-baru.destroy');
     });
+<<<<<<< HEAD
     Route::get('jumlah-regulasi-baru/{jumlah_regulasi_baru}', [JumlahRegulasiBaruController::class, 'show'])->name('jumlah-regulasi-baru.show')->middleware('role:' . $crudRolesSekjen . ',' . $readOnlyRoles);
     
+=======
+
+    // Ulangi pola yang sama untuk resource controller lainnya di Sekjen
+>>>>>>> 806c2a6 (add ikpa features)
     // JumlahPenangananKasusController
     Route::get('jumlah-penanganan-kasus', [JumlahPenangananKasusController::class, 'index'])->name('jumlah-penanganan-kasus.index')->middleware('role:' . $crudRolesSekjen . ',' . $readOnlyRoles);
     Route::middleware('role:' . $crudRolesSekjen)->group(function() {
@@ -186,8 +192,13 @@ Route::prefix('sekretariat-jenderal')->name('sekretariat-jenderal.')->middleware
         Route::put('persentase-kehadiran/{persentase_kehadiran}', [PersentaseKehadiranController::class, 'update'])->name('persentase-kehadiran.update');
         Route::delete('persentase-kehadiran/{persentase_kehadiran}', [PersentaseKehadiranController::class, 'destroy'])->name('persentase-kehadiran.destroy');
     });
+<<<<<<< HEAD
     
     // MonevMonitoringMediaController
+=======
+
+    // MonevMonitoringMediaController (kecuali show)
+>>>>>>> 806c2a6 (add ikpa features)
     Route::get('monev-monitoring-media', [MonevMonitoringMediaController::class, 'index'])->name('monev-monitoring-media.index')->middleware('role:' . $crudRolesSekjen . ',' . $readOnlyRoles);
     Route::middleware('role:' . $crudRolesSekjen)->group(function() {
         Route::get('monev-monitoring-media/create', [MonevMonitoringMediaController::class, 'create'])->name('monev-monitoring-media.create');
@@ -208,8 +219,13 @@ Route::prefix('sekretariat-jenderal')->name('sekretariat-jenderal.')->middleware
         Route::put('lulusan-polteknaker-bekerja/{lulusan_polteknaker_bekerja}', [LulusanPolteknakerBekerjaController::class, 'update'])->name('lulusan-polteknaker-bekerja.update');
         Route::delete('lulusan-polteknaker-bekerja/{lulusan_polteknaker_bekerja}', [LulusanPolteknakerBekerjaController::class, 'destroy'])->name('lulusan-polteknaker-bekerja.destroy');
     });
+<<<<<<< HEAD
     
     // SdmMengikutiPelatihanController
+=======
+
+    // SdmMengikutiPelatihanController (kecuali show)
+>>>>>>> 806c2a6 (add ikpa features)
     Route::get('sdm-mengikuti-pelatihan', [SdmMengikutiPelatihanController::class, 'index'])->name('sdm-mengikuti-pelatihan.index')->middleware('role:' . $crudRolesSekjen . ',' . $readOnlyRoles);
     Route::middleware('role:' . $crudRolesSekjen)->group(function() {
         Route::get('sdm-mengikuti-pelatihan/create', [SdmMengikutiPelatihanController::class, 'create'])->name('sdm-mengikuti-pelatihan.create');
@@ -219,13 +235,20 @@ Route::prefix('sekretariat-jenderal')->name('sekretariat-jenderal.')->middleware
         Route::put('sdm-mengikuti-pelatihan/{sdm_mengikuti_pelatihan}', [SdmMengikutiPelatihanController::class, 'update'])->name('sdm-mengikuti-pelatihan.update');
         Route::delete('sdm-mengikuti-pelatihan/{sdm_mengikuti_pelatihan}', [SdmMengikutiPelatihanController::class, 'destroy'])->name('sdm-mengikuti-pelatihan.destroy');
     });
+
+    // Indikator Kinerja Pelaksanaan Anggaran
+    Route::get('ikpa', [IKPAController::class, 'index'])->name('ikpa.index')->middleware('role:' . $crudRolesSekjen . ',' . $readOnlyRoles);
+    Route::middleware('role:' . $crudRolesSekjen)->group(function() {
+        Route::resource('ikpa', IKPAController::class)->except(['index', 'show']);
+        Route::post('ikpa/import', [IKPAController::class, 'importExcel'])->name('ikpa.import');
+    });
 });
 
 
 // Binapenta
 Route::prefix('binapenta')->name('binapenta.')->middleware(['auth'])->group(function () use ($allEselonViewRolesBinapenta, $crudRolesBinapenta, $readOnlyRoles) {
     Route::get('/', [BinapentaDashboardController::class, 'index'])->name('dashboard')->middleware('role:' . $allEselonViewRolesBinapenta);
-    
+
     // Jumlah Penempatan oleh Kemnaker
     Route::prefix('jumlah-penempatan-kemnaker')->name('jumlah-penempatan-kemnaker.')->group(function() use ($crudRolesBinapenta, $readOnlyRoles){
         Route::get('/', [JumlahPenempatanKemnakerController::class, 'index'])->name('index')->middleware('role:' . $crudRolesBinapenta . ',' . $readOnlyRoles);
@@ -267,7 +290,7 @@ Route::prefix('binapenta')->name('binapenta.')->middleware(['auth'])->group(func
         });
         Route::get('/{jumlahTkaDisetujui}', [JumlahTkaDisetujuiController::class, 'show'])->name('show')->middleware('role:' . $crudRolesBinapenta . ',' . $readOnlyRoles);
     });
-    
+
     // PersetujuanRptkaController
     Route::get('persetujuan-rptka', [PersetujuanRptkaController::class, 'index'])->name('persetujuan-rptka.index')->middleware('role:' . $crudRolesBinapenta . ',' . $readOnlyRoles);
     Route::middleware('role:' . $crudRolesBinapenta)->group(function() {
@@ -317,8 +340,13 @@ Route::prefix('binalavotas')->name('binalavotas.')->middleware(['auth'])->group(
 // Binwasnaker
 Route::prefix('binwasnaker')->name('binwasnaker.')->middleware(['auth'])->group(function () use ($allEselonViewRolesBinwasnaker, $crudRolesBinwasnaker, $readOnlyRoles) {
     Route::get('/', [BinwasnakerDashboardController::class, 'index'])->name('dashboard')->middleware('role:' . $allEselonViewRolesBinwasnaker);
+<<<<<<< HEAD
     
     // PelaporanWlkpOnlineController
+=======
+
+    // PelaporanWlkpOnlineController (kecuali show)
+>>>>>>> 806c2a6 (add ikpa features)
     Route::get('pelaporan-wlkp-online', [PelaporanWlkpOnlineController::class, 'index'])->name('pelaporan-wlkp-online.index')->middleware('role:' . $crudRolesBinwasnaker . ',' . $readOnlyRoles);
     Route::middleware('role:' . $crudRolesBinwasnaker)->group(function() {
         Route::get('pelaporan-wlkp-online/create', [PelaporanWlkpOnlineController::class, 'create'])->name('pelaporan-wlkp-online.create');
@@ -366,8 +394,13 @@ Route::prefix('binwasnaker')->name('binwasnaker.')->middleware(['auth'])->group(
 // PHI
 Route::prefix('phi')->name('phi.')->middleware(['auth'])->group(function () use ($allEselonViewRolesPhi, $crudRolesPhi, $readOnlyRoles) {
     Route::get('/', [PhiDashboardController::class, 'index'])->name('dashboard')->middleware('role:' . $allEselonViewRolesPhi);
+<<<<<<< HEAD
     
     // JumlahPhkController
+=======
+
+    // JumlahPhkController (kecuali show)
+>>>>>>> 806c2a6 (add ikpa features)
     Route::get('jumlah-phk', [JumlahPhkController::class, 'index'])->name('jumlah-phk.index')->middleware('role:' . $crudRolesPhi . ',' . $readOnlyRoles);
     Route::middleware('role:' . $crudRolesPhi)->group(function() {
         Route::get('jumlah-phk/create', [JumlahPhkController::class, 'create'])->name('jumlah-phk.create');
@@ -377,8 +410,13 @@ Route::prefix('phi')->name('phi.')->middleware(['auth'])->group(function () use 
         Route::put('jumlah-phk/{jumlah_phk}', [JumlahPhkController::class, 'update'])->name('jumlah-phk.update');
         Route::delete('jumlah-phk/{jumlah_phk}', [JumlahPhkController::class, 'destroy'])->name('jumlah-phk.destroy');
     });
+<<<<<<< HEAD
     
     // PerselisihanDitindaklanjutiController
+=======
+
+    // PerselisihanDitindaklanjutiController (kecuali show)
+>>>>>>> 806c2a6 (add ikpa features)
     Route::get('perselisihan-ditindaklanjuti', [PerselisihanDitindaklanjutiController::class, 'index'])->name('perselisihan-ditindaklanjuti.index')->middleware('role:' . $crudRolesPhi . ',' . $readOnlyRoles);
     Route::middleware('role:' . $crudRolesPhi)->group(function() {
         Route::get('perselisihan-ditindaklanjuti/create', [PerselisihanDitindaklanjutiController::class, 'create'])->name('perselisihan-ditindaklanjuti.create');
@@ -399,8 +437,13 @@ Route::prefix('phi')->name('phi.')->middleware(['auth'])->group(function () use 
         Route::put('mediasi-berhasil/{mediasi_berhasil}', [MediasiBerhasilController::class, 'update'])->name('mediasi-berhasil.update');
         Route::delete('mediasi-berhasil/{mediasi_berhasil}', [MediasiBerhasilController::class, 'destroy'])->name('mediasi-berhasil.destroy');
     });
+<<<<<<< HEAD
     
     // PerusahaanMenerapkanSusuController
+=======
+
+    // PerusahaanMenerapkanSusuController (kecuali show)
+>>>>>>> 806c2a6 (add ikpa features)
     Route::get('perusahaan-menerapkan-susu', [PerusahaanMenerapkanSusuController::class, 'index'])->name('perusahaan-menerapkan-susu.index')->middleware('role:' . $crudRolesPhi . ',' . $readOnlyRoles);
     Route::middleware('role:' . $crudRolesPhi)->group(function() {
         Route::get('perusahaan-menerapkan-susu/create', [PerusahaanMenerapkanSusuController::class, 'create'])->name('perusahaan-menerapkan-susu.create');
@@ -415,7 +458,7 @@ Route::prefix('phi')->name('phi.')->middleware(['auth'])->group(function () use 
 // Barenbang
 Route::prefix('barenbang')->name('barenbang.')->middleware(['auth'])->group(function () use ($allEselonViewRolesBarenbang, $crudRolesBarenbang, $readOnlyRoles) {
     Route::get('/', [BarenbangDashboardController::class, 'index'])->name('dashboard')->middleware('role:' . $allEselonViewRolesBarenbang);
-    
+
     // Jumlah Kajian dan Rekomendasi
     Route::prefix('jumlah-kajian-rekomendasi')->name('jumlah-kajian-rekomendasi.')->group(function() use ($crudRolesBarenbang, $readOnlyRoles){
         Route::get('/', [JumlahKajianRekomendasiController::class, 'index'])->name('index')->middleware('role:' . $crudRolesBarenbang . ',' . $readOnlyRoles);
@@ -429,7 +472,7 @@ Route::prefix('barenbang')->name('barenbang.')->middleware(['auth'])->group(func
         });
         Route::get('/{jumlahKajianRekomendasi}', [JumlahKajianRekomendasiController::class, 'show'])->name('show')->middleware('role:' . $crudRolesBarenbang . ',' . $readOnlyRoles);
     });
-    
+
     // Jumlah Aplikasi Lintas K/L/D yang Terintegrasi ke SiapKerja
     Route::prefix('aplikasi-integrasi-siapkerja')->name('aplikasi-integrasi-siapkerja.')->group(function() use ($crudRolesBarenbang, $readOnlyRoles){
         Route::get('/', [AplikasiIntegrasiSiapkerjaController::class, 'index'])->name('index')->middleware('role:' . $crudRolesBarenbang . ',' . $readOnlyRoles);
