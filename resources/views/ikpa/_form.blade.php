@@ -1,80 +1,125 @@
 @csrf
-<div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
     <div>
-        <x-input-label for="tahun" :value="__('Tahun')" />
-        <x-text-input id="tahun" class="block mt-1 w-full" type="number" name="tahun" :value="old('tahun', $ikpa->tahun ?? date('Y'))" required min="2000" max="{{ date('Y') + 5 }}" />
-        <x-input-error :messages="$errors->get('tahun')" class="mt-2" />
+        <label for="tahun_ikpa" class="block text-sm font-medium text-gray-700 mb-1">Tahun <span
+                class="text-red-500">*</span></label>
+        <input type="number" name="tahun" id="tahun_ikpa"
+            value="{{ old('tahun', $indikatorKinerjaPelaksanaanAnggaran->tahun ?? date('Y')) }}" required
+            class="form-input w-full" min="2000" max="{{ date('Y') + 5 }}">
+        @error('tahun')
+            <span class="text-xs text-red-500 mt-1">{{ $message }}</span>
+        @enderror
     </div>
 
     <div>
-        <x-input-label for="bulan" :value="__('Bulan')" />
-        <select name="bulan" id="bulan" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full" required>
-            <option value="">Pilih Bulan</option>
-            @foreach($bulanOptions as $key => $value)
-                <option value="{{ $key }}" {{ (old('bulan', $ikpa->bulan ?? '') == $key) ? 'selected' : '' }}>
-                    {{ $value }}
+        <label for="bulan_ikpa" class="block text-sm font-medium text-gray-700 mb-1">Bulan <span
+                class="text-red-500">*</span></label>
+        <select name="bulan" id="bulan_ikpa" required class="form-input w-full pr-8">
+            @for ($i = 1; $i <= 12; $i++)
+                <option value="{{ $i }}"
+                    {{ old('bulan', $indikatorKinerjaPelaksanaanAnggaran->bulan ?? '') == $i ? 'selected' : '' }}>
+                    {{ \Carbon\Carbon::create()->month($i)->isoFormat('MMMM') }}
                 </option>
-            @endforeach
+            @endfor
         </select>
-        <x-input-error :messages="$errors->get('bulan')" class="mt-2" />
+        @error('bulan')
+            <span class="text-xs text-red-500 mt-1">{{ $message }}</span>
+        @enderror
     </div>
+</div>
 
-    <div class="md:col-span-2">
-        <x-input-label for="id_unit_kerja_eselon_i" :value="__('Unit Kerja Eselon I')" />
-        <select name="id_unit_kerja_eselon_i" id="id_unit_kerja_eselon_i" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full" required>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <div>
+        <label for="kode_unit_kerja_eselon_i_ikpa" class="block text-sm font-medium text-gray-700 mb-1">Unit Kerja
+            Eselon I <span class="text-red-500">*</span></label>
+        <select name="kode_unit_kerja_eselon_i" id="kode_unit_kerja_eselon_i_ikpa" required
+            class="form-input w-full pr-8">
             <option value="">Pilih Unit Kerja</option>
-            @foreach($unitKerjaEselonIs as $unit)
-                <option value="{{ $unit->id }}" {{ (old('id_unit_kerja_eselon_i', $ikpa->id_unit_kerja_eselon_i ?? '') == $unit->id) ? 'selected' : '' }}>
+            @foreach ($unitKerjaEselonIs as $unit)
+                <option value="{{ $unit->kode_uke1 }}"
+                    {{ old('kode_unit_kerja_eselon_i', $indikatorKinerjaPelaksanaanAnggaran->kode_unit_kerja_eselon_i ?? '') == $unit->kode_uke1 ? 'selected' : '' }}>
                     {{ $unit->nama_unit_kerja_eselon_i }}
                 </option>
             @endforeach
         </select>
-        <x-input-error :messages="$errors->get('id_unit_kerja_eselon_i')" class="mt-2" />
+        @error('kode_unit_kerja_eselon_i')
+            <span class="text-xs text-red-500 mt-1">{{ $message }}</span>
+        @enderror
     </div>
-
     <div>
-        <x-input-label for="aspek_pelaksanaan_anggaran" :value="__('Aspek Pelaksanaan Anggaran')" />
-        <select name="aspek_pelaksanaan_anggaran" id="aspek_pelaksanaan_anggaran" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full" required>
-            <option value="">Pilih Aspek</option>
-            @foreach($aspekOptions as $key => $value)
-                <option value="{{ $key }}" {{ (old('aspek_pelaksanaan_anggaran', $ikpa->aspek_pelaksanaan_anggaran ?? '') == $key) ? 'selected' : '' }}>
+        <label for="aspek_pelaksanaan_anggaran_ikpa" class="block text-sm font-medium text-gray-700 mb-1">Aspek Pelaksanaan Anggaran<span class="text-red-500">*</span></label>
+        <select name="aspek_pelaksanaan_anggaran" id="aspek_pelaksanaan_anggaran_ikpa" required
+            class="form-input w-full pr-8">
+            <option value="">Pilih Aspek Pelaksanaan Anggaran</option>
+            @foreach ($aspekPelaksanaanAnggaranOptions as $value)
+                <option value="{{ $value }}"
+                    {{ old('aspek_pelaksanaan_anggaran', $indikatorKinerjaPelaksanaanAnggaran->aspek_pelaksanaan_anggaran ?? '') == $value ? 'selected' : '' }}>
                     {{ $value }}
                 </option>
             @endforeach
         </select>
-        <x-input-error :messages="$errors->get('aspek_pelaksanaan_anggaran')" class="mt-2" />
-    </div>
-
-    <div>
-        <x-input-label for="nilai_aspek" :value="__('Nilai Aspek')" />
-        <x-text-input id="nilai_aspek" class="block mt-1 w-full" type="number" step="0.01" name="nilai_aspek" :value="old('nilai_aspek', $ikpa->nilai_aspek ?? '')" placeholder="Contoh: 90.50"/>
-        <x-input-error :messages="$errors->get('nilai_aspek')" class="mt-2" />
-    </div>
-
-    <div>
-        <x-input-label for="konversi_bobot" :value="__('Konversi Bobot')" />
-        <x-text-input id="konversi_bobot" class="block mt-1 w-full" type="number" step="0.01" name="konversi_bobot" :value="old('konversi_bobot', $ikpa->konversi_bobot ?? '')" placeholder="Contoh: 25.00"/>
-        <x-input-error :messages="$errors->get('konversi_bobot')" class="mt-2" />
-    </div>
-
-    <div>
-        <x-input-label for="dispensasi_spm" :value="__('Dispensasi SPM (Pengurang)')" />
-        <x-text-input id="dispensasi_spm" class="block mt-1 w-full" type="number" step="0.01" name="dispensasi_spm" :value="old('dispensasi_spm', $ikpa->dispensasi_spm ?? '')" placeholder="Contoh: 0.00"/>
-        <x-input-error :messages="$errors->get('dispensasi_spm')" class="mt-2" />
-    </div>
-
-    <div>
-        <x-input-label for="nilai_akhir" :value="__('Nilai Akhir')" />
-        <x-text-input id="nilai_akhir" class="block mt-1 w-full" type="number" step="0.01" name="nilai_akhir" :value="old('nilai_akhir', $ikpa->nilai_akhir ?? '')" placeholder="Contoh: 90.50"/>
-        <x-input-error :messages="$errors->get('nilai_akhir')" class="mt-2" />
+        @error('aspek_pelaksanaan_anggaran')
+            <span class="text-xs text-red-500 mt-1">{{ $message }}</span>
+        @enderror
     </div>
 </div>
 
-<div class="flex items-center justify-end mt-6">
-    <a href="{{ route('ikpa.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 dark:bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-gray-800 dark:text-gray-200 uppercase tracking-widest hover:bg-gray-300 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150 mr-3">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <div>
+        <label for="nilai_aspek" class="block text-sm font-medium text-gray-700 mb-1">Nilai Aspek<span
+                class="text-red-500">*</span></label>
+        <input type="number" name="nilai_aspek" id="nilai_aspek"
+            value="{{ old('nilai_aspek', $indikatorKinerjaPelaksanaanAnggaran->nilai_aspek ?? 0) }}" required
+            class="form-input w-full" min="0" max="999999">
+        @error('nilai_aspek')
+            <span class="text-xs text-red-500 mt-1">{{ $message }}</span>
+        @enderror
+    </div>
+
+    <div>
+        <label for="konversi_bobot" class="block text-sm font-medium text-gray-700 mb-1">Konversi Bobot <span
+                class="text-red-500">*</span></label>
+        <input type="number" name="konversi_bobot" id="konversi_bobot"
+            value="{{ old('konversi_bobot', $indikatorKinerjaPelaksanaanAnggaran->konversi_bobot ?? 0) }}" required
+            class="form-input w-full" min="0" max="999999">
+        @error('konversi_bobot')
+            <span class="text-xs text-red-500 mt-1">{{ $message }}</span>
+        @enderror
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <div>
+        <label for="dispensasi_spm" class="block text-sm font-medium text-gray-700 mb-1">Dispensasi SPM<span
+                class="text-red-500">*</span></label>
+        <input type="number" name="dispensasi_spm" id="dispensasi_spm"
+            value="{{ old('dispensasi_spm', $indikatorKinerjaPelaksanaanAnggaran->dispensasi_spm ?? 0) }}" required
+            class="form-input w-full" min="0" max="999999">
+        @error('dispensasi_spm')
+            <span class="text-xs text-red-500 mt-1">{{ $message }}</span>
+        @enderror
+    </div>
+
+    <div>
+        <label for="nilai_akhir" class="block text-sm font-medium text-gray-700 mb-1">Nilai Akhir<span
+                class="text-red-500">*</span></label>
+        <input type="number" name="nilai_akhir" id="nilai_akhir"
+            value="{{ old('nilai_akhir', $indikatorKinerjaPelaksanaanAnggaran->nilai_akhir ?? 0) }}" required
+            class="form-input w-full" min="0" max="999999">
+        @error('nilai_akhir')
+            <span class="text-xs text-red-500 mt-1">{{ $message }}</span>
+        @enderror
+    </div>
+</div>
+
+<div class="flex justify-end space-x-3 mt-8">
+    <a href="{{ route('sekretariat-jenderal.ikpa.index') }}"
+       class="px-4 py-2 bg-gray-200 text-gray-700 rounded-button hover:bg-gray-300 text-sm font-medium">
         Batal
     </a>
-    <x-primary-button>
-        {{ $ikpa->exists ? __('Perbarui') : __('Simpan') }}
-    </x-primary-button>
+    <button type="submit"
+            class="px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium">
+        <i class="ri-save-line mr-1"></i> Simpan
+    </button>
 </div>
+

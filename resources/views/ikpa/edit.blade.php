@@ -1,30 +1,23 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Edit Data IKPA') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    @if ($errors->any())
-                         <div class="mb-4 p-4 bg-red-100 dark:bg-red-800 text-red-700 dark:text-red-200 rounded-md">
-                            <div class="font-medium">{{ __('Whoops! Ada yang salah dengan input Anda.') }}</div>
-                            <ul class="mt-1 list-disc list-inside text-sm">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-                    <form method="POST" action="{{ route('ikpa.update', $ikpa->id) }}">
-                        @method('PUT')
-                        @include('ikpa._form', ['ikpa' => $ikpa, 'bulanOptions' => $bulanOptions, 'aspekOptions' => $aspekOptions, 'unitKerjaEselonIs' => $unitKerjaEselonIs])
-                    </form>
-                </div>
-            </div>
-        </div>
+@section('title', 'Edit Data Indikator Kinerja Pelaksanaan Anggaran')
+@section('page_title', 'Edit Data Indikator Kinerja Pelaksanaan Anggaran')
+
+@section('content')
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-semibold text-gray-800">Formulir Edit Indikator Kinerja Pelaksanaan Anggaran</h2>
+        <a href="{{ route('sekretariat-jenderal.ikpa.index') }}" class="text-sm text-primary hover:text-primary/80 flex items-center">
+            <i class="ri-arrow-left-line mr-1"></i> Kembali ke Daftar
+        </a>
     </div>
-</x-app-layout>
+    <form action="{{ route('sekretariat-jenderal.ikpa.update', $indikatorKinerjaPelaksanaanAnggaran->id) }}" method="POST">
+        @method('PUT')
+        @include('ikpa._form', [
+            'indikatorKinerjaPelaksanaanAnggaran' => $indikatorKinerjaPelaksanaanAnggaran,
+            'unitKerjaEselonIs' => $unitKerjaEselonIs,
+            'aspekPelaksanaanAnggaranOptions' => $aspekPelaksanaanAnggaranOptions
+        ])
+    </form>
+</div>
+@endsection

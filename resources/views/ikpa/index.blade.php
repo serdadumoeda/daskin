@@ -1,123 +1,213 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Data Indikator Kinerja Pelaksanaan Anggaran (IKPA)') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-full mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
+@section('title', 'Indikator Kinerja Pelaksanaan Anggaran')
+@section('page_title', 'Indikator Kinerja Pelaksanaan Anggaran')
 
-                    @include('layouts.partials.alerts') {{-- Asumsi Anda punya partial untuk alert --}}
+@php
+    if (!function_exists('sortableLinkIkpa')) {
+        function sortableLinkIkpa(string $column, string $label, string $currentSortBy, string $currentSortDirection, array $requestFilters)
+        {
+            $newDirection = ($currentSortBy == $column && $currentSortDirection == 'asc') ? 'desc' : 'asc';
+            $iconHtml = '';
+            if ($currentSortBy == $column) {
+                $iconClass = $currentSortDirection = 'asc' ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill';
+                $iconHtml = '<i class="' . $iconClass . ' ml-1"></i>';
+            }
+            $queryParams = array_merge(
+                $requestFilters,
+                ['sort_by' => $column, 'sort_direction' => $newDirection]
+            );
+            return '<a href="' . route('sekretariat-jenderal.ikpa.index', $queryParams) . '" class="flex items-center hover:text-primary">' . e($label) . $iconHtml . '</a>';
+        }
+    }
+    $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_filter', 'aspek_pelaksanaan_anggaran']);
+@endphp
 
-                    <div class="mb-4 flex flex-col sm:flex-row justify-between items-center gap-2">
-                        <x-primary-button-link href="{{ route('ikpa.create') }}">
-                            Tambah Data IKPA
-                        </x-primary-button-link>
-                        <x-secondary-button-link href="{{ route('ikpa.showImportForm') }}" class="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white">
-                            Import dari Excel
-                        </x-secondary-button-link>
-                    </div>
-                    
-                    <form method="GET" action="{{ route('ikpa.index') }}" class="mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-md shadow">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                            <div>
-                                <x-input-label for="search_tahun" :value="__('Filter Tahun')"/>
-                                <x-text-input type="number" name="search_tahun" id="search_tahun" class="mt-1 block w-full" :value="request('search_tahun')" placeholder="Contoh: {{date('Y')}}" />
-                            </div>
-                            <div>
-                                <x-input-label for="search_bulan" :value="__('Filter Bulan')"/>
-                                <select name="search_bulan" id="search_bulan" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
-                                    <option value="">Semua Bulan</option>
-                                    @foreach($bulanOptions as $key => $value)
-                                        <option value="{{ $key }}" {{ request('search_bulan') == $key ? 'selected' : '' }}>{{ $value }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <x-input-label for="search_unit_kerja" :value="__('Filter Unit Kerja')"/>
-                                <select name="search_unit_kerja" id="search_unit_kerja" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
-                                    <option value="">Semua Unit Kerja</option>
-                                    @foreach($unitKerjaEselonIs as $unit)
-                                        <option value="{{ $unit->id }}" {{ request('search_unit_kerja') == $unit->id ? 'selected' : '' }}>{{ $unit->nama_unit_kerja_eselon_i }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mt-4 flex items-center gap-2">
-                            <x-primary-button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                                </svg>
-                                Filter
-                            </x-primary-button>
-                            <x-secondary-button-link href="{{ route('ikpa.index') }}">
-                                Reset Filter
-                            </x-secondary-button-link>
-                        </div>
-                    </form>
-
-                    <div class="overflow-x-auto mt-6">
-                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead class="bg-gray-50 dark:bg-gray-700">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">No</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Tahun</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bulan</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Unit Kerja</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Aspek Pelaksanaan</th>
-                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nilai Aspek</th>
-                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Konversi Bobot</th>
-                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Dispensasi SPM</th>
-                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nilai Akhir</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                @forelse ($ikpas as $index => $item)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ $ikpas->firstItem() + $index }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ $item->tahun }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ $item->bulan }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ $item->unitKerjaEselonI->nama_unit_kerja_eselon_i ?? 'N/A' }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ $item->getAspekPelaksanaanAnggaranTextAttribute() }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right">{{ number_format($item->nilai_aspek, 2, ',', '.') }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right">{{ number_format($item->konversi_bobot, 2, ',', '.') }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right">{{ number_format($item->dispensasi_spm, 2, ',', '.') }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right">{{ number_format($item->nilai_akhir, 2, ',', '.') }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
-                                            <a href="{{ route('ikpa.show', $item->id) }}" class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-200" title="Lihat">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>
-                                            </a>
-                                            <a href="{{ route('ikpa.edit', $item->id) }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-200" title="Edit">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
-                                            </a>
-                                            <form action="{{ route('ikpa.destroy', $item->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data IKPA ini?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-200" title="Hapus">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="10" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
-                                            Tidak ada data IKPA yang ditemukan. Sesuaikan filter atau <a href="{{ route('ikpa.create')}}" class="text-blue-600 dark:text-blue-400 hover:underline">tambah data baru</a>.
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="mt-4">
-                        {{ $ikpas->links() }}
-                    </div>
-                </div>
+@section('header_filters')
+    <form method="GET" action="{{ route('sekretariat-jenderal.ikpa.index') }}" class="w-full">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 items-end">
+            <div class="flex-grow">
+                <label for="tahun_filter_ikpa" class="text-sm text-gray-600 whitespace-nowrap">Tahun:</label>
+                <select name="tahun_filter" id="tahun_filter_ikpa" class="form-input mt-1 w-full bg-white">
+                    <option value="">Semua</option>
+                    @foreach($availableYears as $year)
+                        <option value="{{ $year }}" {{ request('tahun_filter') == $year ? 'selected' : '' }}>{{ $year }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="flex-grow">
+                <label for="bulan_filter_ikpa" class="text-sm text-gray-600 whitespace-nowrap">Bulan:</label>
+                <select name="bulan_filter" id="bulan_filter_ikpa" class="form-input mt-1 w-full bg-white">
+                    <option value="">Semua</option>
+                    @for ($i = 1; $i <= 12; $i++)
+                        <option value="{{ $i }}" {{ request('bulan_filter') == $i ? 'selected' : '' }}>{{ \Carbon\Carbon::create()->month($i)->isoFormat('MMMM') }}</option>
+                    @endfor
+                </select>
+            </div>
+            <div class="flex-grow">
+                <label for="unit_kerja_filter_ikpa" class="text-sm text-gray-600 whitespace-nowrap">Unit Kerja:</label>
+                <select name="unit_kerja_filter" id="unit_kerja_filter_ikpa" class="form-input mt-1 w-full bg-white">
+                    <option value="">Semua Unit Kerja</option>
+                    @foreach($unitKerjaEselonIs as $unit)
+                        <option value="{{ $unit->kode_uke1 }}" {{ request('unit_kerja_filter') == $unit->kode_uke1 ? 'selected' : '' }}>
+                            {{ Str::limit($unit->nama_unit_kerja_eselon_i, 30) }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="flex-grow">
+                <label for="aspek_pelaksanaan_anggaran_ikpa" class="text-sm text-gray-600 whitespace-nowrap">Aspek Pelaksanaan Anggaran:</label>
+                <select name="aspek_pelaksanaan_anggaran_filter" id="aspek_pelaksanaan_anggaran_ikpa" class="form-input mt-1 w-full bg-white">
+                    <option value="">Semua Aspek</option>
+                    @foreach($aspekPelaksanaanAnggaranOptions as $aspek)
+                        <option value="{{ $aspek }}" {{ request('aspek_pelaksanaan_anggaran_filter') == $aspek ? 'selected' : '' }}>
+                            {{ Str::limit($aspek, 30) }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="flex items-center space-x-2 pt-5">
+                @if(request()->filled('sort_by')) <input type="hidden" name="sort_by" value="{{ request('sort_by') }}"> @endif
+                @if(request()->filled('sort_direction')) <input type="hidden" name="sort_direction" value="{{ request('sort_direction') }}"> @endif
+                <button type="submit" class="w-full sm:w-auto px-4 py-1.5 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium">
+                    <i class="ri-filter-3-line mr-1"></i> Filter
+                </button>
+                <a href="{{ route('sekretariat-jenderal.ikpa.index') }}" class="w-full sm:w-auto px-4 py-1.5 bg-gray-200 text-gray-700 rounded-button hover:bg-gray-300 text-sm font-medium">
+                    Reset
+                </a>
             </div>
         </div>
+    </form>
+@endsection
+
+@section('content')
+<div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+        <div class="w-full sm:w-auto sm:ml-auto flex flex-col sm:flex-row items-start sm:items-center gap-2">
+            <form action="" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                @csrf
+                <div class="flex-grow">
+                    <input type="file" name="excel_file" id="excel_file_sdm" required
+                           class="block w-full text-sm text-gray-500
+                                  file:mr-2 file:py-1.5 file:px-3 file:rounded-button
+                                  file:border-0 file:text-sm file:font-semibold
+                                  file:bg-green-50 file:text-green-700
+                                  hover:file:bg-green-100 form-input p-0.5 h-full border border-gray-300">
+                </div>
+                <button type="submit" class="px-3 py-2 bg-green-600 text-white rounded-button hover:bg-green-700 text-sm font-medium flex items-center justify-center whitespace-nowrap">
+                    <i class="ri-upload-2-line mr-1"></i> Impor Data
+                </button>
+            </form>
+             <a href="MASUKKAN_LINK_ONEDRIVE_FORMAT_SDM_PELATIHAN_DISINI"
+               target="_blank"
+               class="px-3 py-2 bg-blue-500 text-white rounded-button hover:bg-blue-600 text-sm font-medium flex items-center justify-center whitespace-nowrap w-full sm:w-auto mt-2 sm:mt-0">
+                <i class="ri-download-2-line mr-1"></i> Unduh Format
+            </a>
+            <a href="{{ route('sekretariat-jenderal.ikpa.create') }}" class="w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium whitespace-nowrap mt-2 sm:mt-0">
+                <i class="ri-add-line mr-1"></i> Tambah Data Pelatihan
+            </a>
+        </div>
     </div>
-</x-app-layout>
+
+    @if (session('import_errors'))
+        <div class="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-md text-sm">
+            <strong class="font-bold">Beberapa data gagal diimpor:</strong>
+            <ul class="mt-1 list-disc list-inside text-xs">
+                @foreach (session('import_errors') as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+    @if (session('error') && !session('import_errors'))
+        <div class="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-md text-sm">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 border border-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        {!! sortableLinkIkpa('tahun', 'Tahun', $sortBy, $sortDirection, $requestFilters) !!}
+                    </th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        {!! sortableLinkIkpa('bulan', 'Bulan', $sortBy, $sortDirection, $requestFilters) !!}
+                    </th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        {!! sortableLinkIkpa('kode_unit_kerja_eselon_i', 'Unit Kerja', $sortBy, $sortDirection, $requestFilters) !!}
+                    </th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        {!! sortableLinkIkpa('aspek_pelaksanaan_anggaran', 'Aspek Pelaksanaan Anggaran', $sortBy, $sortDirection, $requestFilters) !!}
+                    </th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        {!! sortableLinkIkpa('nilai_aspek', 'Nilai Aspek', $sortBy, $sortDirection, $requestFilters) !!}
+                    </th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        {!! sortableLinkIkpa('konversi_bobot', 'Koversi Bobot', $sortBy, $sortDirection, $requestFilters) !!}
+                    </th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        {!! sortableLinkIkpa('dispensasi_spm', 'Dispensasi SPM', $sortBy, $sortDirection, $requestFilters) !!}
+                    </th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        {!! sortableLinkIkpa('nilai_akhir', 'Nilai Akhir', $sortBy, $sortDirection, $requestFilters) !!}
+                    </th>
+                    <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                @forelse ($indikatorKinerjaPelaksanaanAnggarans as $index => $item)
+                    <tr>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $indikatorKinerjaPelaksanaanAnggarans->firstItem() + $index }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->tahun }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ \Carbon\Carbon::create()->month($item->bulan)->isoFormat('MMMM') }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->unitKerjaEselonI->nama_unit_kerja_eselon_i ?? $item->kode_unit_kerja_eselon_i }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->aspek_pelaksanaan_anggaran}}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->nilai_aspek}}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->konversi_bobot}}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->dispensasi_spm}}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->nilai_akhir}}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-center">
+                            <div class="flex items-center justify-center space-x-2">
+                                <a href="{{ route('sekretariat-jenderal.ikpa.edit', $item->id) }}" class="text-blue-600 hover:text-blue-800" title="Edit">
+                                    <i class="ri-pencil-line text-base"></i>
+                                </a>
+                                <form action="{{ route('sekretariat-jenderal.ikpa.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data indek kinerja pelaksanaan anggaran ini?');" style="display: inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-600 hover:text-red-800" title="Hapus">
+                                        <i class="ri-delete-bin-line text-base"></i>
+                                    </button>
+                                </form>
+                                {{-- <a href="{{ route('sekretariat-jenderal.sdm-mengikuti-pelatihan.show', $item->id) }}" class="text-gray-500 hover:text-gray-700" title="Lihat Detail">
+                                    <i class="ri-eye-line text-base"></i>
+                                </a> --}}
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="8" class="px-4 py-10 text-center text-sm text-gray-500">
+                            <div class="flex flex-col items-center">
+                                <i class="ri-inbox-2-line text-4xl text-gray-400 mb-2"></i>
+                                Tidak ada data indikator kinerja pelaksanaan anggaran ditemukan.
+                            </div>
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+    <div class="mt-6">
+        {{ $indikatorKinerjaPelaksanaanAnggarans->appends(request()->except('page'))->links('vendor.pagination.tailwind') }}
+    </div>
+</div>
+@endsection
+
+@push('scripts')
+<script>
+
+</script>
+@endpush

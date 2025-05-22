@@ -221,6 +221,7 @@
                                         ['name' => 'Monev monitoring media', 'route' => 'sekretariat-jenderal.monev-monitoring-media.index', 'icon' => 'ri-rss-line', 'roles' => [App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN]],
                                         ['name' => 'Lulusan Polteknaker bekerja', 'route' => 'sekretariat-jenderal.lulusan-polteknaker-bekerja.index', 'icon' => 'ri-user-star-line', 'roles' => [App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN]],
                                         ['name' => 'SDM mengikuti pelatihan', 'route' => 'sekretariat-jenderal.sdm-mengikuti-pelatihan.index', 'icon' => 'ri-team-line', 'roles' => [App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN]],
+                                        ['name' => 'Indikator Kinerja Pelaksanaan Anggaran', 'route' => 'sekretariat-jenderal.ikpa.index', 'icon' => 'ri-money-dollar-circle-line', 'roles' => [App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN]],
                                     ]
                                 ],
                                 'Binapenta' => [

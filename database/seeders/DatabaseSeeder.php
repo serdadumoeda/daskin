@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
             JumlahRegulasiBaruSeeder::class,
             JumlahPenangananKasusSeeder::class,
             PenyelesaianBmnSeeder::class,
-            // IKPASeeder::class, // Dilewati
+            IKPASeeder::class,
             PersentaseKehadiranSeeder::class,
             MonevMonitoringMediaSeeder::class,
             LulusanPolteknakerBekerjaSeeder::class,
@@ -46,21 +46,21 @@ class DatabaseSeeder extends Seeder
             PerusahaanMenerapkanSusuSeeder::class,
 
             // Seeder  Binapenta
-            JumlahPenempatanKemnakerSeeder::class, 
-            JumlahLowonganPaskerSeeder::class, 
-            JumlahTkaDisetujuiSeeder::class, 
-            PersetujuanRptkaSeeder::class, 
+            JumlahPenempatanKemnakerSeeder::class,
+            JumlahLowonganPaskerSeeder::class,
+            JumlahTkaDisetujuiSeeder::class,
+            PersetujuanRptkaSeeder::class,
 
             // Seeder  Binalavotas
-            JumlahKepesertaanPelatihanSeeder::class, 
-            JumlahSertifikasiKompetensiSeeder::class, 
+            JumlahKepesertaanPelatihanSeeder::class,
+            JumlahSertifikasiKompetensiSeeder::class,
 
             // Seeder  Barenbang
             JumlahKajianRekomendasiSeeder::class,
             AplikasiIntegrasiSiapkerjaSeeder::class,
             DataKetenagakerjaanSeeder::class,
-            
-            
+
+
             // JumlahLowonganPaskerSeeder::class,
             // PersetujuanRptkaSeeder::class,
         ]); // Akhir dari array $this->call
