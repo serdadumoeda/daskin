@@ -3,192 +3,245 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Models\User; 
-use App\Models\ProgressTemuanBpk;
-use App\Models\ProgressTemuanInternal;
-use App\Models\ProgressMou;
-use App\Models\JumlahRegulasiBaru;
-use App\Models\JumlahPenangananKasus;
-use App\Models\PenyelesaianBmn;
-use App\Models\PersentaseKehadiran;
-use App\Models\MonevMonitoringMedia;
-use App\Models\LulusanPolteknakerBekerja;
-use App\Models\SdmMengikutiPelatihan;
-use App\Models\JumlahPenempatanKemnaker;
-use App\Models\JumlahLowonganPasker;
-use App\Models\JumlahTkaDisetujui;
-use App\Models\JumlahKepesertaanPelatihan;
-use App\Models\JumlahSertifikasiKompetensi;
-use App\Models\PelaporanWlkpOnline;
-use App\Models\PengaduanPelanggaranNorma;
-use App\Models\PenerapanSmk3;
-use App\Models\SelfAssessmentNorma100;
-use App\Models\JumlahPhk;
-use App\Models\PerselisihanDitindaklanjuti;
-use App\Models\MediasiBerhasil;
-use App\Models\PerusahaanMenerapkanSusu;
-use App\Models\JumlahKajianRekomendasi;
-use App\Models\DataKetenagakerjaan;
-use App\Models\AplikasiIntegrasiSiapkerja;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
+// Model-model yang digunakan
+use App\Models\JumlahPenempatanKemnaker;
+use App\Models\JumlahKepesertaanPelatihan;
+use App\Models\JumlahRegulasiBaru;
+use App\Models\AplikasiIntegrasiSiapkerja;
+use App\Models\DataKetenagakerjaan;
+
 class MainDashboardController extends Controller
 {
-    // Fungsi untuk mendapatkan nama lengkap unit kerja
-    private function getUnitKerjaFullNamesMapping()
-    {
-        return [
-            'itjen' => 'Inspektorat Jenderal',
-            'sekjen' => 'Sekretariat Jenderal',
-            'binapenta' => 'Direktorat Jenderal Pembinaan Penempatan Tenaga Kerja dan Perluasan Kesempatan Kerja',
-            'binalavotas' => 'Direktorat Jenderal Pembinaan Pelatihan Vokasi dan Produktivitas',
-            'binwasnaker' => 'Direktorat Jenderal Pembinaan Pengawasan Ketenagakerjaan dan Keselamatan dan Kesehatan Kerja',
-            'phi' => 'Direktorat Jenderal Pembinaan Hubungan Industrial dan Jaminan Sosial Tenaga Kerja',
-            'barenbang' => 'Badan Perencanaan dan Pengembangan Ketenagakerjaan',
-        ];
-    }
+    const STATUS_LULUS_PELATIHAN = 1; // Asumsi nilai 1 berarti LULUS
 
     public function index(Request $request)
     {
-        $user = Auth::user();
-        $currentYear = date('Y');
-        $selectedYear = $request->input('year_filter', $currentYear);
-        // Pastikan selectedMonth adalah integer jika ada, atau null jika tidak.
-        $selectedMonth = $request->filled('month_filter') ? (int)$request->input('month_filter') : null;
+        $selectedYear = $request->input('tahun', Carbon::now()->year);
+        $selectedMonth = $request->input('bulan'); 
 
-        // PERUBAHAN LOGIKA DIMULAI DI SINI
-        // Role Eselon I diarahkan ke dashboard masing-masing
-        // Selain Superadmin dan Read-only roles
-        if (
-            !$user->isSuperAdmin() &&
-            !$user->isReadOnlyUser() // Menggunakan helper isReadOnlyUser() dari User Model
-        ) {
-            if ($user->isItjen()) return redirect()->route('inspektorat.dashboard', $request->query());
-            if ($user->isSekjen()) return redirect()->route('sekretariat-jenderal.dashboard', $request->query());
-            if ($user->isBinapenta()) return redirect()->route('binapenta.dashboard', $request->query());
-            if ($user->isBinalavotas()) return redirect()->route('binalavotas.dashboard', $request->query());
-            if ($user->isBinwasnaker()) return redirect()->route('binwasnaker.dashboard', $request->query());
-            if ($user->isPhi()) return redirect()->route('phi.dashboard', $request->query());
-            if ($user->isBarenbang()) return redirect()->route('barenbang.dashboard', $request->query());
-            
-            // Fallback jika ada role non-Superadmin, non-ReadOnly, dan non-Eselon I
-            // (seharusnya tidak terjadi jika role didefinisikan dengan baik)
-            // atau jika view dashboard.default memang ada untuk role tertentu.
-            if (view()->exists('dashboard.default')) { // Anda mungkin punya view default untuk role lain
-                 return view('dashboard.default');
-            }
-            abort(403, 'Anda tidak memiliki dashboard yang ditetapkan untuk peran ini.');
-        }
+        $dashboardSummaryCards = $this->getDashboardSummaryCards($selectedYear, $selectedMonth);
 
-        // Jika user adalah SuperAdmin atau salah satu dari ReadOnly roles (menteri, wamen, staff_khusus, user),
-        // maka lanjutkan untuk menampilkan dashboards.main
+        $chartData = [];
+        // Definisikan $monthLabels di sini untuk konsistensi
+        $monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
 
-        $data = [];
-        $availableYears = collect([]);
-
-        // --- ITJEN ---
-        $queryBpk = ProgressTemuanBpk::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
-                                     ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth));
-        $data['itjen']['temuan_bpk_administratif'] = (clone $queryBpk)->sum('temuan_administratif_kasus');
-        $data['itjen']['temuan_bpk_kerugian_negara'] = (clone $queryBpk)->sum('temuan_kerugian_negara_rp');
-        $data['itjen']['total_temuan_internal'] = ProgressTemuanInternal::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->count();
-        $availableYears = $availableYears->merge(ProgressTemuanBpk::select('tahun')->distinct()->pluck('tahun'));
-        $availableYears = $availableYears->merge(ProgressTemuanInternal::select('tahun')->distinct()->pluck('tahun'));
-
-        // --- SEKJEN ---
-        $data['sekjen']['total_mou'] = ProgressMou::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->count();
-        $data['sekjen']['total_regulasi'] = JumlahRegulasiBaru::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_regulasi');
-        $data['sekjen']['total_kasus'] = JumlahPenangananKasus::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_perkara');
-        $data['sekjen']['total_lulusan_bekerja'] = LulusanPolteknakerBekerja::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_lulusan_bekerja');
-        $availableYears = $availableYears->merge(ProgressMou::select('tahun')->distinct()->pluck('tahun'));
-        $availableYears = $availableYears->merge(JumlahRegulasiBaru::select('tahun')->distinct()->pluck('tahun'));
-        $availableYears = $availableYears->merge(JumlahPenangananKasus::select('tahun')->distinct()->pluck('tahun'));
-        $availableYears = $availableYears->merge(LulusanPolteknakerBekerja::select('tahun')->distinct()->pluck('tahun'));
-
-        // --- BINAPENTA ---
-        $data['binapenta']['total_penempatan'] = JumlahPenempatanKemnaker::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah');
-        $data['binapenta']['total_lowongan_pasker'] = JumlahLowonganPasker::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_lowongan');
-        $data['binapenta']['total_tka_disetujui'] = JumlahTkaDisetujui::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_tka');
-        $availableYears = $availableYears->merge(JumlahPenempatanKemnaker::select('tahun')->distinct()->pluck('tahun'));
-        $availableYears = $availableYears->merge(JumlahLowonganPasker::select('tahun')->distinct()->pluck('tahun'));
-        $availableYears = $availableYears->merge(JumlahTkaDisetujui::select('tahun')->distinct()->pluck('tahun'));
-
-        // --- BINALAVOTAS ---
-        $data['binalavotas']['total_lulus_pelatihan'] = JumlahKepesertaanPelatihan::where('status_kelulusan', 1)
-            ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
-            ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
-            ->sum('jumlah');
-        $data['binalavotas']['total_sertifikasi'] = JumlahSertifikasiKompetensi::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
-            ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
-            ->sum('jumlah_sertifikasi');
-        $availableYears = $availableYears->merge(JumlahKepesertaanPelatihan::select('tahun')->distinct()->pluck('tahun'));
-        $availableYears = $availableYears->merge(JumlahSertifikasiKompetensi::select('tahun')->distinct()->pluck('tahun'));
-
-        // --- BINWASNAKER ---
-        $data['binwasnaker']['total_wlkp'] = PelaporanWlkpOnline::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_perusahaan_melapor');
-        $data['binwasnaker']['total_pengaduan_norma'] = PengaduanPelanggaranNorma::when($selectedYear, fn($q) => $q->where('tahun_pengaduan', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan_pengaduan', $selectedMonth))->sum('jumlah_kasus');
-        $data['binwasnaker']['total_smk3'] = PenerapanSmk3::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_perusahaan');
-        $availableYears = $availableYears->merge(PelaporanWlkpOnline::select('tahun')->distinct()->pluck('tahun'));
-        $availableYears = $availableYears->merge(PengaduanPelanggaranNorma::select('tahun_pengaduan as tahun')->distinct()->pluck('tahun'));
-        $availableYears = $availableYears->merge(PenerapanSmk3::select('tahun')->distinct()->pluck('tahun'));
-
-        // --- PHI ---
-        $data['phi']['total_phk'] = JumlahPhk::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_tk_phk');
-        $data['phi']['total_mediasi_berhasil'] = MediasiBerhasil::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_mediasi_berhasil');
-        $data['phi']['total_susu'] = PerusahaanMenerapkanSusu::when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_perusahaan_susu');
-        $availableYears = $availableYears->merge(JumlahPhk::select('tahun')->distinct()->pluck('tahun'));
-        $availableYears = $availableYears->merge(MediasiBerhasil::select('tahun')->distinct()->pluck('tahun'));
-        $availableYears = $availableYears->merge(PerusahaanMenerapkanSusu::select('tahun')->distinct()->pluck('tahun'));
-
-        // --- BARENBANG ---
-        $data['barenbang']['total_kajian'] = JumlahKajianRekomendasi::where('jenis_output', 1)->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah');
-        $latestTptData = DataKetenagakerjaan::where('tahun', $selectedYear)
-                                            ->orderBy('bulan', 'desc')
-                                            ->first();
-        $data['barenbang']['latest_tpt'] = $latestTptData ? $latestTptData->tpak : 0;
-        $data['barenbang']['latest_tpt_month'] = $latestTptData ? Carbon::create()->month((int)$latestTptData->bulan)->format('F') : null; // Format nama bulan
-        $data['barenbang']['total_aplikasi_integrasi'] = AplikasiIntegrasiSiapkerja::where('status_integrasi', 1)->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->count();
-        $availableYears = $availableYears->merge(JumlahKajianRekomendasi::select('tahun')->distinct()->pluck('tahun'));
-        $availableYears = $availableYears->merge(DataKetenagakerjaan::select('tahun')->distinct()->pluck('tahun'));
-        $availableYears = $availableYears->merge(AplikasiIntegrasiSiapkerja::select('tahun')->distinct()->pluck('tahun'));
-
-        $uniqueAvailableYears = $availableYears->unique()->filter()->sortDesc();
-        if ($uniqueAvailableYears->isEmpty()) {
-             $uniqueAvailableYears = collect([$selectedYear ?: $currentYear]);
-        }
-
-        // Chart Data (Contoh: Total Penempatan per Bulan untuk Binapenta)
-        $penempatanPerBulan = JumlahPenempatanKemnaker::select('bulan', DB::raw('SUM(jumlah) as total'))
-            ->where('tahun', $selectedYear)
-            ->groupBy('bulan')
-            ->orderBy('bulan')
-            ->pluck('total', 'bulan');
-
-        $chartLabelsBulan = [];
-        $penempatanChartDataValues = [];
-        for ($m = 1; $m <= 12; $m++) {
-            $chartLabelsBulan[] = Carbon::create()->month($m)->format('M'); // Nama bulan singkat (Jan, Feb, dst.)
-            $penempatanChartDataValues[] = $penempatanPerBulan->get($m, 0);
-        }
-        $data['binapenta']['charts']['penempatan_tren'] = [
-            'labels' => $chartLabelsBulan,
-            'values' => $penempatanChartDataValues,
+        // 1. Chart Penempatan Tenaga Kerja
+        $penempatanData = $this->getPenempatanTenagaKerjaData($selectedYear, $selectedMonth);
+        $chartData['penempatan'] = [
+            'title' => 'Penempatan Tenaga Kerja',
+            'akumulasi_total' => number_format($penempatanData['akumulasi_total']) . ' Orang',
+            'tren_bulanan' => $penempatanData['tren_bulanan'],
+            'tren_akumulasi_bulanan' => $penempatanData['tren_akumulasi_bulanan'],
+            'icon' => 'ri-briefcase-4-line',
+            'icon_bg_color' => 'bg-icon-summary-1-bg',
+            'icon_text_color' => 'text-icon-summary-1-text',
+            'bar_color' => '#ffab00', 
+            'line_color' => '#d97706', 
         ];
 
-        // Pastikan view 'dashboards.main' ada di resources/views/dashboards/main.blade.php
-        if (!view()->exists('dashboards.main')) {
-            abort(500, 'View dashboards.main tidak ditemukan.');
-        }
+        // 2. Chart Peserta Pelatihan Lulus
+        $pelatihanData = $this->getPesertaPelatihanData($selectedYear, $selectedMonth);
+        $chartData['pelatihan'] = [
+            'title' => 'Peserta Pelatihan Lulus',
+            'akumulasi_total' => number_format($pelatihanData['akumulasi_total']) . ' Peserta',
+            'tren_bulanan' => $pelatihanData['tren_bulanan'],
+            'tren_akumulasi_bulanan' => $pelatihanData['tren_akumulasi_bulanan'],
+            'icon' => 'ri-team-line',
+            'icon_bg_color' => 'bg-icon-summary-2-bg',
+            'icon_text_color' => 'text-icon-summary-2-text',
+            'bar_color' => '#f5365c', 
+            'line_color' => '#c026d3', 
+        ];
+        
+        // 3. Chart Penerbitan Regulasi
+        $regulasiData = $this->getPenerbitanRegulasiData($selectedYear, $selectedMonth);
+        $chartData['regulasi'] = [
+            'title' => 'Penerbitan Regulasi Baru',
+            'akumulasi_total' => number_format($regulasiData['akumulasi_total']) . ' Regulasi',
+            'tren_bulanan' => $regulasiData['tren_bulanan'],
+            'tren_akumulasi_bulanan' => $regulasiData['tren_akumulasi_bulanan'],
+            'icon' => 'ri-file-list-3-line',
+            'icon_bg_color' => 'bg-icon-summary-3-bg',
+            'icon_text_color' => 'text-icon-summary-3-text',
+            'bar_color' => '#1172ef', 
+            'line_color' => '#2563eb', 
+        ];
+        
+        return view('dashboards.main', compact(
+            'selectedYear',
+            'selectedMonth',
+            'dashboardSummaryCards',
+            'chartData',
+            'monthLabels' // Pastikan $monthLabels selalu dikirim
+        ));
+    }
 
-        return view('dashboards.main', [
-            'data' => $data,
-            'availableYears' => $uniqueAvailableYears,
-            'selectedYear' => $selectedYear,
-            'selectedMonth' => $selectedMonth,
-            'tptDataMonth' => $data['barenbang']['latest_tpt_month'] ?? null,
-            'unitKerjaFullNames' => $this->getUnitKerjaFullNamesMapping(),
-        ]);
+    private function getDashboardSummaryCards($year, $month)
+    {
+        $totalPenempatan = JumlahPenempatanKemnaker::query()
+            ->when($year, fn ($q) => $q->where('tahun', $year))
+            ->when($month, fn ($q) => $q->where('bulan', $month))
+            ->sum(DB::raw('COALESCE(jumlah, 0)'));
+
+        $totalLulusPelatihan = JumlahKepesertaanPelatihan::query()
+            ->where('status_kelulusan', self::STATUS_LULUS_PELATIHAN) 
+            ->when($year, fn ($q) => $q->where('tahun', $year))
+            ->when($month, fn ($q) => $q->where('bulan', $month))
+            ->sum(DB::raw('COALESCE(jumlah, 0)'));
+
+        $tptModel = DataKetenagakerjaan::query()
+            ->where('tahun', $year)
+            ->when($month, fn ($q) => $q->where('bulan', $month))
+            ->orderBy('bulan', 'desc')
+            ->first();
+        $tpt = $tptModel ? number_format($tptModel->tpt_persen, 2) . '%' : 'N/A';
+
+        $totalAplikasiTerintegrasi = AplikasiIntegrasiSiapkerja::query()
+            ->when($year, fn ($q) => $q->where('tahun', $year))
+            // ->where('status_integrasi', 1) // Opsional: filter status
+            ->count();
+
+        return [
+            [
+                'title' => 'Total Penempatan Kerja',
+                'value' => number_format($totalPenempatan),
+                'unit' => 'Orang',
+                'icon' => 'ri-group-line',
+                'icon_bg_color' => 'bg-icon-summary-1-bg',
+                'icon_text_color' => 'text-icon-summary-1-text',
+            ],
+            [ 
+                'title' => 'Tingkat Pengangguran Terbuka',
+                'value' => $tpt,
+                'unit' => '',
+                'icon' => 'ri-line-chart-line',
+                'icon_bg_color' => 'bg-icon-summary-4-bg', 
+                'icon_text_color' => 'text-icon-summary-4-text',
+            ],
+            [
+                'title' => 'Pelatihan Total Lulus',
+                'value' => number_format($totalLulusPelatihan),
+                'unit' => 'Peserta',
+                'icon' => 'ri-graduation-cap-line',
+                'icon_bg_color' => 'bg-icon-summary-2-bg',
+                'icon_text_color' => 'text-icon-summary-2-text',
+            ],
+            [ 
+                'title' => 'Total Aplikasi Terintegrasi',
+                'value' => number_format($totalAplikasiTerintegrasi),
+                'unit' => 'Aplikasi',
+                'icon' => 'ri-computer-line',
+                'icon_bg_color' => 'bg-icon-summary-5-bg',
+                'icon_text_color' => 'text-icon-summary-5-text',
+            ],
+        ];
+    }
+
+    private function getPenempatanTenagaKerjaData($year, $monthFilter)
+    {
+        $query = JumlahPenempatanKemnaker::query()->where('tahun', $year);
+        
+        $akumulasiTotalQuery = clone $query;
+        if ($monthFilter) {
+            $akumulasiTotalQuery->where('bulan', '<=', $monthFilter);
+        }
+        $akumulasiTotal = $akumulasiTotalQuery->sum(DB::raw('COALESCE(jumlah, 0)'));
+
+        $trenBulananDb = JumlahPenempatanKemnaker::query()->where('tahun', $year)
+                         ->selectRaw('bulan, SUM(COALESCE(jumlah, 0)) as total')
+                         ->groupBy('bulan')
+                         ->orderBy('bulan')
+                         ->pluck('total', 'bulan')
+                         ->all();
+        
+        $trenBulanan = $this->formatMonthlyDataForChart($trenBulananDb);
+        $trenAkumulasiBulanan = $this->calculateMonthlyAccumulation($trenBulanan);
+        
+        return [
+            'akumulasi_total' => $akumulasiTotal,
+            'tren_bulanan' => $trenBulanan,
+            'tren_akumulasi_bulanan' => $trenAkumulasiBulanan,
+        ];
+    }
+
+    private function getPesertaPelatihanData($year, $monthFilter)
+    {
+        $baseQuery = JumlahKepesertaanPelatihan::query()
+                    ->where('status_kelulusan', self::STATUS_LULUS_PELATIHAN)
+                    ->where('tahun', $year);
+        
+        $akumulasiTotalQuery = clone $baseQuery;
+        if ($monthFilter) {
+            $akumulasiTotalQuery->where('bulan', '<=', $monthFilter);
+        }
+        $akumulasiTotal = $akumulasiTotalQuery->sum(DB::raw('COALESCE(jumlah, 0)'));
+
+        $trenBulananDb = (clone $baseQuery) 
+                         ->selectRaw('bulan, SUM(COALESCE(jumlah, 0)) as total')
+                         ->groupBy('bulan')
+                         ->orderBy('bulan')
+                         ->pluck('total', 'bulan')
+                         ->all();
+
+        $trenBulanan = $this->formatMonthlyDataForChart($trenBulananDb);
+        $trenAkumulasiBulanan = $this->calculateMonthlyAccumulation($trenBulanan);
+
+        return [
+            'akumulasi_total' => $akumulasiTotal,
+            'tren_bulanan' => $trenBulanan,
+            'tren_akumulasi_bulanan' => $trenAkumulasiBulanan,
+        ];
+    }
+    
+    private function getPenerbitanRegulasiData($year, $monthFilter)
+    {
+        $query = JumlahRegulasiBaru::query()->where('tahun', $year);
+        
+        $akumulasiTotalQuery = clone $query;
+        if ($monthFilter) {
+            $akumulasiTotalQuery->where('bulan', '<=', $monthFilter);
+        }
+        $akumulasiTotal = $akumulasiTotalQuery->sum(DB::raw('COALESCE(jumlah_regulasi, 0)'));
+
+        $trenBulananDb = JumlahRegulasiBaru::query()->where('tahun', $year)
+                         ->selectRaw('bulan, SUM(COALESCE(jumlah_regulasi, 0)) as total')
+                         ->groupBy('bulan')
+                         ->orderBy('bulan')
+                         ->pluck('total', 'bulan')
+                         ->all();
+
+        $trenBulanan = $this->formatMonthlyDataForChart($trenBulananDb);
+        $trenAkumulasiBulanan = $this->calculateMonthlyAccumulation($trenBulanan);
+        
+        return [
+            'akumulasi_total' => $akumulasiTotal,
+            'tren_bulanan' => $trenBulanan,
+            'tren_akumulasi_bulanan' => $trenAkumulasiBulanan,
+        ];
+    }
+
+    private function formatMonthlyDataForChart(array $dataFromDb): array
+    {
+        $monthlyData = array_fill(0, 12, 0); // Indeks 0-11 untuk JavaScript (Jan-Des)
+        foreach ($dataFromDb as $bulanDb => $total) { // $bulanDb adalah 1-12 dari database
+            if ($bulanDb >= 1 && $bulanDb <= 12) {
+                $monthlyData[(int)$bulanDb - 1] = (float)$total; // Konversi ke indeks 0-11
+            }
+        }
+        return $monthlyData; // Tidak perlu array_values() lagi karena sudah 0-indexed
+    }
+
+    private function calculateMonthlyAccumulation(array $monthlyData): array
+    {
+        $accumulated = [];
+        $currentSum = 0;
+        foreach ($monthlyData as $value) { // $monthlyData sudah 0-indexed
+            $currentSum += $value;
+            $accumulated[] = $currentSum;
+        }
+        return $accumulated;
     }
 }

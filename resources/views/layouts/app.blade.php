@@ -6,74 +6,114 @@
     <title>@yield('title', 'Kemnaker Dashboard')</title>
     <link rel="icon" href="{{ asset('image/logo/logo_kemnaker.svg') }}" type="image/svg+xml">
 
-    {{-- ... (Script & CSS lainnya tetap sama) ... --}}
-    <script src="https://cdn.tailwindcss.com/3.4.1"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#3b82f6',
-                        secondary: '#64748b',
-                    },
-                    borderRadius: {'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}
-                }
-            }
-        }
-    </script>
+    {{-- HAPUS BLOK SCRIPT TAILWIND CONFIG DARI SINI --}}
+    {{-- <script src="https://cdn.tailwindcss.com/3.4.1"></script> --}}
+    {{-- <script>
+        // Konfigurasi inline Tailwind sudah dipindahkan ke tailwind.config.js
+    </script> --}}
+
+    {{-- Jika Anda menggunakan Vite (sesuai package.json), pastikan CSS di-build dan di-include melalui Vite --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js']) {{-- Pastikan app.css mengimpor Tailwind --}}
+
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.min.css">
+    {{-- Jika ingin menggunakan Font Awesome seperti contoh, uncomment baris berikut dan pastikan sudah terinstall --}}
+    {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
 
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f9fafb; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa; /* Warna latar body dari contoh (atau bisa juga theme('colors.gray.50') dari Tailwind) */
+        }
+
+        /* Sidebar Styling Baru menggunakan theme() dari tailwind.config.js */
+        /* Tidak perlu kelas .sidebar-custom-bg atau .sidebar-custom-border-color lagi jika kelas Tailwind langsung dipakai di HTML */
+
+        /* Styling untuk Tombol Induk Menu */
+        .sidebar-parent-button {
+            /* color: theme('colors.sidebar-text'); // Akan diatur oleh kelas text-sidebar-text */
+            transition: background-color 0.3s ease, color 0.3s ease;
+            border-left: 3px solid theme('colors.transparent'); /* Placeholder untuk indikator */
+            padding-left: calc(1rem - 3px); /* 1rem (px-4) - 3px (border) */
+        }
+        .sidebar-parent-button:hover {
+            background-color: theme('colors.sidebar-active-bg');
+            color: theme('colors.white');
+            border-left-color: theme('colors.sidebar-active-indicator');
+        }
         .sidebar-parent-button.active-parent,
         .sidebar-parent-button.expanded {
-             background-color: rgba(59, 130, 246, 0.05);
-             color: #3b82f6;
+             background-color: theme('colors.sidebar-active-bg');
+             color: theme('colors.white');
+             border-left-color: theme('colors.sidebar-active-indicator');
         }
         .sidebar-parent-button.active-parent .main-menu-icon,
         .sidebar-parent-button.expanded .main-menu-icon {
-             color: #3b82f6;
+             color: theme('colors.white');
         }
          .sidebar-parent-button.active-parent > div > span:first-child,
          .sidebar-parent-button.expanded > div > span:first-child {
             font-weight: 600;
         }
+
+        /* Styling untuk Item Submenu */
+        .sidebar-submenu-item {
+            /* color: theme('colors.sidebar-text'); // Akan diatur oleh kelas text-sidebar-text */
+            padding-left: calc(1.5rem - 3px); /* pl-6 default, dikurangi border */
+            border-left: 3px solid theme('colors.transparent'); /* Placeholder untuk indikator */
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+         .sidebar-submenu-item:hover {
+            background-color: theme('colors.sidebar-active-bg');
+            color: theme('colors.white');
+        }
         .sidebar-submenu-item.active {
-            background-color: rgba(59, 130, 246, 0.1);
-            color: #3b82f6;
-            font-weight: 500;
+            background-color: theme('colors.sidebar-active-bg');
+            color: theme('colors.white');
+            font-weight: 500; /* atau 600 agar lebih tebal */
+            border-left-color: theme('colors.sidebar-active-indicator');
         }
-        .sidebar-parent-button:hover:not(.active-parent):not(.expanded) {
-            background-color: rgba(59, 130, 246, 0.03);
+
+        /* Penyesuaian padding karena border kiri ditambahkan */
+        .sidebar-parent-button.active-parent,
+        .sidebar-parent-button.expanded {
+             padding-left: calc(1rem - 3px); /* px-4 */
         }
-         .sidebar-submenu-item:hover:not(.active) {
-            background-color: rgba(59, 130, 246, 0.03);
+         .sidebar-submenu-item.active {
+            /* Jika pl-6 (1.5rem) adalah target awal submenu */
+            padding-left: calc(1.5rem - 3px);
         }
+         .sidebar-submenu-item.active.pl-10 { /* Jika ada submenu yang lebih dalam (2.5rem) */
+            padding-left: calc(2.5rem - 3px);
+        }
+
+
         .submenu-list {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease-in-out;
+            background-color: rgba(0,0,0,0.1); /* Latar submenu sedikit berbeda */
         }
         .submenu-list.expanded {
             max-height: 1000px; /* Adjust as needed */
         }
         .form-input {
              border-width: 1px;
-             border-color: #d1d5db;
+             border-color: #d1d5db; /* theme('colors.gray.300') */
              border-radius: theme('borderRadius.button');
              box-shadow: theme('boxShadow.sm');
         }
         .form-input:focus {
             border-color: theme('colors.primary');
             --tw-ring-color: theme('colors.primary');
-            box-shadow: 0 0 0 2px theme('ringOpacity.50', 'colors.primary');
+            /* box-shadow: 0 0 0 2px theme('ringOpacity.50', 'colors.primary'); */ /* Tailwind v2 syntax */
+            box-shadow: 0 0 0 2px theme('colors.primary / 50%'); /* Tailwind v3 syntax for ring opacity */
         }
         .chart-container {
             width: 100%;
@@ -81,30 +121,35 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #f3f4f6;
+            background-color: #f3f4f6; /* theme('colors.gray.100') */
             border-radius: theme('borderRadius.DEFAULT');
-            color: #9ca3af;
+            color: #9ca3af; /* theme('colors.gray.400') */
             font-size: theme('fontSize.xs');
         }
     </style>
     @stack('styles')
 </head>
-<body>
+<body class="font-inter bg-gray-50"> {{-- Menggunakan kelas Tailwind global --}}
     <div class="flex h-screen overflow-hidden bg-gray-100">
-        <div id="sidebar" class="w-64 bg-white shadow-md flex flex-col h-full
+        {{-- Sidebar --}}
+        <div id="sidebar" class="bg-sidebar-bg w-64 shadow-md flex flex-col h-full
                                 fixed inset-y-0 left-0 z-30
                                 transform -translate-x-full lg:translate-x-0
                                 transition-transform duration-300 ease-in-out
                                 lg:relative">
-            <div class="p-4 flex items-center justify-between border-b border-gray-100">
+            {{-- Sidebar Header --}}
+            <div class="p-4 flex items-center justify-between border-b border-sidebar-border-color">
                 <a href="{{ route('dashboard') }}" class="flex items-center">
-                        <img src="{{ asset('image/logo/logo_daskin.png') }}" alt="Logo Kemnaker" class="h-13 mr-5">
+                         <!-- <img src="{{ asset('image/logo/logo_daskin_white.png') }}" alt="Logo Aplikasi" class="h-6 mr-2">  -->
+                         <span class="text-white font-semibold text-lg">Kemnaker Dashboard</span>
                 </a>
-                <button id="closeSidebar" class="lg:hidden text-gray-500 hover:text-primary">
+                <button id="closeSidebar" class="lg:hidden text-sidebar-text hover:text-white">
                     <i class="ri-close-line text-2xl"></i>
                 </button>
             </div>
-            <div class="overflow-y-auto flex-1">
+
+            {{-- Navigasi Menu --}}
+            <div class="overflow-y-auto flex-1 pt-2">
                 <nav class="py-2">
                     @php
                         $currentRouteName = Route::currentRouteName();
@@ -126,7 +171,6 @@
                             }
                         }
                         
-                        // Definisikan role read-only untuk kemudahan
                         $readOnlySpecificRoles = [
                             App\Models\User::ROLE_MENTERI,
                             App\Models\User::ROLE_WAKIL_MENTERI,
@@ -134,11 +178,10 @@
                             App\Models\User::ROLE_USER,
                         ];
 
-                        $sidebarMenu = [
+                        $sidebarMenu = [ // Susunan menu tetap sama
                             'Dashboard Utama' => [
                                 'icon' => 'ri-home-smile-line',
                                 'route' => 'dashboard',
-                                // Semua role yang terautentikasi bisa melihat Dashboard Utama
                                 'roles' => array_merge(
                                     [App\Models\User::ROLE_SUPERADMIN, App\Models\User::ROLE_ITJEN, App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_BINAPENTA, App\Models\User::ROLE_BINALAVOTAS, App\Models\User::ROLE_BINWASNAKER, App\Models\User::ROLE_PHI, App\Models\User::ROLE_BARENBANG],
                                     $readOnlySpecificRoles
@@ -147,18 +190,15 @@
                             'Inspektorat Jenderal' => [
                                 'icon' => 'ri-government-line',
                                 'route' => 'inspektorat.dashboard',
-                                // Superadmin, Itjen, dan semua ReadOnlyUser bisa melihat parent menu ini
                                 'roles' => array_merge([App\Models\User::ROLE_ITJEN, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
                                 'submenus' => [
-                                    // Submenu Dashboard bisa dilihat oleh Itjen, Superadmin, dan ReadOnlyUser
                                     ['name' => 'Dashboard Itjen', 'route' => 'inspektorat.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['inspektorat.dashboard'], 'roles' => array_merge([App\Models\User::ROLE_ITJEN, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles)],
-                                    // Submenu CRUD hanya untuk Itjen dan Superadmin
                                     ['name' => '% Progres Tindak Lanjut temuan BPK', 'route' => 'inspektorat.progress-temuan-bpk.index', 'icon' => 'ri-file-chart-line', 'roles' => [App\Models\User::ROLE_ITJEN, App\Models\User::ROLE_SUPERADMIN]],
                                     ['name' => '% Progres Tindak Lanjut temuan internal', 'route' => 'inspektorat.progress-temuan-internal.index', 'icon' => 'ri-file-search-line', 'roles' => [App\Models\User::ROLE_ITJEN, App\Models\User::ROLE_SUPERADMIN]],
                                 ]
                             ],
-                            'Sekretariat Jenderal' => [
-                                'icon' => 'ri-building-4-line',
+                             'Sekretariat Jenderal' => [
+                                'icon' => 'ri-building-4-line', 
                                 'route' => 'sekretariat-jenderal.dashboard',
                                 'roles' => array_merge([App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
                                 'submenus' => [
@@ -174,7 +214,7 @@
                                 ]
                             ],
                             'Binapenta' => [
-                                'icon' => 'ri-user-search-line',
+                                'icon' => 'ri-user-search-line', 
                                 'route' => 'binapenta.dashboard',
                                 'roles' => array_merge([App\Models\User::ROLE_BINAPENTA, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
                                 'submenus' => [
@@ -185,7 +225,7 @@
                                 ]
                             ],
                             'Binalavotas' => [
-                                'icon' => 'ri-graduation-cap-line',
+                                'icon' => 'ri-graduation-cap-line', 
                                 'route' => 'binalavotas.dashboard',
                                 'roles' => array_merge([App\Models\User::ROLE_BINALAVOTAS, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
                                 'submenus' => [
@@ -194,7 +234,7 @@
                                     ['name' => 'Jml Sertifikasi Kompetensi', 'route' => 'binalavotas.jumlah-sertifikasi-kompetensi.index', 'icon' => 'ri-shield-star-line', 'roles' => [App\Models\User::ROLE_BINALAVOTAS, App\Models\User::ROLE_SUPERADMIN]],
                                 ]
                             ],
-                            'Binwasnaker & K3' => [
+                            'Binwasnaker & K3' => [ 
                                 'icon' => 'ri-shield-check-line',
                                 'route' => 'binwasnaker.dashboard',
                                 'roles' => array_merge([App\Models\User::ROLE_BINWASNAKER, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
@@ -206,7 +246,7 @@
                                     ['name' => 'Self-Assessment Norma 100', 'route' => 'binwasnaker.self-assessment-norma100.index', 'icon' => 'ri-check-double-line', 'roles' => [App\Models\User::ROLE_BINWASNAKER, App\Models\User::ROLE_SUPERADMIN]],
                                 ]
                             ],
-                            'PHI & JAMSOS' => [
+                            'PHI & JAMSOS' => [ 
                                 'icon' => 'ri-scales-3-line',
                                 'route' => 'phi.dashboard',
                                 'roles' => array_merge([App\Models\User::ROLE_PHI, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
@@ -218,7 +258,7 @@
                                     ['name' => 'Perusahaan Penerap SUSU', 'route' => 'phi.perusahaan-menerapkan-susu.index', 'icon' => 'ri-currency-line', 'roles' => [App\Models\User::ROLE_PHI, App\Models\User::ROLE_SUPERADMIN]],
                                 ]
                             ],
-                            'Barenbang' => [
+                            'Barenbang' => [ 
                                 'icon' => 'ri-bar-chart-box-line',
                                 'route' => 'barenbang.dashboard',
                                 'roles' => array_merge([App\Models\User::ROLE_BARENBANG, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
@@ -236,7 +276,6 @@
                         @foreach ($sidebarMenu as $deptName => $deptDetails)
                             @php
                                 $canAccessParent = false;
-                                // Pengecekan untuk parent menu: jika user punya salah satu role yang didefinisikan di $deptDetails['roles']
                                 if ($user && isset($deptDetails['roles']) && is_array($deptDetails['roles'])) {
                                     foreach ($deptDetails['roles'] as $role) {
                                         if ($user->hasRole($role)) {
@@ -251,12 +290,11 @@
                                 @php
                                     $parentSlug = Str::slug($deptName);
                                     $hasActiveChild = false;
-                                    if (isset($deptDetails['route']) && Route::has($deptDetails['route']) && $currentRouteName == $deptDetails['route']) {
+                                    if (isset($deptDetails['route']) && Route::has($deptDetails['route']) && ($currentRouteName == $deptDetails['route'] || ($deptDetails['route'] === 'dashboard' && $currentRouteName === '/'))) {
                                         $hasActiveChild = true;
                                     }
                                     if (!$hasActiveChild && !empty($deptDetails['submenus'])) {
                                         foreach ($deptDetails['submenus'] as $submenu) {
-                                            // Cek apakah submenu ini boleh diakses oleh role user saat ini
                                             $canAccessSubmenu = false;
                                             if (isset($submenu['roles']) && is_array($submenu['roles'])) {
                                                 foreach($submenu['roles'] as $smRole) {
@@ -266,21 +304,7 @@
                                                     }
                                                 }
                                             } else {
-                                                // Jika submenu tidak mendefinisikan 'roles', asumsikan semua yang bisa lihat parent bisa lihat submenu ini
-                                                // ATAU defaultnya adalah role parent. Untuk kasus kita, lebih baik definisikan roles di tiap submenu.
-                                                // Untuk amannya, jika tidak ada 'roles' di submenu, kita bisa samakan dengan role parent
-                                                // atau hanya izinkan superadmin jika tidak spesifik.
-                                                // Tapi karena kita sudah tambahkan 'roles' di semua submenu penting, ini seharusnya aman.
-                                                // Jika submenu data-CRUD tidak punya 'roles', maka user read-only bisa melihatnya, ini yang kita hindari.
-                                                // Jadi, pastikan semua submenu memiliki 'roles' yang sesuai.
-                                                if (isset($deptDetails['roles']) && is_array($deptDetails['roles'])) {
-                                                    foreach ($deptDetails['roles'] as $role) { // Default ke role parent jika submenu tidak spesifik
-                                                        if ($user->hasRole($role)) {
-                                                            $canAccessSubmenu = true;
-                                                            break;
-                                                        }
-                                                    }
-                                                }
+                                                $canAccessSubmenu = true; 
                                             }
 
                                             if ($canAccessSubmenu && isSubmenuActive($submenu, $currentRouteName)) {
@@ -290,17 +314,18 @@
                                         }
                                     }
                                 @endphp
-                                <div class="mb-1 sidebar-parent-item {{ $hasActiveChild ? 'expanded active-parent' : '' }}">
+                                <div class="mb-0.5 sidebar-parent-item {{ $hasActiveChild ? 'expanded active-parent' : '' }}">
                                     <a href="{{ isset($deptDetails['route']) && Route::has($deptDetails['route']) ? route($deptDetails['route']) : '#' }}"
                                        onclick="{{ !empty($deptDetails['submenus']) && (!isset($deptDetails['route']) || $deptDetails['route'] === '#') ? "event.preventDefault(); toggleSubmenu('".$parentSlug."');" : ((!empty($deptDetails['submenus'])) ? "toggleSubmenu('".$parentSlug."');" : "") }}"
-                                       class="sidebar-parent-button flex items-center justify-between w-full px-4 py-2.5 text-gray-700 focus:outline-none">
+                                       class="sidebar-parent-button text-sidebar-text flex items-center justify-between w-full px-4 py-3 focus:outline-none">
                                         <div class="flex items-center">
-                                            <div class="w-6 h-6 flex items-center justify-center mr-2 main-menu-icon"><i class="{{ $deptDetails['icon'] }}"></i></div>
+                                            <div class="w-5 h-5 flex items-center justify-center mr-3 main-menu-icon text-lg">
+                                                <i class="{{ $deptDetails['icon'] }}"></i>
+                                            </div>
                                             <span class="text-sm">{{ $deptName }}</span>
                                         </div>
                                         @if (!empty($deptDetails['submenus']))
                                             @php
-                                                // Cek apakah ada setidaknya satu submenu yang bisa diakses user saat ini
                                                 $hasVisibleSubmenus = false;
                                                 foreach ($deptDetails['submenus'] as $submenu) {
                                                     if (isset($submenu['roles']) && is_array($submenu['roles'])) {
@@ -310,20 +335,20 @@
                                                                 break 2;
                                                             }
                                                         }
-                                                    } else { // Jika tidak ada roles di submenu, asumsikan bisa dilihat jika parent bisa dilihat
+                                                    } else { 
                                                        $hasVisibleSubmenus = true; break;
                                                     }
                                                 }
                                             @endphp
                                             @if($hasVisibleSubmenus)
-                                                <i id="arrow-{{ $parentSlug }}" class="arrow-icon ri-arrow-right-s-line text-lg text-gray-500 transition-transform duration-300 {{ $hasActiveChild ? 'transform rotate-90' : '' }}"></i>
+                                                <i id="arrow-{{ $parentSlug }}" class="arrow-icon ri-arrow-right-s-line text-xl text-sidebar-text transition-transform duration-300 {{ $hasActiveChild ? 'transform rotate-90' : '' }}"></i>
                                             @endif
                                         @endif
                                     </a>
 
                                     @if (!empty($deptDetails['submenus']))
                                         <div class="submenu-list {{ $hasActiveChild ? 'expanded' : '' }}" id="submenu-{{ $parentSlug }}">
-                                            <div class="pt-1 pb-2">
+                                            <div class="pt-1 pb-1">
                                                 @foreach ($deptDetails['submenus'] as $submenu)
                                                     @php
                                                         $canAccessThisSubmenu = false;
@@ -335,14 +360,7 @@
                                                                 }
                                                             }
                                                         } else {
-                                                            // Default behavior jika 'roles' tidak ada di submenu
-                                                            // Anda bisa set $canAccessThisSubmenu = true; jika ingin semua submenu terlihat jika parent terlihat
-                                                            // atau $canAccessThisSubmenu = $user->isSuperAdmin(); jika hanya superadmin
-                                                            // Untuk amannya, jika tidak didefinisikan, anggap bisa diakses jika parent bisa diakses (sesuai $canAccessParent)
-                                                            // Namun, karena kita sudah mendefinisikan 'roles' di semua submenu penting, ini seharusnya aman.
-                                                            // Jika submenu adalah link CRUD, harus ada 'roles' yang spesifik.
-                                                            // Untuk link dashboard, kita sudah tambahkan $readOnlySpecificRoles.
-                                                            $canAccessThisSubmenu = true; // Default jika tidak ada roles spesifik di submenu
+                                                            $canAccessThisSubmenu = true; 
                                                         }
                                                     @endphp
 
@@ -351,12 +369,12 @@
                                                             <div class="px-6 py-1 text-xs font-semibold text-gray-400 uppercase mt-1">{{ $submenu['name'] }}</div>
                                                         @else
                                                             <a href="{{ $submenu['route'] === '#' ? '#' : (Route::has($submenu['route']) ? route($submenu['route']) : '#!') }}"
-                                                               class="sidebar-submenu-item flex items-center w-full py-1.5 pr-4
-                                                                      {{ (isset($submenu['is_sub_item']) && $submenu['is_sub_item']) ? 'pl-10' : 'pl-6' }}
-                                                                      text-xs text-gray-600 hover:text-primary
+                                                               class="sidebar-submenu-item text-sidebar-text flex items-center w-full py-2.5 pr-4
+                                                                      {{ (isset($submenu['is_sub_item']) && $submenu['is_sub_item']) ? 'pl-10' : 'pl-6' }} 
+                                                                      text-xs hover:text-white
                                                                       {{ isSubmenuActive($submenu, $currentRouteName) ? 'active' : '' }}">
                                                                 @if(isset($submenu['icon']))
-                                                                <div class="w-5 h-5 flex items-center justify-center mr-2 opacity-75"><i class="{{ $submenu['icon'] }}"></i></div>
+                                                                <div class="w-5 h-5 flex items-center justify-center mr-2 opacity-75 text-base"><i class="{{ $submenu['icon'] }}"></i></div>
                                                                 @else
                                                                 <div class="w-5 h-5 mr-2"></div>
                                                                 @endif
@@ -374,22 +392,23 @@
                     @endif
                 </nav>
             </div>
-            {{-- ... (User Info & Logout tetap sama) ... --}}
-            <div class="p-4 border-t border-gray-100 mt-auto">
+            
+            {{-- Sidebar Footer / User Info --}}
+            <div class="p-4 border-t border-sidebar-border-color mt-auto">
                 @if (Auth::check())
                     <div class="flex items-center">
-                        <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                            <i class="ri-user-line text-gray-600"></i>
+                        <div class="w-9 h-9 rounded-full bg-sidebar-text text-sidebar-bg flex items-center justify-center text-xl mr-3">
+                             <i class="ri-user-fill"></i>
                         </div>
-                        <div class="ml-2">
-                            <div class="text-sm font-medium text-gray-700">{{ Auth::user()->name }}</div>
-                            <div class="text-xs text-gray-500">{{ Str::ucfirst(Auth::user()->role) }}</div>
+                        <div class="flex-grow">
+                            <div class="text-sm font-bold text-white">{{ Auth::user()->name }}</div>
+                            <div class="text-xs text-sidebar-text">{{ Str::ucfirst(Auth::user()->role) }}</div>
                         </div>
                         <div class="ml-auto">
                             <form id="logout-form" method="POST" action="{{ route('logout') }}" style="display: inline;">
                                 @csrf
                                 <button type="button" onclick="confirmLogout()"
-                                        class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-primary" title="Logout">
+                                        class="w-8 h-8 flex items-center justify-center text-sidebar-text hover:text-white text-xl" title="Logout">
                                     <i class="ri-logout-box-r-line"></i>
                                 </button>
                             </form>
@@ -403,7 +422,7 @@
             </div>
         </div>
 
-        {{-- ... (Main Content Area tetap sama) ... --}}
+        {{-- Main Content Area (Struktur tetap sama) --}}
         <div class="flex-1 flex flex-col overflow-hidden">
             <header class="bg-white shadow-sm z-10 sticky top-0">
                 <div class="flex items-center justify-between h-16 px-4 sm:px-6">
@@ -415,7 +434,6 @@
                         </button>
                         <div class="text-lg font-semibold text-gray-800 lg:ml-0">@yield('page_title', 'Dashboard')</div>
                     </div>
-                    {{-- ... (bagian search dan notifikasi tetap sama) ... --}}
                 </div>
                  @hasSection('header_filters')
                     <div class="px-4 sm:px-6 py-3 border-t border-gray-100 flex flex-col md:flex-row items-stretch md:items-center md:justify-between gap-3 md:gap-4">
@@ -425,7 +443,6 @@
             </header>
 
             <main class="flex-1 overflow-y-auto p-4 sm:p-6 bg-gray-50">
-                 {{-- ... (Session messages dan error handling tetap sama) ... --}}
                  @if (session('success'))
                     <div class="mb-4 p-3 bg-green-100 border border-green-300 text-green-700 rounded-md text-sm">
                         {{ session('success') }}
@@ -461,9 +478,7 @@
         </div>
         <div id="mainContentOverlay" class="fixed inset-0 bg-black bg-opacity-25 z-20 hidden lg:hidden"></div>
     </div>
-    {{-- ... (JavaScript tetap sama) ... --}}
     <script>
-        // JavaScript untuk toggle sidebar mobile & submenu (sama seperti sebelumnya)
         document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('sidebar');
             const sidebarToggle = document.getElementById('sidebarToggle');
@@ -514,7 +529,13 @@
                         arrow.classList.toggle('rotate-90');
                     }
                     if(parentItem){
-                        parentItem.classList.toggle('expanded');
+                        if (submenu.classList.contains('expanded')) {
+                            parentItem.classList.add('expanded');
+                        } else {
+                            if (!parentItem.classList.contains('active-parent')) {
+                                parentItem.classList.remove('expanded');
+                            }
+                        }
                     }
                 }
             }
