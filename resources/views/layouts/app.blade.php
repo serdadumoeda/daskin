@@ -161,7 +161,7 @@
                                     if ($currentRouteName == $submenu['route']) return true;
                                     $baseRoute = explode('.index', $submenu['route'])[0];
                                     if (str_starts_with($currentRouteName ?? '', $baseRoute . '.')) return true;
-                                     if (isset($submenu['active_on_prefixes']) && is_array($submenu['active_on_prefixes'])) {
+                                    if (isset($submenu['active_on_prefixes']) && is_array($submenu['active_on_prefixes'])) {
                                         foreach($submenu['active_on_prefixes'] as $prefix){
                                             if(str_starts_with($currentRouteName ?? '', $prefix)) return true;
                                         }
@@ -192,17 +192,17 @@
                                 'route' => 'inspektorat.dashboard',
                                 'roles' => array_merge([App\Models\User::ROLE_ITJEN, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
                                 'submenus' => [
-                                    ['name' => 'Dashboard Itjen', 'route' => 'inspektorat.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['inspektorat.dashboard'], 'roles' => array_merge([App\Models\User::ROLE_ITJEN, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles)],
+                                    // Submenu Dashboard Itjen dihapus
                                     ['name' => '% Progres Tindak Lanjut temuan BPK', 'route' => 'inspektorat.progress-temuan-bpk.index', 'icon' => 'ri-file-chart-line', 'roles' => [App\Models\User::ROLE_ITJEN, App\Models\User::ROLE_SUPERADMIN]],
                                     ['name' => '% Progres Tindak Lanjut temuan internal', 'route' => 'inspektorat.progress-temuan-internal.index', 'icon' => 'ri-file-search-line', 'roles' => [App\Models\User::ROLE_ITJEN, App\Models\User::ROLE_SUPERADMIN]],
                                 ]
                             ],
-                             'Sekretariat Jenderal' => [
+                            'Sekretariat Jenderal' => [
                                 'icon' => 'ri-building-4-line', 
                                 'route' => 'sekretariat-jenderal.dashboard',
                                 'roles' => array_merge([App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
                                 'submenus' => [
-                                    ['name' => 'Dashboard Sekjen', 'route' => 'sekretariat-jenderal.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['sekretariat-jenderal.dashboard'], 'roles' => array_merge([App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles)],
+                                    // Submenu Dashboard Sekjen dihapus
                                     ['name' => 'Jumlah MoU', 'route' => 'sekretariat-jenderal.progress-mou.index', 'icon' => 'ri-honour-line', 'roles' => [App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN]],
                                     ['name' => 'Jumlah regulasi baru', 'route' => 'sekretariat-jenderal.jumlah-regulasi-baru.index', 'icon' => 'ri-file-list-3-line', 'roles' => [App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN]],
                                     ['name' => 'Jumlah penanganan kasus', 'route' => 'sekretariat-jenderal.jumlah-penanganan-kasus.index', 'icon' => 'ri-scales-2-line', 'roles' => [App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN]],
@@ -218,7 +218,7 @@
                                 'route' => 'binapenta.dashboard',
                                 'roles' => array_merge([App\Models\User::ROLE_BINAPENTA, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
                                 'submenus' => [
-                                    ['name' => 'Dashboard Binapenta', 'route' => 'binapenta.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['binapenta.dashboard'], 'roles' => array_merge([App\Models\User::ROLE_BINAPENTA, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles)],
+                                    // Submenu Dashboard Binapenta dihapus
                                     ['name' => 'Jml Penempatan oleh Kemnaker', 'route' => 'binapenta.jumlah-penempatan-kemnaker.index', 'icon' => 'ri-user-add-line', 'roles' => [App\Models\User::ROLE_BINAPENTA, App\Models\User::ROLE_SUPERADMIN]],
                                     ['name' => 'Jml Lowongan Kerja Baru (Pasker)', 'route' => 'binapenta.jumlah-lowongan-pasker.index', 'icon' => 'ri-briefcase-4-line', 'roles' => [App\Models\User::ROLE_BINAPENTA, App\Models\User::ROLE_SUPERADMIN]],
                                     ['name' => 'Persetujuan RPTKA', 'route' => 'binapenta.persetujuan-rptka.index', 'icon' => 'ri-user-shared-line', 'roles' => [App\Models\User::ROLE_BINAPENTA, App\Models\User::ROLE_SUPERADMIN]],
@@ -229,7 +229,7 @@
                                 'route' => 'binalavotas.dashboard',
                                 'roles' => array_merge([App\Models\User::ROLE_BINALAVOTAS, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
                                 'submenus' => [
-                                    ['name' => 'Dashboard Binalavotas', 'route' => 'binalavotas.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['binalavotas.dashboard'], 'roles' => array_merge([App\Models\User::ROLE_BINALAVOTAS, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles)],
+                                    // Submenu Dashboard Binalavotas dihapus
                                     ['name' => 'Jumlah Kepesertaan Pelatihan', 'route' => 'binalavotas.jumlah-kepesertaan-pelatihan.index', 'icon' => 'ri-group-line', 'roles' => [App\Models\User::ROLE_BINALAVOTAS, App\Models\User::ROLE_SUPERADMIN]],
                                     ['name' => 'Jml Sertifikasi Kompetensi', 'route' => 'binalavotas.jumlah-sertifikasi-kompetensi.index', 'icon' => 'ri-shield-star-line', 'roles' => [App\Models\User::ROLE_BINALAVOTAS, App\Models\User::ROLE_SUPERADMIN]],
                                 ]
@@ -239,7 +239,7 @@
                                 'route' => 'binwasnaker.dashboard',
                                 'roles' => array_merge([App\Models\User::ROLE_BINWASNAKER, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
                                 'submenus' => [
-                                    ['name' => 'Dashboard Binwasnaker', 'route' => 'binwasnaker.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['binwasnaker.dashboard'], 'roles' => array_merge([App\Models\User::ROLE_BINWASNAKER, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles)],
+                                    // Submenu Dashboard Binwasnaker dihapus
                                     ['name' => 'Laporan WLKP Online', 'route' => 'binwasnaker.pelaporan-wlkp-online.index', 'icon' => 'ri-computer-line', 'roles' => [App\Models\User::ROLE_BINWASNAKER, App\Models\User::ROLE_SUPERADMIN]],
                                     ['name' => 'Pengaduan Pelanggaran Norma (TL)', 'route' => 'binwasnaker.pengaduan-pelanggaran-norma.index', 'icon' => 'ri-alert-line', 'roles' => [App\Models\User::ROLE_BINWASNAKER, App\Models\User::ROLE_SUPERADMIN]],
                                     ['name' => 'Penerapan SMK3', 'route' => 'binwasnaker.penerapan-smk3.index', 'icon' => 'ri-shield-keyhole-line', 'roles' => [App\Models\User::ROLE_BINWASNAKER, App\Models\User::ROLE_SUPERADMIN]],
@@ -251,7 +251,7 @@
                                 'route' => 'phi.dashboard',
                                 'roles' => array_merge([App\Models\User::ROLE_PHI, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
                                 'submenus' => [
-                                    ['name' => 'Dashboard PHI', 'route' => 'phi.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['phi.dashboard'], 'roles' => array_merge([App\Models\User::ROLE_PHI, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles)],
+                                    // Submenu Dashboard PHI dihapus
                                     ['name' => 'Jumlah PHK', 'route' => 'phi.jumlah-phk.index', 'icon' => 'ri-user-unfollow-fill', 'roles' => [App\Models\User::ROLE_PHI, App\Models\User::ROLE_SUPERADMIN]],
                                     ['name' => 'Perselisihan (TL)', 'route' => 'phi.perselisihan-ditindaklanjuti.index', 'icon' => 'ri-auction-line', 'roles' => [App\Models\User::ROLE_PHI, App\Models\User::ROLE_SUPERADMIN]],
                                     ['name' => 'Mediasi Berhasil', 'route' => 'phi.mediasi-berhasil.index', 'icon' => 'ri-shake-hands-line', 'roles' => [App\Models\User::ROLE_PHI, App\Models\User::ROLE_SUPERADMIN]],
@@ -263,7 +263,7 @@
                                 'route' => 'barenbang.dashboard',
                                 'roles' => array_merge([App\Models\User::ROLE_BARENBANG, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
                                 'submenus' => [
-                                    ['name' => 'Dashboard Barenbang', 'route' => 'barenbang.dashboard', 'icon' => 'ri-pie-chart-box-line', 'active_on_prefixes' => ['barenbang.dashboard'], 'roles' => array_merge([App\Models\User::ROLE_BARENBANG, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles)],
+                                    // Submenu Dashboard Barenbang dihapus
                                     ['name' => 'Jml Kajian & Rekomendasi', 'route' => 'barenbang.jumlah-kajian-rekomendasi.index', 'icon' => 'ri-lightbulb-flash-line', 'roles' => [App\Models\User::ROLE_BARENBANG, App\Models\User::ROLE_SUPERADMIN]],
                                     ['name' => 'Data Ketenagakerjaan', 'route' => 'barenbang.data-ketenagakerjaan.index', 'icon' => 'ri-database-2-line', 'roles' => [App\Models\User::ROLE_BARENBANG, App\Models\User::ROLE_SUPERADMIN]],
                                     ['name' => 'Jml Aplikasi Terintegrasi SiapKerja', 'route' => 'barenbang.aplikasi-integrasi-siapkerja.index', 'icon' => 'ri-link-m', 'roles' => [App\Models\User::ROLE_BARENBANG, App\Models\User::ROLE_SUPERADMIN]],
@@ -316,8 +316,8 @@
                                 @endphp
                                 <div class="mb-0.5 sidebar-parent-item {{ $hasActiveChild ? 'expanded active-parent' : '' }}">
                                     <a href="{{ isset($deptDetails['route']) && Route::has($deptDetails['route']) ? route($deptDetails['route']) : '#' }}"
-                                       onclick="{{ !empty($deptDetails['submenus']) && (!isset($deptDetails['route']) || $deptDetails['route'] === '#') ? "event.preventDefault(); toggleSubmenu('".$parentSlug."');" : ((!empty($deptDetails['submenus'])) ? "toggleSubmenu('".$parentSlug."');" : "") }}"
-                                       class="sidebar-parent-button text-sidebar-text flex items-center justify-between w-full px-4 py-3 focus:outline-none">
+                                    onclick="{{ !empty($deptDetails['submenus']) && (!isset($deptDetails['route']) || $deptDetails['route'] === '#') ? "event.preventDefault(); toggleSubmenu('".$parentSlug."');" : ((!empty($deptDetails['submenus'])) ? "toggleSubmenu('".$parentSlug."');" : "") }}"
+                                    class="sidebar-parent-button text-sidebar-text flex items-center justify-between w-full px-4 py-3 focus:outline-none">
                                         <div class="flex items-center">
                                             <div class="w-5 h-5 flex items-center justify-center mr-3 main-menu-icon text-lg">
                                                 <i class="{{ $deptDetails['icon'] }}"></i>
@@ -336,7 +336,7 @@
                                                             }
                                                         }
                                                     } else { 
-                                                       $hasVisibleSubmenus = true; break;
+                                                    $hasVisibleSubmenus = true; break;
                                                     }
                                                 }
                                             @endphp
@@ -369,10 +369,10 @@
                                                             <div class="px-6 py-1 text-xs font-semibold text-gray-400 uppercase mt-1">{{ $submenu['name'] }}</div>
                                                         @else
                                                             <a href="{{ $submenu['route'] === '#' ? '#' : (Route::has($submenu['route']) ? route($submenu['route']) : '#!') }}"
-                                                               class="sidebar-submenu-item text-sidebar-text flex items-center w-full py-2.5 pr-4
-                                                                      {{ (isset($submenu['is_sub_item']) && $submenu['is_sub_item']) ? 'pl-10' : 'pl-6' }} 
-                                                                      text-xs hover:text-white
-                                                                      {{ isSubmenuActive($submenu, $currentRouteName) ? 'active' : '' }}">
+                                                            class="sidebar-submenu-item text-sidebar-text flex items-center w-full py-2.5 pr-4
+                                                                    {{ (isset($submenu['is_sub_item']) && $submenu['is_sub_item']) ? 'pl-10' : 'pl-6' }} 
+                                                                    text-xs hover:text-white
+                                                                    {{ isSubmenuActive($submenu, $currentRouteName) ? 'active' : '' }}">
                                                                 @if(isset($submenu['icon']))
                                                                 <div class="w-5 h-5 flex items-center justify-center mr-2 opacity-75 text-base"><i class="{{ $submenu['icon'] }}"></i></div>
                                                                 @else
