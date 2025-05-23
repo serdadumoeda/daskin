@@ -140,8 +140,8 @@
             {{-- Sidebar Header --}}
             <div class="p-4 flex items-center justify-between border-b border-sidebar-border-color">
                 <a href="{{ route('dashboard') }}" class="flex items-center">
-                         <!-- <img src="{{ asset('image/logo/logo_daskin_white.png') }}" alt="Logo Aplikasi" class="h-6 mr-2">  -->
-                         <span class="text-white font-semibold text-lg">Kemnaker Dashboard</span>
+                         <!-- <img src="{{ asset('image/logo/logo_daskin.png') }}" alt="Logo-Dashboard-Kinerja" class="h-7 mr-8">  -->
+                         <span class="text-white font-semibold text-lg"> Dashboard Kinerja</span>
                 </a>
                 <button id="closeSidebar" class="lg:hidden text-sidebar-text hover:text-white">
                     <i class="ri-close-line text-2xl"></i>

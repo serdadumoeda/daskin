@@ -1,3 +1,43 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Warna 1: Biru (Untuk Penempatan & Total Penempatan Kerja) */
+.bg-icon-summary-1-bg {
+    background-color: #e7f0ff !important;
+}
+.text-icon-summary-1-text {
+    color: #4a90e2 !important;
+}
+
+/* Warna 2: Hijau (Untuk Pelatihan & Total Lulus Pelatihan) */
+.bg-icon-summary-2-bg {
+    background-color: #e8f5e9 !important;
+}
+.text-icon-summary-2-text {
+    color: #50bda1 !important;
+}
+
+/* Warna 3: Oranye (Untuk Regulasi Baru) */
+.bg-icon-summary-3-bg {
+    background-color: #fff3e0 !important;
+}
+.text-icon-summary-3-text {
+    color: #f5a623 !important;
+}
+
+/* Warna 4: Merah (Untuk Tingkat Pengangguran Terbuka) */
+.bg-icon-summary-4-bg {
+    background-color: #ffebee !important;
+}
+.text-icon-summary-4-text {
+    color: #d0021b !important;
+}
+
+/* Warna 5: Ungu (Untuk Total Aplikasi Terintegrasi) */
+.bg-icon-summary-5-bg {
+    background-color: #f3e8ff !important;
+}
+.text-icon-summary-5-text {
+    color: #9013fe !important;
+}

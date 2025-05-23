@@ -20,7 +20,10 @@ class MainDashboardController extends Controller
     public function index(Request $request)
     {
         $selectedYear = $request->input('tahun', Carbon::now()->year);
-        $selectedMonth = $request->input('bulan'); 
+
+        // PERBAIKAN: Memastikan $selectedMonth adalah integer atau null, bukan string kosong.
+        $selectedMonthInput = $request->input('bulan');
+        $selectedMonth = !empty($selectedMonthInput) ? (int)$selectedMonthInput : null;
 
         $dashboardSummaryCards = $this->getDashboardSummaryCards($selectedYear, $selectedMonth);
 
@@ -99,10 +102,6 @@ class MainDashboardController extends Controller
             ->first();
         $tpt = $tptModel ? number_format($tptModel->tpt_persen, 2) . '%' : 'N/A';
 
-        $totalAplikasiTerintegrasi = AplikasiIntegrasiSiapkerja::query()
-            ->when($year, fn ($q) => $q->where('tahun', $year))
-            // ->where('status_integrasi', 1) // Opsional: filter status
-            ->count();
 
         return [
             [
@@ -122,21 +121,14 @@ class MainDashboardController extends Controller
                 'icon_text_color' => 'text-icon-summary-4-text',
             ],
             [
-                'title' => 'Pelatihan Total Lulus',
+                'title' => 'Total Lulus Pelatihan ',
                 'value' => number_format($totalLulusPelatihan),
                 'unit' => 'Peserta',
                 'icon' => 'ri-graduation-cap-line',
                 'icon_bg_color' => 'bg-icon-summary-2-bg',
                 'icon_text_color' => 'text-icon-summary-2-text',
             ],
-            [ 
-                'title' => 'Total Aplikasi Terintegrasi',
-                'value' => number_format($totalAplikasiTerintegrasi),
-                'unit' => 'Aplikasi',
-                'icon' => 'ri-computer-line',
-                'icon_bg_color' => 'bg-icon-summary-5-bg',
-                'icon_text_color' => 'text-icon-summary-5-text',
-            ],
+           
         ];
     }
 
@@ -231,7 +223,7 @@ class MainDashboardController extends Controller
                 $monthlyData[(int)$bulanDb - 1] = (float)$total; // Konversi ke indeks 0-11
             }
         }
-        return $monthlyData; // Tidak perlu array_values() lagi karena sudah 0-indexed
+        return $monthlyData;
     }
 
     private function calculateMonthlyAccumulation(array $monthlyData): array

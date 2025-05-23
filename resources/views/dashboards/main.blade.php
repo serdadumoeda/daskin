@@ -44,7 +44,7 @@
 
     @if (!empty($dashboardSummaryCards))
     <section class="mb-6">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             @foreach ($dashboardSummaryCards as $card)
             <div class="bg-white p-5 rounded-lg shadow-md flex items-center space-x-4 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
                 <div class="flex-shrink-0 p-3.5 rounded-full {{ $card['icon_bg_color'] }} w-16 h-16 flex items-center justify-center">
