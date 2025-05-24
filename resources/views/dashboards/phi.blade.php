@@ -146,75 +146,82 @@
 @endsection
 
 @push('scripts')
-{{-- ECharts sudah di-include di layouts.app.blade.php --}}
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const textColor = '#374151'; 
-        const axisLineColor = '#D1D5DB';
-        const legendTextColor = '#4B5563';
-
-        // Fungsi umum untuk membuat chart
-        function createChart(chartId, legendDataName, chartDataLabels, chartDataValues, itemColor, areaColorStops) {
-            var chartDom = document.getElementById(chartId);
-            if (chartDom) {
-                var myChart = echarts.init(chartDom, null);
-                var option = {
-                    tooltip: { trigger: 'axis', formatter: function (params) { return params[0].name + '<br/>' + params[0].seriesName + ' : ' + params[0].value.toLocaleString('id-ID'); } },
-                    legend: { data: [legendDataName], textStyle: { color: legendTextColor }, bottom: 0 },
-                    grid: { left: '3%', right: '4%', bottom: '10%', containLabel: true },
-                    xAxis: { type: 'category', boundaryGap: false, data: chartDataLabels, axisLine: { lineStyle: { color: axisLineColor } }, axisLabel: { color: textColor } },
-                    yAxis: { type: 'value', name: 'Jumlah', min: 0, axisLine: { lineStyle: { color: axisLineColor } }, axisLabel: { color: textColor, formatter: function (value) { return value.toLocaleString('id-ID'); } }, nameTextStyle: { color: textColor } },
-                    series: [{
-                        name: legendDataName, type: 'line', smooth: true,
-                        data: chartDataValues,
-                        itemStyle: { color: itemColor },
-                        areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, areaColorStops)}
-                    }]
-                };
-                myChart.setOption(option);
-                window.addEventListener('resize', () => myChart.resize());
+    document.addEventListener("DOMContentLoaded", function () {
+        
+        function createMultiSeriesChart(elementId, labels, seriesConfig) {
+            const chartDom = document.getElementById(elementId);
+            if (!chartDom) {
+                console.error('Element chart tidak ditemukan:', elementId);
+                return;
             }
+            const myChart = echarts.init(chartDom);
+            
+            const series = seriesConfig.map(s => ({
+                name: s.name, type: s.type, yAxisIndex: s.yAxisIndex || 0, stack: s.stack || null,
+                smooth: s.type === 'line', data: s.data, itemStyle: { color: s.color }, lineStyle: { color: s.color }
+            }));
+            
+            const legendData = series.map(s => s.name);
+
+            const option = {
+                tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+                legend: { data: legendData, bottom: 0, type: 'scroll' }, // Tambahkan type: 'scroll' jika legenda terlalu banyak
+                grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true }, // Bottom disesuaikan untuk legenda
+                xAxis: [{ type: 'category', data: labels, axisPointer: { type: 'shadow' } }],
+                yAxis: [
+                    { type: 'value', name: 'Jumlah', min: 0, position: 'left' },
+                    { type: 'value', name: 'Kumulatif', min: 0, position: 'right', splitLine: { show: false } }
+                ],
+                series: series
+            };
+            myChart.setOption(option);
+            window.addEventListener('resize', () => myChart.resize());
         }
 
-        // Chart untuk Tren Jumlah PHK
-        createChart(
-            'echart-phi-phk-trend',
-            'Jumlah PHK',
-            @json($phkChartLabels ?? []), // Pastikan variabel ini benar
-            @json($phkChartDataValues ?? []), // Pastikan variabel ini benar
-            '#ef4444', // Merah
-            [{offset: 0, color: 'rgba(239, 68, 68, 0.5)'}, {offset: 1, color: 'rgba(239, 68, 68, 0.1)'}]
-        );
+        const labels = @json($chartLabels ?? []);
+        const chartData = @json($chartData ?? null);
 
-        // Chart untuk Tren Perselisihan Ditindaklanjuti
-        createChart(
-            'echart-phi-perselisihan-trend',
-            'Jumlah Perselisihan (TL)',
-            @json($perselisihanChartLabels ?? []), // Pastikan variabel ini benar
-            @json($perselisihanTlChartDataValues ?? []), // Pastikan variabel ini benar
-            '#f59e0b', // Kuning/Amber
-            [{offset: 0, color: 'rgba(245, 158, 11, 0.5)'}, {offset: 1, color: 'rgba(245, 158, 11, 0.1)'}]
-        );
-
-        // Chart untuk Tren Mediasi Berhasil
-        createChart(
-            'echart-phi-mediasi-trend',
-            'Jumlah Mediasi Berhasil',
-            @json($mediasiChartLabels ?? []),
-            @json($mediasiBerhasilData ?? []),
-            '#10b981', // Hijau Emerald
-            [{offset: 0, color: 'rgba(16, 185, 129, 0.5)'}, {offset: 1, color: 'rgba(16, 185, 129, 0.1)'}]
-        );
+        if (!chartData) {
+            console.error('Data chart tidak tersedia dari controller.');
+            return;
+        }
         
-        // Chart untuk Tren Perusahaan Menerapkan SUSU
-        createChart(
-            'echart-phi-susu-trend',
-            'Jumlah Perusahaan SUSU',
-            @json($susuChartLabels ?? []),
-            @json($susuChartDataValues ?? []),
-            '#3b82f6', // Biru primary
-            [{offset: 0, color: 'rgba(59, 130, 246, 0.5)'}, {offset: 1, color: 'rgba(59, 130, 246, 0.1)'}]
-        );
+        // 1. Chart PHK (2 Batang + 1 Garis)
+        if (chartData.phk) {
+            createMultiSeriesChart('echart-phi-phk-trend', labels, [
+                { name: 'Jml TK PHK', type: 'bar', yAxisIndex: 0, data: chartData.phk.tk, color: '#ef4444' },
+                { name: 'Jml Perusahaan PHK', type: 'bar', yAxisIndex: 0, data: chartData.phk.perusahaan, color: '#10b981' },
+                { name: 'Kumulatif TK PHK', type: 'line', yAxisIndex: 1, data: chartData.phk.kumulatif, color: '#a855f7' }
+            ]);
+        }
+
+        // 2. Chart Perselisihan (2 Batang Identik + 1 Garis) - TELAH DIPERBARUI
+        if (chartData.perselisihan) {
+            createMultiSeriesChart('echart-phi-perselisihan-trend', labels, [
+                { name: 'Perselisihan Ditindaklanjuti', type: 'bar', yAxisIndex: 0, data: chartData.perselisihan.ditindaklanjuti, color: '#f59e0b' },
+                { name: 'Jumlah Perselisihan', type: 'bar', yAxisIndex: 0, data: chartData.perselisihan.total_perselisihan, color: '#84cc16' }, // Batang baru
+                { name: 'Kumulatif Total', type: 'line', yAxisIndex: 1, data: chartData.perselisihan.kumulatif, color: '#14b8a6' }
+            ]);
+        }
+
+        // 3. Chart Mediasi (2 Batang + 1 Garis)
+        if (chartData.mediasi) {
+            createMultiSeriesChart('echart-phi-mediasi-trend', labels, [
+                { name: 'Total Mediasi', type: 'bar', yAxisIndex: 0, data: chartData.mediasi.total, color: '#22c55e' },
+                { name: 'Mediasi Berhasil', type: 'bar', yAxisIndex: 0, data: chartData.mediasi.berhasil, color: '#f97316' },
+                { name: 'Kumulatif Berhasil', type: 'line', yAxisIndex: 1, data: chartData.mediasi.kumulatif, color: '#3b82f6' }
+            ]);
+        }
+        
+        // 4. Chart SUSU (1 Batang + 1 Garis)
+        if (chartData.susu) {
+            createMultiSeriesChart('echart-phi-susu-trend', labels, [
+                { name: 'Perusahaan Terapkan SUSU', type: 'bar', yAxisIndex: 0, data: chartData.susu.susu, color: '#3b82f6' },
+                { name: 'Kumulatif', type: 'line', yAxisIndex: 1, data: chartData.susu.kumulatif, color: '#ef4444' }
+            ]);
+        }
     });
 </script>
 @endpush
