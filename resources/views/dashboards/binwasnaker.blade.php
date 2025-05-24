@@ -132,82 +132,118 @@
         </div>
         <div class="bg-white p-5 rounded-lg shadow">
             <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Self-Assessment Norma 100 ({{ $yearToDisplay }})</h3>
-            <div id="echart-binwasnaker-norma100-trend" style="width: 100%; height: 300px;"></div>
+            <div id="echart-binwasnaker-sa-trend" style="width: 100%; height: 300px;"></div>
         </div>
     </section>
 </div>
 @endsection
 
 @push('scripts')
-{{-- ECharts sudah di-include di layouts.app.blade.php --}}
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const textColor = '#374151'; 
-        const axisLineColor = '#D1D5DB';
-        const legendTextColor = '#4B5563';
+    document.addEventListener("DOMContentLoaded", function () {
+        
+        function createMultiSeriesChart(elementId, labels, seriesConfig) {
+            const chartDom = document.getElementById(elementId);
+            if (!chartDom) {
+                // console.error('Element chart tidak ditemukan:', elementId); // Dihilangkan agar tidak muncul jika div memang tidak ada
+                return;
+            }
+            let existingChart = echarts.getInstanceByDom(chartDom);
+            if (existingChart) {
+                existingChart.dispose();
+            }
+            const myChart = echarts.init(chartDom);
+            
+            const series = seriesConfig.map(s => ({
+                name: s.name, type: s.type, yAxisIndex: s.yAxisIndex || 0, stack: s.stack || null,
+                smooth: s.type === 'line', data: s.data, itemStyle: { color: s.color }, lineStyle: { color: s.color }
+            }));
+            
+            const legendData = series.map(s => s.name);
 
-        // Fungsi umum untuk membuat chart
-        function createChart(chartId, legendDataName, chartDataLabels, chartDataValues, itemColor, areaColorStops) {
-            var chartDom = document.getElementById(chartId);
-            if (chartDom) {
-                var myChart = echarts.init(chartDom, null);
-                var option = {
-                    tooltip: { trigger: 'axis', formatter: function (params) { return params[0].name + '<br/>' + params[0].seriesName + ' : ' + params[0].value.toLocaleString('id-ID'); } },
-                    legend: { data: [legendDataName], textStyle: { color: legendTextColor }, bottom: 0 },
-                    grid: { left: '3%', right: '4%', bottom: '10%', containLabel: true },
-                    xAxis: { type: 'category', boundaryGap: false, data: chartDataLabels, axisLine: { lineStyle: { color: axisLineColor } }, axisLabel: { color: textColor } },
-                    yAxis: { type: 'value', name: 'Jumlah', min: 0, axisLine: { lineStyle: { color: axisLineColor } }, axisLabel: { color: textColor, formatter: function (value) { return value.toLocaleString('id-ID'); } }, nameTextStyle: { color: textColor } },
-                    series: [{
-                        name: legendDataName, type: 'line', smooth: true,
-                        data: chartDataValues,
-                        itemStyle: { color: itemColor },
-                        areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, areaColorStops)}
-                    }]
-                };
-                myChart.setOption(option);
-                window.addEventListener('resize', () => myChart.resize());
+            const option = {
+                tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+                legend: { data: legendData, bottom: 0, type: 'scroll' },
+                grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
+                xAxis: [{ type: 'category', data: labels, axisPointer: { type: 'shadow' } }],
+                yAxis: [
+                    { type: 'value', name: 'Jumlah', min: 0, position: 'left' },
+                    { type: 'value', name: 'Kumulatif', min: 0, position: 'right', splitLine: { show: false } }
+                ],
+                series: series
+            };
+            myChart.setOption(option);
+            window.addEventListener('resize', () => myChart.resize());
+        }
+
+        const chartData = @json($chartData ?? null);
+
+        if (!chartData) {
+            console.error('Variabel chartData utama tidak tersedia dari controller.');
+            const chartIds = ['echart-binwasnaker-wlkp-trend', 'echart-binwasnaker-pengaduan-trend', 'echart-binwasnaker-smk3-trend', 'echart-binwasnaker-sa-trend'];
+            chartIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) { el.innerHTML = '<p class="text-center text-gray-500 py-5">Data chart tidak tersedia.</p>'; }
+            });
+            return;
+        }
+
+        // 1. Render Chart WLKP Online
+        const wlkpChartEl = document.getElementById('echart-binwasnaker-wlkp-trend');
+        if (wlkpChartEl) {
+            if (chartData.wlkp && chartData.wlkp.labels && Array.isArray(chartData.wlkp.bulanan) && Array.isArray(chartData.wlkp.kumulatif)) {
+                createMultiSeriesChart('echart-binwasnaker-wlkp-trend', chartData.wlkp.labels, [
+                    { name: 'Perusahaan Melapor WLKP (Bulanan)', type: 'bar', yAxisIndex: 0, data: chartData.wlkp.bulanan, color: '#3b82f6' },
+                    { name: 'Kumulatif Perusahaan', type: 'line', yAxisIndex: 1, data: chartData.wlkp.kumulatif, color: '#10b981' }
+                ]);
+            } else {
+                console.warn('Data untuk chart WLKP tidak lengkap atau tidak tersedia.', chartData.wlkp);
+                wlkpChartEl.innerHTML = '<p class="text-center text-gray-500 py-5">Data chart WLKP tidak tersedia.</p>';
             }
         }
 
-        // Chart untuk Tren Laporan WLKP Online
-        createChart(
-            'echart-binwasnaker-wlkp-trend',
-            'Laporan WLKP Online',
-            @json($wlkpChartLabels ?? []),
-            @json($wlkpChartDataValues ?? []),
-            '#3b82f6', // Biru
-            [{offset: 0, color: 'rgba(59, 130, 246, 0.5)'}, {offset: 1, color: 'rgba(59, 130, 246, 0.1)'}]
-        );
-
-        // Chart untuk Tren Pengaduan Pelanggaran Norma (TL)
-        createChart(
-            'echart-binwasnaker-pengaduan-trend',
-            'Pengaduan Norma (TL)',
-            @json($pengaduanChartData ?? []),
-            @json($pengaduanChartData ?? []),
-            '#ef4444', // Merah
-            [{offset: 0, color: 'rgba(239, 68, 68, 0.5)'}, {offset: 1, color: 'rgba(239, 68, 68, 0.1)'}]
-        );
-
-        // Chart untuk Tren Penerapan SMK3
-        createChart(
-            'echart-binwasnaker-smk3-trend',
-            'Penerapan SMK3',
-            @json($smk3TrendChartLabels ?? []),
-            @json($smk3TrendChartDataValues ?? []),
-            '#10b981', // Hijau
-            [{offset: 0, color: 'rgba(16, 185, 129, 0.5)'}, {offset: 1, color: 'rgba(16, 185, 129, 0.1)'}]
-        );
+        // 2. Render Chart Pengaduan Pelanggaran Norma
+        const pengaduanChartEl = document.getElementById('echart-binwasnaker-pengaduan-trend');
+        if (pengaduanChartEl) {
+            if (chartData.pengaduan && chartData.pengaduan.labels && Array.isArray(chartData.pengaduan.bulanan) && Array.isArray(chartData.pengaduan.kumulatif)) {
+                createMultiSeriesChart('echart-binwasnaker-pengaduan-trend', chartData.pengaduan.labels, [
+                    { name: 'Pengaduan Norma (Bulanan)', type: 'bar', yAxisIndex: 0, data: chartData.pengaduan.bulanan, color: '#ef4444' },
+                    { name: 'Kumulatif Pengaduan', type: 'line', yAxisIndex: 1, data: chartData.pengaduan.kumulatif, color: '#f97316' }
+                ]);
+            } else {
+                console.warn('Data untuk chart Pengaduan tidak lengkap atau tidak tersedia.', chartData.pengaduan);
+                pengaduanChartEl.innerHTML = '<p class="text-center text-gray-500 py-5">Data chart Pengaduan tidak tersedia.</p>';
+            }
+        }
         
-        // Chart untuk Tren Self-Assessment Norma 100
-        createChart(
-            'echart-binwasnaker-norma100-trend',
-            'Self-Assessment Norma 100',
-            @json($saTrendChartLabels ?? []),
-            @json($saTrendChartDataValues ?? []),
-            '#f59e0b', // Kuning/Amber
-            [{offset: 0, color: 'rgba(245, 158, 11, 0.5)'}, {offset: 1, color: 'rgba(245, 158, 11, 0.1)'}]
-        );
+        // 3. Render Chart Penerapan SMK3
+        const smk3ChartEl = document.getElementById('echart-binwasnaker-smk3-trend');
+        if (smk3ChartEl) {
+            if (chartData.smk3 && chartData.smk3.labels && Array.isArray(chartData.smk3.bulanan) && Array.isArray(chartData.smk3.kumulatif)) {
+                createMultiSeriesChart('echart-binwasnaker-smk3-trend', chartData.smk3.labels, [
+                    { name: 'Penerapan SMK3 (Bulanan)', type: 'bar', yAxisIndex: 0, data: chartData.smk3.bulanan, color: '#10b981' },
+                    { name: 'Kumulatif SMK3', type: 'line', yAxisIndex: 1, data: chartData.smk3.kumulatif, color: '#06b6d4' }
+                ]);
+            } else {
+                console.warn('Data untuk chart SMK3 tidak lengkap atau tidak tersedia.', chartData.smk3);
+                smk3ChartEl.innerHTML = '<p class="text-center text-gray-500 py-5">Data chart SMK3 tidak tersedia.</p>';
+            }
+        }
+
+        // 4. Render Chart Self Assessment Norma 100
+        const saChartEl = document.getElementById('echart-binwasnaker-sa-trend');
+        if (saChartEl) { // Pastikan elemen HTML ada
+            if (chartData.sa && chartData.sa.labels && Array.isArray(chartData.sa.bulanan) && Array.isArray(chartData.sa.kumulatif)) {
+                 createMultiSeriesChart('echart-binwasnaker-sa-trend', chartData.sa.labels, [
+                    { name: 'Self Assessment Norma (Bulanan)', type: 'bar', yAxisIndex: 0, data: chartData.sa.bulanan, color: '#f59e0b' },
+                    { name: 'Kumulatif Self Assessment', type: 'line', yAxisIndex: 1, data: chartData.sa.kumulatif, color: '#8b5cf6' }
+                ]);
+            } else {
+                console.warn('Data untuk chart Self Assessment (SA) tidak lengkap atau tidak tersedia. Data diterima:', chartData.sa);
+                saChartEl.innerHTML = '<p class="text-center text-gray-500 py-5">Data chart Self Assessment tidak tersedia.</p>';
+            }
+        }
     });
 </script>
 @endpush
