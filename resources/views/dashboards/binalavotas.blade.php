@@ -4,197 +4,197 @@
 @section('page_title', 'Binalavotas')
 
 @section('header_filters')
-    <form method="GET" action="{{ route('binalavotas.dashboard') }}" class="w-full">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 items-end">
-            <div class="flex-grow">
-                <label for="year_filter_binalavotas" class="text-sm text-gray-600 whitespace-nowrap">Tahun:</label>
-                <select name="year_filter" id="year_filter_binalavotas" class="form-input mt-1 w-full bg-white">
-                    @foreach($availableYears as $year)
-                        <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>{{ $year }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="flex-grow">
-                <label for="month_filter_binalavotas" class="text-sm text-gray-600 whitespace-nowrap">Bulan:</label>
-                <select name="month_filter" id="month_filter_binalavotas" class="form-input mt-1 w-full bg-white">
-                    <option value="">Semua Bulan</option>
-                    @for ($i = 1; $i <= 12; $i++)
-                        <option value="{{ $i }}" {{ $selectedMonth == $i ? 'selected' : '' }}>{{ \Carbon\Carbon::create()->month($i)->isoFormat('MMMM') }}</option>
-                    @endfor
-                </select>
-            </div>
-            <div class="flex items-center space-x-2 pt-5">
-                <button type="submit" class="w-full sm:w-auto px-4 py-1.5 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium">
-                    <i class="ri-filter-3-line mr-1"></i> Terapkan
-                </button>
-                 <a href="{{ route('binalavotas.dashboard') }}" class="w-full sm:w-auto px-4 py-1.5 bg-gray-200 text-gray-700 rounded-button hover:bg-gray-300 text-sm font-medium">
-                    Reset
-                </a>
-            </div>
-        </div>
-    </form>
+    {{-- Bagian ini dikosongkan karena filter dipindahkan ke @section('content') --}}
 @endsection
 
 @section('content')
-<div class="space-y-6">
-    {{-- Baris 1: Kartu Ringkasan --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="bg-white p-5 rounded-lg shadow">
-            <div class="flex items-center justify-between mb-1">
-                <h3 class="text-sm font-medium text-gray-600">Lulus Pelatihan Internal</h3>
-                <a href="{{ route('binalavotas.jumlah-kepesertaan-pelatihan.index', ['penyelenggara_filter' => 1, 'status_kelulusan_filter' => 1]) }}" class="text-xs text-primary hover:text-primary/80">Detail &rarr;</a>
-            </div>
-            <div class="text-3xl font-semibold text-gray-800">{{ number_format($totalLulusInternal ?? 0) }} <span class="text-sm font-normal">Peserta</span></div>
-            <div class="mt-3 h-32 chart-container" id="echart-binalavotas-lulus-internal"></div>
-        </div>
+<div class="space-y-8">
 
-        <div class="bg-white p-5 rounded-lg shadow">
-            <div class="flex items-center justify-between mb-1">
-                <h3 class="text-sm font-medium text-gray-600">Lulus Pelatihan Eksternal</h3>
-                <a href="{{ route('binalavotas.jumlah-kepesertaan-pelatihan.index', ['penyelenggara_filter' => 2, 'status_kelulusan_filter' => 1]) }}" class="text-xs text-primary hover:text-primary/80">Detail &rarr;</a>
+    {{-- Filter --}}
+    <section>
+        <form method="GET" action="{{ route('binalavotas.dashboard') }}" class="w-full mb-6">
+            <h3 class="text-md font-semibold text-gray-700 mb-3">Filter Data:</h3>
+            <div class="p-4 bg-white rounded-lg shadow">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 items-end">
+                    <div class="flex-grow">
+                        <label for="year_filter" class="text-sm text-gray-600 whitespace-nowrap">Tahun:</label>
+                        <select name="year_filter" id="year_filter" class="form-input mt-1 w-full bg-white border-gray-300">
+                            @if(isset($availableYears) && $availableYears->isEmpty() && isset($selectedYear))
+                                 <option value="{{ $selectedYear }}" selected>{{ $selectedYear }}</option>
+                            @elseif(isset($availableYears) && $availableYears->isEmpty())
+                                <option value="{{ date('Y') }}" selected>{{ date('Y') }}</option>
+                            @elseif(isset($availableYears))
+                                @foreach($availableYears as $year)
+                                    <option value="{{ $year }}" {{ (isset($selectedYear) && $selectedYear == $year) ? 'selected' : '' }}>{{ $year }}</option>
+                                @endforeach
+                            @else
+                                <option value="{{ date('Y') }}" selected>{{ date('Y') }}</option> {{-- Fallback jika $availableYears tidak ada --}}
+                            @endif
+                        </select>
+                    </div>
+                    <div class="flex-grow">
+                        <label for="month_filter" class="text-sm text-gray-600 whitespace-nowrap">Bulan:</label>
+                        <select name="month_filter" id="month_filter" class="form-input mt-1 w-full bg-white border-gray-300">
+                            <option value="">Semua Bulan</option>
+                            @for ($i = 1; $i <= 12; $i++)
+                                <option value="{{ $i }}" {{ (isset($selectedMonth) && $selectedMonth == $i) ? 'selected' : '' }}>{{ \Carbon\Carbon::create()->month($i)->isoFormat('MMMM') }}</option>
+                            @endfor
+                        </select>
+                    </div>
+                    <div class="flex items-center space-x-2 pt-5">
+                        <button type="submit" class="w-full sm:w-auto px-4 py-1.5 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium">
+                            <i class="ri-filter-3-line mr-1"></i> Terapkan Filter
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="text-3xl font-semibold text-gray-800">{{ number_format($totalLulusEksternal ?? 0) }} <span class="text-sm font-normal">Peserta</span></div>
-             <div class="mt-3 h-32 chart-container" id="echart-binalavotas-lulus-eksternal"></div>
-        </div>
+        </form>
+    </section>
 
-        <div class="bg-white p-5 rounded-lg shadow">
-            <div class="flex items-center justify-between mb-1">
-                <h3 class="text-sm font-medium text-gray-600">Sertifikasi Kompetensi</h3>
-                <a href="{{ route('binalavotas.jumlah-sertifikasi-kompetensi.index') }}" class="text-xs text-primary hover:text-primary/80">Detail &rarr;</a>
+    <h2 class="text-xl font-semibold text-gray-800 -mb-4">Kinerja Umum Binalavotas</h2>
+    @php
+        $currentSelectedYear = $selectedYear ?? date('Y'); // Menggunakan $selectedYear dari controller atau tahun ini
+        $currentSelectedMonth = $selectedMonth ?? null; // Menggunakan $selectedMonth dari controller
+
+        $yearToDisplay = $currentSelectedYear;
+        $monthValue = null;
+        if ($currentSelectedMonth && is_numeric($currentSelectedMonth)) {
+            $monthValue = (int)$currentSelectedMonth;
+        }
+
+        if ($monthValue && $monthValue >= 1 && $monthValue <= 12) {
+            $endMonthName = \Carbon\Carbon::create()->month($monthValue)->isoFormat('MMMM');
+            $periodText = "Periode: Januari - " . $endMonthName . " " . $yearToDisplay;
+        } else {
+            $periodText = "Sepanjang Tahun " . $yearToDisplay;
+        }
+    @endphp
+
+    {{-- Kartu Statistik Binalavotas --}}
+    {{-- Pastikan variabel total dan rute sesuai dengan yang ada di BinalavotasDashboardController --}}
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {{-- Kartu Lulus Pelatihan Internal --}}
+        <a href="{{ route('binalavotas.dashboard') }}#internal" class="stat-card-link-wrapper"> {{-- Ganti rute jika ada halaman detail --}}
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Lulus Pelatihan Internal</p>
+                    <p class="stat-card-value">{{ number_format($totalLulusInternal ?? 0) }}</p> {{-- Sesuaikan nama variabel --}}
+                </div>
+                <div class="stat-card-icon-wrapper bg-blue-100">
+                    <i class="ri-home-heart-line text-blue-500 text-2xl"></i>
+                </div>
             </div>
-            <div class="text-3xl font-semibold text-gray-800">{{ number_format($totalSertifikasi ?? 0) }} <span class="text-sm font-normal">Sertifikat</span></div>
-            <div class="mt-3 h-32 chart-container" id="echart-binalavotas-sertifikasi"></div>
-        </div>
-    </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
 
-    {{-- Baris untuk Chart Utama --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        {{-- Kartu Lulus Pelatihan Eksternal --}}
+        <a href="{{ route('binalavotas.dashboard') }}#eksternal" class="stat-card-link-wrapper"> {{-- Ganti rute jika ada halaman detail --}}
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Lulus Pelatihan Eksternal</p>
+                    <p class="stat-card-value">{{ number_format($totalLulusEksternal ?? 0) }}</p> {{-- Sesuaikan nama variabel --}}
+                </div>
+                <div class="stat-card-icon-wrapper bg-purple-100">
+                    <i class="ri-flight-takeoff-line text-purple-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
+        
+        {{-- Kartu Jumlah Sertifikasi Kompetensi --}}
+        <a href="{{ route('binalavotas.jumlah-sertifikasi-kompetensi.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Jml Sertifikasi Kompetensi</p>
+                    <p class="stat-card-value">{{ number_format($totalSertifikasi ?? 0) }}</p> {{-- Sesuaikan nama variabel --}}
+                </div>
+                <div class="stat-card-icon-wrapper bg-green-100">
+                    <i class="ri-shield-star-line text-green-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
+    </section>
+
+    {{-- Bagian Grafik --}}
+    {{-- Pastikan ID chart dan variabel data chart sesuai dengan yang ada di BinalavotasDashboardController --}}
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Komposisi Tipe Lembaga Pelatihan (Lulus - Tahun {{ $selectedYear }}{{ $selectedMonth ? ' - '.\Carbon\Carbon::create()->month($selectedMonth)->isoFormat('MMMM') : '' }})</h3>
-            <div id="echart-binalavotas-tipe-lembaga" style="width: 100%; height: 350px;"></div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Lulus Pelatihan Internal ({{ $yearToDisplay }})</h3>
+            <div id="echart-binalavotas-internal-trend" style="width: 100%; height: 300px;"></div>
         </div>
         <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Komposisi Jenis LSP Sertifikasi (Tahun {{ $selectedYear }}{{ $selectedMonth ? ' - '.\Carbon\Carbon::create()->month($selectedMonth)->isoFormat('MMMM') : '' }})</h3>
-            <div id="echart-binalavotas-jenis-lsp" style="width: 100%; height: 350px;"></div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Lulus Pelatihan Eksternal ({{ $yearToDisplay }})</h3>
+            <div id="echart-binalavotas-eksternal-trend" style="width: 100%; height: 300px;"></div>
         </div>
-    </div>
+        <div class="bg-white p-5 rounded-lg shadow">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Jumlah Sertifikasi Kompetensi ({{ $yearToDisplay }})</h3>
+            <div id="echart-binalavotas-sertifikasi-trend" style="width: 100%; height: 300px;"></div>
+        </div>
+    </section>
 </div>
 @endsection
 
 @push('scripts')
-{{-- ECharts sudah di-include di layouts/app.blade.php --}}
+{{-- ECharts sudah di-include di layouts.app.blade.php --}}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // 1. Chart Tren Lulus Pelatihan Internal
-        var lulusInternalChartDom = document.getElementById('echart-binalavotas-lulus-internal');
-        if (lulusInternalChartDom) {
-            var lulusInternalChart = echarts.init(lulusInternalChartDom);
-            var lulusInternalOption = {
-                tooltip: { trigger: 'axis' },
-                grid: { left: '3%', right: '10%', bottom: '3%', top: '15%', containLabel: true },
-                xAxis: { type: 'category', boundaryGap: false, data: @json($chartLabels) },
-                yAxis: { type: 'value', min: 0 },
-                series: [{
-                    name: 'Lulus Internal', type: 'line', smooth: true,
-                    data: @json($lulusInternalChartData),
-                    itemStyle: { color: '#3b82f6' }, 
-                    areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{offset: 0, color: 'rgba(59, 130, 246, 0.3)'}, {offset: 1, color: 'rgba(59, 130, 246, 0)'}])}
-                }]
-            };
-            lulusInternalChart.setOption(lulusInternalOption);
-            window.addEventListener('resize', () => lulusInternalChart.resize());
+        const textColor = '#374151'; 
+        const axisLineColor = '#D1D5DB';
+        const legendTextColor = '#4B5563';
+
+        // Fungsi umum untuk membuat chart
+        function createChart(chartId, legendDataName, chartDataLabels, chartDataValues, itemColor, areaColorStops) {
+            var chartDom = document.getElementById(chartId);
+            if (chartDom) {
+                var myChart = echarts.init(chartDom, null);
+                var option = {
+                    tooltip: { trigger: 'axis', formatter: function (params) { return params[0].name + '<br/>' + params[0].seriesName + ' : ' + params[0].value.toLocaleString('id-ID'); } },
+                    legend: { data: [legendDataName], textStyle: { color: legendTextColor }, bottom: 0 },
+                    grid: { left: '3%', right: '4%', bottom: '10%', containLabel: true },
+                    xAxis: { type: 'category', boundaryGap: false, data: chartDataLabels, axisLine: { lineStyle: { color: axisLineColor } }, axisLabel: { color: textColor } },
+                    yAxis: { type: 'value', name: 'Jumlah', min: 0, axisLine: { lineStyle: { color: axisLineColor } }, axisLabel: { color: textColor, formatter: function (value) { return value.toLocaleString('id-ID'); } }, nameTextStyle: { color: textColor } },
+                    series: [{
+                        name: legendDataName, type: 'line', smooth: true,
+                        data: chartDataValues,
+                        itemStyle: { color: itemColor },
+                        areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, areaColorStops)}
+                    }]
+                };
+                myChart.setOption(option);
+                window.addEventListener('resize', () => myChart.resize());
+            }
         }
 
-        // 2. Chart Tren Lulus Pelatihan Eksternal
-        var lulusEksternalChartDom = document.getElementById('echart-binalavotas-lulus-eksternal');
-        if (lulusEksternalChartDom) {
-            var lulusEksternalChart = echarts.init(lulusEksternalChartDom);
-            var lulusEksternalOption = {
-                tooltip: { trigger: 'axis' },
-                grid: { left: '3%', right: '10%', bottom: '3%', top: '15%', containLabel: true },
-                xAxis: { type: 'category', boundaryGap: false, data: @json($chartLabels) },
-                yAxis: { type: 'value', min: 0 },
-                series: [{
-                    name: 'Lulus Eksternal', type: 'line', smooth: true,
-                    data: @json($lulusEksternalChartData),
-                    itemStyle: { color: '#10b981' }, 
-                    areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{offset: 0, color: 'rgba(16, 185, 129, 0.3)'}, {offset: 1, color: 'rgba(16, 185, 129, 0)'}])}
-                }]
-            };
-            lulusEksternalChart.setOption(lulusEksternalOption);
-            window.addEventListener('resize', () => lulusEksternalChart.resize());
-        }
-        
-        // 3. Chart Tren Sertifikasi Kompetensi
-        var sertifikasiChartDom = document.getElementById('echart-binalavotas-sertifikasi');
-        if (sertifikasiChartDom) {
-            var sertifikasiChart = echarts.init(sertifikasiChartDom);
-            var sertifikasiOption = {
-                tooltip: { trigger: 'axis' },
-                grid: { left: '3%', right: '10%', bottom: '3%', top: '15%', containLabel: true },
-                xAxis: { type: 'category', boundaryGap: false, data: @json($chartLabels) },
-                yAxis: { type: 'value', min: 0 },
-                series: [{
-                    name: 'Jumlah Sertifikasi', type: 'line', smooth: true,
-                    data: @json($sertifikasiChartData),
-                    itemStyle: { color: '#f59e0b' }, 
-                    areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{offset: 0, color: 'rgba(245, 158, 11, 0.3)'}, {offset: 1, color: 'rgba(245, 158, 11, 0)'}])}
-                }]
-            };
-            sertifikasiChart.setOption(sertifikasiOption);
-            window.addEventListener('resize', () => sertifikasiChart.resize());
-        }
+        // Chart untuk Tren Lulus Pelatihan Internal
+        createChart(
+            'echart-binalavotas-internal-trend',
+            'Lulus Pelatihan Internal',
+            @json($chartLabels ?? []), // Sesuaikan nama variabel
+            @json($lulusInternalChartData ?? []), // Sesuaikan nama variabel
+            '#3b82f6', // Biru
+            [{offset: 0, color: 'rgba(59, 130, 246, 0.5)'}, {offset: 1, color: 'rgba(59, 130, 246, 0.1)'}]
+        );
 
-        // 4. Chart Komposisi Tipe Lembaga Pelatihan (Lulus)
-        var tipeLembagaChartDom = document.getElementById('echart-binalavotas-tipe-lembaga');
-        if (tipeLembagaChartDom) {
-            var tipeLembagaChart = echarts.init(tipeLembagaChartDom);
-            var tipeLembagaOption = {
-                tooltip: { trigger: 'item', formatter: '{a} <br/>{b}: {c} ({d}%)' },
-                legend: { 
-                    orient: 'horizontal', 
-                    bottom: 0, 
-                    data: @json(collect($pelatihanPerTipeLembaga)->pluck('name')),
-                    textStyle: { fontSize: 10 }
-                },
-                series: [{
-                    name: 'Tipe Lembaga (Lulus)', type: 'pie', radius: ['45%', '70%'], center: ['50%', '45%'],
-                    avoidLabelOverlap: false,
-                    label: { show: false, position: 'center' },
-                    emphasis: { label: { show: true, fontSize: '16', fontWeight: 'bold' } },
-                    labelLine: { show: false },
-                    data: @json($pelatihanPerTipeLembaga)
-                }]
-            };
-            tipeLembagaChart.setOption(tipeLembagaOption);
-            window.addEventListener('resize', () => tipeLembagaChart.resize());
-        }
-        
-        // 5. Chart Komposisi Jenis LSP Sertifikasi
-        var jenisLspChartDom = document.getElementById('echart-binalavotas-jenis-lsp');
-        if (jenisLspChartDom) {
-            var jenisLspChart = echarts.init(jenisLspChartDom);
-            var jenisLspOption = {
-                tooltip: { trigger: 'item', formatter: '{a} <br/>{b}: {c} ({d}%)' },
-                legend: { 
-                    orient: 'horizontal', 
-                    bottom: 0, 
-                    data: @json(collect($sertifikasiPerJenisLsp)->pluck('name')),
-                    textStyle: { fontSize: 10 }
-                },
-                series: [{
-                    name: 'Jenis LSP', type: 'pie', radius: ['45%', '70%'], center: ['50%', '45%'],
-                    avoidLabelOverlap: false,
-                    label: { show: false, position: 'center' },
-                    emphasis: { label: { show: true, fontSize: '16', fontWeight: 'bold' } },
-                    labelLine: { show: false },
-                    data: @json($sertifikasiPerJenisLsp)
-                }]
-            };
-            jenisLspChart.setOption(jenisLspOption);
-            window.addEventListener('resize', () => jenisLspChart.resize());
-        }
+        // Chart untuk Tren Lulus Pelatihan Eksternal
+        createChart(
+            'echart-binalavotas-eksternal-trend',
+            'Lulus Pelatihan Eksternal',
+            @json($chartLabels ?? []), // Sesuaikan nama variabel
+            @json($lulusEksternalChartData ?? []), // Sesuaikan nama variabel
+            '#8b5cf6', // Ungu/Violet
+            [{offset: 0, color: 'rgba(139, 92, 246, 0.5)'}, {offset: 1, color: 'rgba(139, 92, 246, 0.1)'}]
+        );
 
+        // Chart untuk Tren Jumlah Sertifikasi Kompetensi
+        createChart(
+            'echart-binalavotas-sertifikasi-trend',
+            'Jumlah Sertifikasi Kompetensi',
+            @json($chartLabels ?? []), // Sesuaikan nama variabel
+            @json($sertifikasiChartData ?? []), // Sesuaikan nama variabel
+            '#10b981', // Hijau
+            [{offset: 0, color: 'rgba(16, 185, 129, 0.5)'}, {offset: 1, color: 'rgba(16, 185, 129, 0.1)'}]
+        );
     });
 </script>
 @endpush

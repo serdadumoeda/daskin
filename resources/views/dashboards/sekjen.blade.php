@@ -4,277 +4,282 @@
 @section('page_title', 'Sekretariat Jenderal')
 
 @section('header_filters')
-    <form method="GET" action="{{ route('sekretariat-jenderal.dashboard') }}" class="w-full">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 items-end">
-            <div class="flex-grow">
-                <label for="year_filter_sekjen" class="text-sm text-gray-600 whitespace-nowrap">Tahun:</label>
-                <select name="year_filter" id="year_filter_sekjen" class="form-input mt-1 w-full bg-white">
-                    @if($availableYears->isEmpty())
-                        <option value="{{ $selectedYear ?: date('Y') }}" selected>{{ $selectedYear ?: date('Y') }}</option>
-                    @else
-                        @foreach($availableYears as $year)
-                            <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>{{ $year }}</option>
-                        @endforeach
-                    @endif
-                </select>
-            </div>
-            <div class="flex-grow">
-                <label for="month_filter_sekjen" class="text-sm text-gray-600 whitespace-nowrap">Bulan:</label>
-                <select name="month_filter" id="month_filter_sekjen" class="form-input mt-1 w-full bg-white">
-                    <option value="">Semua Bulan</option>
-                    @for ($i = 1; $i <= 12; $i++)
-                        <option value="{{ $i }}" {{ (int)$selectedMonth == $i ? 'selected' : '' }}>{{ \Carbon\Carbon::create()->month((int)$i)->isoFormat('MMMM') }}</option>
-                    @endfor
-                </select>
-            </div>
-            <div class="flex items-center space-x-2 pt-5">
-                <button type="submit" class="w-full sm:w-auto px-4 py-1.5 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium">
-                    <i class="ri-filter-3-line mr-1"></i> Terapkan
-                </button>
-                 <a href="{{ route('sekretariat-jenderal.dashboard') }}" class="w-full sm:w-auto px-4 py-1.5 bg-gray-200 text-gray-700 rounded-button hover:bg-gray-300 text-sm font-medium">
-                    Reset
-                </a>
-            </div>
-        </div>
-    </form>
+    {{-- Bagian ini dikosongkan karena filter dipindahkan ke @section('content') --}}
 @endsection
 
 @section('content')
-<div class="space-y-6">
+<div class="space-y-8">
+
+    {{-- Filter --}}
+    <section>
+        <form method="GET" action="{{ route('sekretariat-jenderal.dashboard') }}" class="w-full mb-6">
+            <h3 class="text-md font-semibold text-gray-700 mb-3">Filter Data:</h3>
+            <div class="p-4 bg-white rounded-lg shadow">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 items-end">
+                    <div class="flex-grow">
+                        <label for="year_filter" class="text-sm text-gray-600 whitespace-nowrap">Tahun:</label>
+                        <select name="year_filter" id="year_filter" class="form-input mt-1 w-full bg-white border-gray-300">
+                            @if(isset($availableYears) && $availableYears->isEmpty() && isset($selectedYear))
+                                 <option value="{{ $selectedYear }}" selected>{{ $selectedYear }}</option>
+                            @elseif(isset($availableYears) && $availableYears->isEmpty())
+                                <option value="{{ date('Y') }}" selected>{{ date('Y') }}</option>
+                            @elseif(isset($availableYears))
+                                @foreach($availableYears as $year)
+                                    <option value="{{ $year }}" {{ (isset($selectedYear) && $selectedYear == $year) ? 'selected' : '' }}>{{ $year }}</option>
+                                @endforeach
+                            @else
+                                <option value="{{ date('Y') }}" selected>{{ date('Y') }}</option> {{-- Fallback --}}
+                            @endif
+                        </select>
+                    </div>
+                    <div class="flex-grow">
+                        <label for="month_filter" class="text-sm text-gray-600 whitespace-nowrap">Bulan:</label>
+                        <select name="month_filter" id="month_filter" class="form-input mt-1 w-full bg-white border-gray-300">
+                            <option value="">Semua Bulan</option>
+                            @for ($i = 1; $i <= 12; $i++)
+                                <option value="{{ $i }}" {{ (isset($selectedMonth) && $selectedMonth == $i) ? 'selected' : '' }}>{{ \Carbon\Carbon::create()->month($i)->isoFormat('MMMM') }}</option>
+                            @endfor
+                        </select>
+                    </div>
+                    <div class="flex items-center space-x-2 pt-5">
+                        <button type="submit" class="w-full sm:w-auto px-4 py-1.5 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium">
+                            <i class="ri-filter-3-line mr-1"></i> Terapkan Filter
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </section>
+
+    <h2 class="text-xl font-semibold text-gray-800 -mb-4">Kinerja Umum Sekretariat Jenderal</h2>
     @php
-        // Definisikan teks periode sekali untuk digunakan di semua kartu KPI
-        $endMonthNameSekjen = $selectedMonth ? \Carbon\Carbon::create()->month((int)$selectedMonth)->isoFormat('MMMM') : 'Desember';
-        $periodTextSekjenGlobal = "Periode: Januari - " . $endMonthNameSekjen . " " . $selectedYear;
+        $currentSelectedYear = $selectedYear ?? date('Y');
+        $currentSelectedMonth = $selectedMonth ?? null;
+
+        $yearToDisplay = $currentSelectedYear;
+        $monthValue = null;
+        if ($currentSelectedMonth && is_numeric($currentSelectedMonth)) {
+            $monthValue = (int)$currentSelectedMonth;
+        }
+
+        if ($monthValue && $monthValue >= 1 && $monthValue <= 12) {
+            $endMonthName = \Carbon\Carbon::create()->month($monthValue)->isoFormat('MMMM');
+            $periodText = "Periode: Januari - " . $endMonthName . " " . $yearToDisplay;
+        } else {
+            $periodText = "Sepanjang Tahun " . $yearToDisplay;
+        }
     @endphp
 
-    {{-- Baris 1: Kartu Ringkasan --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="bg-white p-5 rounded-lg shadow">
-            <div class="flex items-center justify-between mb-1">
-                <h3 class="text-sm font-medium text-gray-600">Jumlah MoU</h3>
-                <a href="{{ route('sekretariat-jenderal.progress-mou.index') }}" class="text-xs text-primary hover:text-primary/80">Detail &rarr;</a>
+    {{-- Kartu Statistik Sekretariat Jenderal --}}
+    {{-- Baris Pertama: 3 Kartu --}}
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <a href="{{ route('sekretariat-jenderal.progress-mou.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Jumlah MoU</p>
+                    <p class="stat-card-value">{{ number_format($totalMoU ?? 0) }}</p>
+                </div>
+                <div class="stat-card-icon-wrapper bg-blue-100">
+                    <i class="ri-honour-line text-blue-500 text-2xl"></i>
+                </div>
             </div>
-            <div class="text-3xl font-semibold text-gray-800">{{ number_format($totalMoU ?? 0) }}</div>
-            <p class="text-xs text-gray-400 mt-1">{{ $periodTextSekjenGlobal }}</p>
-        </div>
-        <div class="bg-white p-5 rounded-lg shadow">
-            <div class="flex items-center justify-between mb-1">
-                <h3 class="text-sm font-medium text-gray-600">Jumlah Regulasi Baru</h3>
-                <a href="{{ route('sekretariat-jenderal.jumlah-regulasi-baru.index') }}" class="text-xs text-primary hover:text-primary/80">Detail &rarr;</a>
-            </div>
-            <div class="text-3xl font-semibold text-gray-800">{{ number_format($totalRegulasi ?? 0) }}</div>
-            <p class="text-xs text-gray-400 mt-1">{{ $periodTextSekjenGlobal }}</p>
-        </div>
-        <div class="bg-white p-5 rounded-lg shadow">
-            <div class="flex items-center justify-between mb-1">
-                <h3 class="text-sm font-medium text-gray-600">Jumlah Penanganan Kasus</h3>
-                <a href="{{ route('sekretariat-jenderal.jumlah-penanganan-kasus.index') }}" class="text-xs text-primary hover:text-primary/80">Detail &rarr;</a>
-            </div>
-            <div class="text-3xl font-semibold text-gray-800">{{ number_format($totalKasusDitangani ?? 0) }}</div>
-            <p class="text-xs text-gray-400 mt-1">{{ $periodTextSekjenGlobal }}</p>
-        </div>
-    </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
 
-    {{-- Baris 2: Kartu Ringkasan Lanjutan --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="bg-white p-5 rounded-lg shadow">
-            <div class="flex items-center justify-between mb-1">
-                <h3 class="text-sm font-medium text-gray-600">Total Nilai Penyelesaian BMN</h3>
-                <a href="{{ route('sekretariat-jenderal.penyelesaian-bmn.index') }}" class="text-xs text-primary hover:text-primary/80">Detail &rarr;</a>
+        <a href="{{ route('sekretariat-jenderal.jumlah-regulasi-baru.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Jumlah Regulasi Baru</p>
+                    <p class="stat-card-value">{{ number_format($totalRegulasi ?? 0) }}</p>
+                </div>
+                <div class="stat-card-icon-wrapper bg-green-100">
+                    <i class="ri-file-list-3-line text-green-500 text-2xl"></i>
+                </div>
             </div>
-            <div class="text-3xl font-semibold text-gray-800">Rp {{ number_format($totalNilaiPenyelesaianBmn ?? 0, 0, ',', '.') }}</div>
-            <p class="text-xs text-gray-400 mt-1">{{ $periodTextSekjenGlobal }}</p>
-        </div>
-        <div class="bg-white p-5 rounded-lg shadow">
-            <div class="flex items-center justify-between mb-1">
-                <h3 class="text-sm font-medium text-gray-600">Total SDM Hadir (WFO)</h3>
-                <a href="{{ route('sekretariat-jenderal.persentase-kehadiran.index') }}" class="text-xs text-primary hover:text-primary/80">Detail &rarr;</a>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
+        
+        <a href="{{ route('sekretariat-jenderal.jumlah-penanganan-kasus.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Jumlah Penanganan Kasus</p>
+                    <p class="stat-card-value">{{ number_format($totalKasusDitangani ?? 0) }}</p>
+                </div>
+                <div class="stat-card-icon-wrapper bg-purple-100">
+                    <i class="ri-scales-2-line text-purple-500 text-2xl"></i>
+                </div>
             </div>
-            <div class="text-3xl font-semibold text-gray-800">{{ number_format($totalWFO ?? 0) }} <span class="text-sm">Orang</span></div>
-            <p class="text-xs text-gray-400 mt-1">{{ $periodTextSekjenGlobal }}</p>
-        </div>
-        <div class="bg-white p-5 rounded-lg shadow">
-            <div class="flex items-center justify-between mb-1">
-                <h3 class="text-sm font-medium text-gray-600">Total Berita Monev Media</h3>
-                <a href="{{ route('sekretariat-jenderal.monev-monitoring-media.index') }}" class="text-xs text-primary hover:text-primary/80">Detail &rarr;</a>
-            </div>
-            <div class="text-3xl font-semibold text-gray-800">{{ number_format($totalBeritaMonev ?? 0) }}</div>
-            <p class="text-xs text-gray-400 mt-1">{{ $periodTextSekjenGlobal }}</p>
-        </div>
-    </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
+    </section>
 
-    {{-- Baris 3: Kartu Ringkasan Tambahan --}}
-     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-white p-5 rounded-lg shadow">
-            <div class="flex items-center justify-between mb-1">
-                <h3 class="text-sm font-medium text-gray-600">Lulusan Polteknaker Bekerja</h3>
-                <a href="{{ route('sekretariat-jenderal.lulusan-polteknaker-bekerja.index') }}" class="text-xs text-primary hover:text-primary/80">Detail &rarr;</a>
+    {{-- Baris Kedua: 3 Kartu --}}
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        <a href="{{ route('sekretariat-jenderal.penyelesaian-bmn.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Jumlah Penyelesaian BMN</p>
+                    <p class="stat-card-value">Rp {{ number_format($totalNilaiPenyelesaianBmn ?? 0, 0, ',', '.') }}</p>
+                </div>
+                <div class="stat-card-icon-wrapper bg-orange-100">
+                    <i class="ri-archive-drawer-line text-orange-500 text-2xl"></i>
+                </div>
             </div>
-            <div class="text-3xl font-semibold text-gray-800">{{ number_format($totalLulusanBekerja ?? 0) }} <span class="text-sm">Orang</span></div>
-            <p class="text-xs text-gray-400 mt-1">{{ $periodTextSekjenGlobal }}</p>
-        </div>
-        <div class="bg-white p-5 rounded-lg shadow">
-            <div class="flex items-center justify-between mb-1">
-                <h3 class="text-sm font-medium text-gray-600">SDM Mengikuti Pelatihan</h3>
-                <a href="{{ route('sekretariat-jenderal.sdm-mengikuti-pelatihan.index') }}" class="text-xs text-primary hover:text-primary/80">Detail &rarr;</a>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
+        
+        <a href="{{ route('sekretariat-jenderal.persentase-kehadiran.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Total SDM Hadir (WFO)</p>
+                    <p class="stat-card-value">{{ number_format($totalWFO ?? 0) }} <span class="text-sm">Orang</span></p>
+                </div>
+                <div class="stat-card-icon-wrapper bg-yellow-100">
+                    <i class="ri-user-follow-line text-yellow-500 text-2xl"></i>
+                </div>
             </div>
-            <div class="text-3xl font-semibold text-gray-800">{{ number_format($totalSdmPelatihan ?? 0) }} <span class="text-sm">Peserta</span></div>
-            <p class="text-xs text-gray-400 mt-1">{{ $periodTextSekjenGlobal }}</p>
-        </div>
-    </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
+
+        <a href="{{ route('sekretariat-jenderal.monev-monitoring-media.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Monev Monitoring Media</p>
+                    <p class="stat-card-value">{{ number_format($totalBeritaMonev ?? 0) }}</p>
+                </div>
+                <div class="stat-card-icon-wrapper bg-teal-100">
+                    <i class="ri-rss-line text-teal-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
+    </section>
+
+    {{-- Baris Ketiga: 2 Kartu --}}
+    {{-- Kita gunakan grid-cols-1 md:grid-cols-2 lg:grid-cols-3 agar 2 kartu terakhir tetap rapi jika layar lebar --}}
+    {{-- atau bisa juga lg:grid-cols-2 jika ingin pas 2 kartu di layar besar --}}
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        <a href="{{ route('sekretariat-jenderal.lulusan-polteknaker-bekerja.index') }}" class="stat-card-link-wrapper lg:col-span-1"> {{-- lg:col-span-1 agar tidak terlalu lebar jika hanya 2 item --}}
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Lulusan Polteknaker Bekerja</p>
+                    <p class="stat-card-value">{{ number_format($totalLulusanBekerja ?? 0) }} <span class="text-sm">Orang</span></p>
+                </div>
+                <div class="stat-card-icon-wrapper bg-indigo-100">
+                    <i class="ri-user-star-line text-indigo-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
+
+        <a href="{{ route('sekretariat-jenderal.sdm-mengikuti-pelatihan.index') }}" class="stat-card-link-wrapper lg:col-span-1">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">SDM Mengikuti Pelatihan</p>
+                    <p class="stat-card-value">{{ number_format($totalSdmPelatihan ?? 0) }}</p>
+                </div>
+                <div class="stat-card-icon-wrapper bg-pink-100">
+                    <i class="ri-team-line text-pink-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
+    </section>
 
 
-    {{-- Baris untuk Chart Utama --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+    {{-- Bagian Grafik --}}
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Jumlah MoU per Bulan (Tahun {{ $selectedYear }})</h3>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Jumlah MoU ({{ $yearToDisplay }})</h3>
             <div id="echart-sekjen-mou-trend" style="width: 100%; height: 300px;"></div>
         </div>
         <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Komposisi Jenis Regulasi Baru ({{ $periodTextSekjenGlobal }})</h3>
-            <div id="echart-sekjen-regulasi-jenis" style="width: 100%; height: 300px;"></div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Jumlah Regulasi Baru ({{ $yearToDisplay }})</h3>
+            <div id="echart-sekjen-regulasi-trend" style="width: 100%; height: 300px;"></div>
         </div>
-    </div>
-     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Jumlah Kasus Ditangani per Bulan (Tahun {{ $selectedYear }})</h3>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Jumlah Penanganan Kasus ({{ $yearToDisplay }})</h3>
             <div id="echart-sekjen-kasus-trend" style="width: 100%; height: 300px;"></div>
         </div>
         <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Nilai Penyelesaian BMN per Bulan (Tahun {{ $selectedYear }})</h3>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Jumlah Penyelesaian BMN ({{ $yearToDisplay }})</h3>
             <div id="echart-sekjen-bmn-trend" style="width: 100%; height: 300px;"></div>
         </div>
-    </div>
-     <div class="bg-white p-5 rounded-lg shadow mt-6">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Kehadiran (WFO vs Lainnya) per Bulan (Tahun {{ $selectedYear }})</h3>
-        <div id="echart-sekjen-kehadiran-trend" style="width: 100%; height: 300px;"></div>
-    </div>
-
+        <div class="bg-white p-5 rounded-lg shadow">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren % Kehadiran ({{ $yearToDisplay }})</h3>
+            <div id="echart-sekjen-kehadiran-trend" style="width: 100%; height: 300px;"></div>
+        </div>
+        <div class="bg-white p-5 rounded-lg shadow">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Monev Monitoring Media ({{ $yearToDisplay }})</h3>
+            <div id="echart-sekjen-media-trend" style="width: 100%; height: 300px;"></div>
+        </div>
+        <div class="bg-white p-5 rounded-lg shadow">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Lulusan Polteknaker Bekerja ({{ $yearToDisplay }})</h3>
+            <div id="echart-sekjen-polteknaker-trend" style="width: 100%; height: 300px;"></div>
+        </div>
+        <div class="bg-white p-5 rounded-lg shadow">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren SDM Mengikuti Pelatihan ({{ $yearToDisplay }})</h3>
+            <div id="echart-sekjen-sdm-pelatihan-trend" style="width: 100%; height: 300px;"></div>
+        </div>
+    </section>
 </div>
 @endsection
 
 @push('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+{{-- ECharts sudah di-include di layouts.app.blade.php --}}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // 1. Chart Tren MoU
-        var mouChartDom = document.getElementById('echart-sekjen-mou-trend');
-        if (mouChartDom) {
-            var mouChart = echarts.init(mouChartDom);
-            var mouOption = {
-                tooltip: { trigger: 'axis' },
-                legend: { data: ['Jumlah MoU'], bottom: 0 },
-                grid: { left: '3%', right: '4%', bottom: '10%', containLabel: true },
-                xAxis: { type: 'category', boundaryGap: false, data: @json($mouChartLabels) },
-                yAxis: { type: 'value', name: 'Jumlah MoU', min: 0 },
-                series: [{
-                    name: 'Jumlah MoU', type: 'line', smooth: true,
-                    data: @json($mouChartDataValues),
-                    itemStyle: { color: '#3b82f6' }, 
-                    areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{offset: 0, color: 'rgba(59, 130, 246, 0.5)'}, {offset: 1, color: 'rgba(59, 130, 246, 0.1)'}])}
-                }]
-            };
-            mouChart.setOption(mouOption);
-            window.addEventListener('resize', () => mouChart.resize());
-        }
+        const textColor = '#374151'; 
+        const axisLineColor = '#D1D5DB';
+        const legendTextColor = '#4B5563';
 
-        // 2. Chart Komposisi Jenis Regulasi
-        var regulasiChartDom = document.getElementById('echart-sekjen-regulasi-jenis');
-        if (regulasiChartDom) {
-            var regulasiChart = echarts.init(regulasiChartDom);
-            var regulasiOption = {
-                tooltip: { trigger: 'item', formatter: '{a} <br/>{b}: {c} ({d}%)' },
-                legend: { 
-                    orient: 'vertical', 
-                    left: 'left', 
-                    data: @json($regulasiPerJenis->pluck('name')),
-                    type: 'scroll', // Memungkinkan legenda di-scroll jika terlalu banyak
-                    textStyle: { fontSize: 10 }
-                },
-                series: [{
-                    name: 'Jenis Regulasi', type: 'pie', radius: ['50%', '70%'], center: ['60%', '50%'], // Menyesuaikan posisi tengah
-                    data: @json($regulasiPerJenis),
-                    avoidLabelOverlap: true,
-                    label: { show: false, position: 'center' },
-                    emphasis: { 
-                        itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' },
-                        label: { show: true, fontSize: '14', fontWeight: 'bold' }
+        function createChart(chartId, legendDataName, chartDataLabels, chartDataValues, itemColor, areaColorStops, yAxisFormatter = null) {
+            var chartDom = document.getElementById(chartId);
+            if (chartDom) {
+                var myChart = echarts.init(chartDom, null);
+                var yAxisOptions = {
+                    type: 'value', name: 'Jumlah', min: 0,
+                    axisLine: { lineStyle: { color: axisLineColor } },
+                    axisLabel: { color: textColor, formatter: yAxisFormatter ? yAxisFormatter : function (value) { return value.toLocaleString('id-ID'); } },
+                    nameTextStyle: { color: textColor }
+                };
+                if (yAxisFormatter && legendDataName.includes('%')) { yAxisOptions.max = 100; }
+
+                var option = {
+                    tooltip: { 
+                        trigger: 'axis', 
+                        formatter: function (params) { 
+                            let value = params[0].value;
+                            let formattedValue = yAxisFormatter ? yAxisFormatter(value) : value.toLocaleString('id-ID');
+                            return params[0].name + '<br/>' + params[0].seriesName + ' : ' + formattedValue; 
+                        } 
                     },
-                    labelLine: { show: false }
-                }]
-            };
-            regulasiChart.setOption(regulasiOption);
-            window.addEventListener('resize', () => regulasiChart.resize());
+                    legend: { data: [legendDataName], textStyle: { color: legendTextColor }, bottom: 0 },
+                    grid: { left: '3%', right: '4%', bottom: '10%', containLabel: true },
+                    xAxis: { type: 'category', boundaryGap: false, data: chartDataLabels, axisLine: { lineStyle: { color: axisLineColor } }, axisLabel: { color: textColor } },
+                    yAxis: yAxisOptions,
+                    series: [{
+                        name: legendDataName, type: 'line', smooth: true,
+                        data: chartDataValues,
+                        itemStyle: { color: itemColor },
+                        areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, areaColorStops)}
+                    }]
+                };
+                myChart.setOption(option);
+                window.addEventListener('resize', () => myChart.resize());
+            }
         }
 
-        // 3. Chart Tren Jumlah Kasus Ditangani
-        var kasusChartDom = document.getElementById('echart-sekjen-kasus-trend');
-        if (kasusChartDom) {
-            var kasusChart = echarts.init(kasusChartDom);
-            var kasusOption = {
-                tooltip: { trigger: 'axis' },
-                legend: { data: ['Jumlah Kasus'], bottom: 0 },
-                grid: { left: '3%', right: '4%', bottom: '10%', containLabel: true },
-                xAxis: { type: 'category', boundaryGap: true, data: @json($kasusChartLabels) },
-                yAxis: { type: 'value', name: 'Jumlah Kasus', min: 0 },
-                series: [{
-                    name: 'Jumlah Kasus', type: 'bar', barMaxWidth: 30,
-                    data: @json($kasusChartDataValues),
-                    itemStyle: { color: '#10b981' } 
-                }]
-            };
-            kasusChart.setOption(kasusOption);
-            window.addEventListener('resize', () => kasusChart.resize());
-        }
-
-        // 4. Chart Tren Nilai Penyelesaian BMN
-        var bmnChartDom = document.getElementById('echart-sekjen-bmn-trend');
-        if (bmnChartDom) {
-            var bmnChart = echarts.init(bmnChartDom);
-            var bmnOption = {
-                tooltip: { trigger: 'axis', axisPointer: {type: 'shadow'} },
-                legend: { data: ['Total Nilai Aset BMN (Rp)'], bottom: 0 },
-                grid: { left: '3%', right: '4%', bottom: '10%', containLabel: true },
-                xAxis: { type: 'category', data: @json($bmnChartLabels) },
-                yAxis: { type: 'value', name: 'Nilai (Rp)', axisLabel: { formatter: function (value) { return (value/1000000).toFixed(1) + ' Jt'; } } },
-                series: [{
-                    name: 'Total Nilai Aset BMN (Rp)', type: 'line', smooth: true,
-                    data: @json($bmnChartDataValues),
-                    itemStyle: { color: '#f59e0b' } 
-                }]
-            };
-            bmnChart.setOption(bmnOption);
-            window.addEventListener('resize', () => bmnChart.resize());
-        }
-        
-        // 5. Chart Tren Kehadiran
-        var kehadiranChartDom = document.getElementById('echart-sekjen-kehadiran-trend');
-        if (kehadiranChartDom) {
-            var kehadiranChart = echarts.init(kehadiranChartDom);
-            var kehadiranOption = {
-                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-                legend: { data: ['WFO', 'Lainnya (Cuti, DL, Sakit, dll)'], bottom: 0 },
-                grid: { left: '3%', right: '4%', bottom: '10%', containLabel: true },
-                xAxis: { type: 'category', data: @json($kehadiranChartLabels) },
-                yAxis: { type: 'value', name: 'Jumlah Orang', min: 0 },
-                series: [
-                    {
-                        name: 'WFO', type: 'bar', stack: 'total', barMaxWidth: 40,
-                        emphasis: { focus: 'series' },
-                        data: @json($kehadiranWFOData),
-                        itemStyle: { color: '#22c55e' } 
-                    },
-                    {
-                        name: 'Lainnya (Cuti, DL, Sakit, dll)', type: 'bar', stack: 'total', barMaxWidth: 40,
-                        emphasis: { focus: 'series' },
-                        data: @json($kehadiranLainData),
-                        itemStyle: { color: '#ef4444' } 
-                    }
-                ]
-            };
-            kehadiranChart.setOption(kehadiranOption);
-            window.addEventListener('resize', () => kehadiranChart.resize());
-        }
+        // Inisialisasi semua 8 chart
+        // Pastikan nama variabel chart (cth: $mouChartLabels) sesuai dengan yang dikirim controller
+        createChart('echart-sekjen-mou-trend', 'Jumlah MoU', @json($mouChartLabels ?? []), @json($mouChartDataValues ?? []), '#3b82f6', [{offset: 0, color: 'rgba(59, 130, 246, 0.5)'}, {offset: 1, color: 'rgba(59, 130, 246, 0.1)'}]);
+        createChart('echart-sekjen-regulasi-trend', 'Jumlah Regulasi Baru', @json($regulasiPerJenis->pluck('name') ?? []), @json($regulasiPerJenis ?? []), '#10b981', [{offset: 0, color: 'rgba(16, 185, 129, 0.5)'}, {offset: 1, color: 'rgba(16, 185, 129, 0.1)'}]);
+        createChart('echart-sekjen-kasus-trend', 'Jumlah Penanganan Kasus', @json($kasusChartLabels ?? []), @json($kasusChartDataValues ?? []), '#8b5cf6', [{offset: 0, color: 'rgba(139, 92, 246, 0.5)'}, {offset: 1, color: 'rgba(139, 92, 246, 0.1)'}]);
+        createChart('echart-sekjen-bmn-trend', 'Jumlah Penyelesaian BMN', @json($bmnChartLabels ?? []), @json($bmnChartDataValues ?? []), '#f97316', [{offset: 0, color: 'rgba(249, 115, 22, 0.5)'}, {offset: 1, color: 'rgba(249, 115, 22, 0.1)'}]);
+        createChart('echart-sekjen-kehadiran-trend', '% Kehadiran', @json($kehadiranChartLabels ?? []), @json($kehadiranWFOData ?? []), '#f59e0b', [{offset: 0, color: 'rgba(245, 158, 11, 0.5)'}, {offset: 1, color: 'rgba(245, 158, 11, 0.1)'}], function (value) { return parseFloat(value).toLocaleString('id-ID', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '%'; });
+        createChart('echart-sekjen-media-trend', 'Monev Monitoring Media', @json($monevMediaChartLabels ?? []), @json($monevMediaChartDataValues ?? []), '#06b6d4', [{offset: 0, color: 'rgba(6, 182, 212, 0.5)'}, {offset: 1, color: 'rgba(6, 182, 212, 0.1)'}]);
+        createChart('echart-sekjen-polteknaker-trend', 'Lulusan Polteknaker Bekerja', @json($lulusanPolteknakerChartLabels ?? []), @json($lulusanPolteknakerChartDataValues ?? []), '#6366f1', [{offset: 0, color: 'rgba(99, 102, 241, 0.5)'}, {offset: 1, color: 'rgba(99, 102, 241, 0.1)'}]);
+        createChart('echart-sekjen-sdm-pelatihan-trend', 'SDM Mengikuti Pelatihan', @json($sdmPelatihanChartLabels ?? []), @json($sdmPelatihanChartDataValues ?? []), '#ec4899', [{offset: 0, color: 'rgba(236, 72, 153, 0.5)'}, {offset: 1, color: 'rgba(236, 72, 153, 0.1)'}]);
     });
 </script>
 @endpush
