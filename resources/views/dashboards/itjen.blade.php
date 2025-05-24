@@ -4,39 +4,42 @@
 @section('page_title', 'Inspektorat Jenderal')
 
 @section('header_filters')
-    <form method="GET" action="{{ route('inspektorat.dashboard') }}" class="w-full">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 items-end">
-            <div class="flex-grow">
-                <label for="year_filter_itjen" class="text-sm text-gray-600 whitespace-nowrap">Tahun:</label>
-                <select name="year_filter" id="year_filter_itjen" class="form-input mt-1 w-full bg-white border-gray-300">
-                    @if(!isset($availableYears) || $availableYears->isEmpty())
-                        <option value="{{ $selectedYear ?: date('Y') }}" selected>{{ $selectedYear ?: date('Y') }}</option>
-                    @else
-                        @foreach($availableYears as $year)
-                            <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>{{ $year }}</option>
-                        @endforeach
-                    @endif
-                </select>
-            </div>
-            <div class="flex-grow">
-                <label for="month_filter_itjen" class="text-sm text-gray-600 whitespace-nowrap">Bulan:</label>
-                <select name="month_filter" id="month_filter_itjen" class="form-input mt-1 w-full bg-white border-gray-300">
-                    <option value="">Semua Bulan</option>
-                    @for ($i = 1; $i <= 12; $i++)
-                        <option value="{{ $i }}" {{ (isset($selectedMonth) && (int)$selectedMonth == $i) ? 'selected' : '' }}>{{ \Carbon\Carbon::create()->month((int)$i)->isoFormat('MMMM') }}</option>
-                    @endfor
-                </select>
-            </div>
-            <div class="flex items-center space-x-2 pt-5">
-                <button type="submit" class="w-full sm:w-auto px-4 py-1.5 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium">
-                    <i class="ri-filter-3-line mr-1"></i> Terapkan
-                </button>
-                 <a href="{{ route('inspektorat.dashboard') }}" class="w-full sm:w-auto px-4 py-1.5 bg-gray-200 text-gray-700 rounded-button hover:bg-gray-300 text-sm font-medium">
-                    Reset
-                </a>
-            </div>
+<form method="GET" action="{{ route('inspektorat.dashboard') }}" class="flex flex-col sm:flex-row items-center gap-3 w-full">
+        {{-- Tahun --}}
+        <div class="flex-1 w-full sm:w-auto">
+            <label for="tahun" class="sr-only">Tahun</label>
+            <select name="tahun" id="tahun" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+                @php
+                    $currentLoopYear = date('Y');
+                @endphp
+                @for ($yearOption = $currentLoopYear + 1; $yearOption >= $currentLoopYear - 4; $yearOption--)
+                    <option value="{{ $yearOption }}" {{ $selectedYear == $yearOption ? 'selected' : '' }}>{{ $yearOption }}</option>
+                @endfor
+            </select>
+        </div>
+
+        {{-- Bulan --}}
+        <div class="flex-1 w-full sm:w-auto">
+            <label for="bulan" class="sr-only">Bulan</label>
+            <select name="bulan" id="bulan" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+                <option value="">Semua Bulan (Tahunan)</option>
+                {{-- Pastikan array ini ditulis dengan benar --}}
+                @foreach (['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'] as $monthKey => $monthName)
+                    <option value="{{ $monthKey + 1 }}" {{ $selectedMonth == ($monthKey + 1) ? 'selected' : '' }}>{{ $monthName }}</option>
+                @endforeach
+            </select>
+        </div>
+        
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+            <button type="submit" class="w-full sm:w-auto text-sm font-medium text-filter-btn-apply-text bg-filter-btn-apply-bg border border-filter-btn-apply-border hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-md px-4 py-2 transition-colors duration-200">
+                Terapkan
+            </button>
+            <a href="{{ route('inspektorat.dashboard') }}" class="w-full sm:w-auto text-center text-sm font-medium text-filter-btn-clear-text bg-filter-btn-clear-bg border border-filter-btn-clear-border hover:bg-red-200 focus:ring-4 focus:outline-none focus:ring-red-100 rounded-md px-4 py-2 transition-colors duration-200">
+                Bersihkan
+            </a>
         </div>
     </form>
+
 @endsection
 
 @section('content')

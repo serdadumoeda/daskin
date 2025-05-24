@@ -4,54 +4,49 @@
 @section('page_title', 'Binalavotas')
 
 @section('header_filters')
-    {{-- Bagian ini dikosongkan karena filter dipindahkan ke @section('content') --}}
+    <form method="GET" action="{{ route('binalavotas.dashboard') }}" class="flex flex-col sm:flex-row items-center gap-3 w-full">
+        {{-- Tahun --}}
+        <div class="flex-1 w-full sm:w-auto">
+            <label for="tahun" class="sr-only">Tahun</label>
+            <select name="tahun" id="tahun" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+                @php
+                    $currentLoopYear = date('Y');
+                @endphp
+                @for ($yearOption = $currentLoopYear + 1; $yearOption >= $currentLoopYear - 4; $yearOption--)
+                    <option value="{{ $yearOption }}" {{ $selectedYear == $yearOption ? 'selected' : '' }}>{{ $yearOption }}</option>
+                @endfor
+            </select>
+        </div>
+
+        {{-- Bulan --}}
+        <div class="flex-1 w-full sm:w-auto">
+            <label for="bulan" class="sr-only">Bulan</label>
+            <select name="bulan" id="bulan" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+                <option value="">Semua Bulan (Tahunan)</option>
+                {{-- Pastikan array ini ditulis dengan benar --}}
+                @foreach (['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'] as $monthKey => $monthName)
+                    <option value="{{ $monthKey + 1 }}" {{ $selectedMonth == ($monthKey + 1) ? 'selected' : '' }}>{{ $monthName }}</option>
+                @endforeach
+            </select>
+        </div>
+        
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+            <button type="submit" class="w-full sm:w-auto text-sm font-medium text-filter-btn-apply-text bg-filter-btn-apply-bg border border-filter-btn-apply-border hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-md px-4 py-2 transition-colors duration-200">
+                Terapkan
+            </button>
+            <a href="{{ route('binalavotas.dashboard') }}" class="w-full sm:w-auto text-center text-sm font-medium text-filter-btn-clear-text bg-filter-btn-clear-bg border border-filter-btn-clear-border hover:bg-red-200 focus:ring-4 focus:outline-none focus:ring-red-100 rounded-md px-4 py-2 transition-colors duration-200">
+                Bersihkan
+            </a>
+        </div>
+    </form>
 @endsection
 
 @section('content')
 <div class="space-y-8">
 
-    {{-- Filter --}}
-    <section>
-        <form method="GET" action="{{ route('binalavotas.dashboard') }}" class="w-full mb-6">
-            <h3 class="text-md font-semibold text-gray-700 mb-3">Filter Data:</h3>
-            <div class="p-4 bg-white rounded-lg shadow">
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 items-end">
-                    <div class="flex-grow">
-                        <label for="year_filter" class="text-sm text-gray-600 whitespace-nowrap">Tahun:</label>
-                        <select name="year_filter" id="year_filter" class="form-input mt-1 w-full bg-white border-gray-300">
-                            @if(isset($availableYears) && $availableYears->isEmpty() && isset($selectedYear))
-                                 <option value="{{ $selectedYear }}" selected>{{ $selectedYear }}</option>
-                            @elseif(isset($availableYears) && $availableYears->isEmpty())
-                                <option value="{{ date('Y') }}" selected>{{ date('Y') }}</option>
-                            @elseif(isset($availableYears))
-                                @foreach($availableYears as $year)
-                                    <option value="{{ $year }}" {{ (isset($selectedYear) && $selectedYear == $year) ? 'selected' : '' }}>{{ $year }}</option>
-                                @endforeach
-                            @else
-                                <option value="{{ date('Y') }}" selected>{{ date('Y') }}</option> {{-- Fallback jika $availableYears tidak ada --}}
-                            @endif
-                        </select>
-                    </div>
-                    <div class="flex-grow">
-                        <label for="month_filter" class="text-sm text-gray-600 whitespace-nowrap">Bulan:</label>
-                        <select name="month_filter" id="month_filter" class="form-input mt-1 w-full bg-white border-gray-300">
-                            <option value="">Semua Bulan</option>
-                            @for ($i = 1; $i <= 12; $i++)
-                                <option value="{{ $i }}" {{ (isset($selectedMonth) && $selectedMonth == $i) ? 'selected' : '' }}>{{ \Carbon\Carbon::create()->month($i)->isoFormat('MMMM') }}</option>
-                            @endfor
-                        </select>
-                    </div>
-                    <div class="flex items-center space-x-2 pt-5">
-                        <button type="submit" class="w-full sm:w-auto px-4 py-1.5 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium">
-                            <i class="ri-filter-3-line mr-1"></i> Terapkan Filter
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </section>
 
-    <h2 class="text-xl font-semibold text-gray-800 -mb-4">Kinerja Umum Binalavotas</h2>
+
+    <!-- <h2 class="text-xl font-semibold text-gray-800 -mb-4">Kinerja Umum Binalavotas</h2> -->
     @php
         $currentSelectedYear = $selectedYear ?? date('Y'); // Menggunakan $selectedYear dari controller atau tahun ini
         $currentSelectedMonth = $selectedMonth ?? null; // Menggunakan $selectedMonth dari controller
