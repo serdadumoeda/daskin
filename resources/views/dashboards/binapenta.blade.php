@@ -101,7 +101,7 @@
             <div class="stat-card">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Persetujuan RPTKA</p>
-                    <p class="stat-card-value">{{ number_format($totalRptkaDiterima ?? 0) }} <span class="text-sm font-normal">TKA</span></p> {{-- Sesuaikan nama variabel --}}
+                    <p class="stat-card-value">{{ number_format($totalTkaDisetujui ?? 0) }} <span class="text-sm font-normal">TKA</span></p> {{-- Sesuaikan nama variabel --}}
                 </div>
                 <div class="stat-card-icon-wrapper bg-purple-100">
                     <i class="ri-user-shared-line text-purple-500 text-2xl"></i>
@@ -113,83 +113,138 @@
 
     {{-- Bagian Grafik --}}
     {{-- Pastikan ID chart dan variabel data chart sesuai dengan yang ada di BinapentaDashboardController --}}
-    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Penempatan oleh Kemnaker ({{ $yearToDisplay }})</h3>
-            <div id="echart-binapenta-penempatan-trend" style="width: 100%; height: 300px;"></div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Penempatan oleh Kemnaker</h3>
+            <div id="echart-binapenta-penempatan-trend" style="height: 400px;"></div>
         </div>
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Lowongan Kerja Baru (Pasker) ({{ $yearToDisplay }})</h3>
-            <div id="echart-binapenta-lowongan-trend" style="width: 100%; height: 300px;"></div>
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Lowongan Kerja Pasker</h3>
+            <div id="echart-binapenta-lowongan-pasker-trend" style="height: 400px;"></div>
         </div>
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Persetujuan RPTKA ({{ $yearToDisplay }})</h3>
-            <div id="echart-binapenta-rptka-trend" style="width: 100%; height: 300px;"></div>
+        <div class="bg-white p-6 rounded-xl shadow-md"> <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Persetujuan RPTKA (TKA Disetujui)</h3>
+            <div id="echart-binapenta-tka-disetujui-trend" style="height: 400px;"></div>
         </div>
-    </section>
-</div>
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h3 class="font-semibold text-lg text-gray-800 mb-4">Komposisi Penempatan berdasarkan Jenis Kelamin</h3>
+            <div id="echart-binapenta-penempatan-jk-pie" style="height: 400px;"></div>
+        </div>
+    </div>
+
+    
 @endsection
 
 @push('scripts')
-{{-- ECharts sudah di-include di layouts.app.blade.php --}}
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const textColor = '#374151'; 
-        const axisLineColor = '#D1D5DB';
-        const legendTextColor = '#4B5563';
+    document.addEventListener("DOMContentLoaded", function () {
+        
+        // Fungsi untuk membuat chart tren bulanan & kumulatif
+        function createMultiSeriesChart(elementId, labels, seriesConfig) {
+            const chartDom = document.getElementById(elementId);
+            if (!chartDom) { return; }
+            let existingChart = echarts.getInstanceByDom(chartDom);
+            if (existingChart) { existingChart.dispose(); }
+            const myChart = echarts.init(chartDom);
+            
+            const series = seriesConfig.map(s => ({
+                name: s.name, type: s.type, yAxisIndex: s.yAxisIndex || 0, stack: s.stack || null,
+                smooth: s.type === 'line', data: s.data, itemStyle: { color: s.color }, lineStyle: { color: s.color }
+            }));
+            const legendData = series.map(s => s.name);
+            const option = {
+                tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+                legend: { data: legendData, bottom: 0, type: 'scroll' },
+                grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
+                xAxis: [{ type: 'category', data: labels, axisPointer: { type: 'shadow' } }],
+                yAxis: [
+                    { type: 'value', name: 'Jumlah', min: 0, position: 'left', axisLabel: { formatter: '{value}' } },
+                    { type: 'value', name: 'Kumulatif', min: 0, position: 'right', splitLine: { show: false }, axisLabel: { formatter: '{value}' } }
+                ],
+                series: series
+            };
+            myChart.setOption(option);
+            window.addEventListener('resize', () => myChart.resize());
+        }
 
-        // Fungsi umum untuk membuat chart
-        function createChart(chartId, legendDataName, chartDataLabels, chartDataValues, itemColor, areaColorStops) {
-            var chartDom = document.getElementById(chartId);
-            if (chartDom) {
-                var myChart = echarts.init(chartDom, null);
-                var option = {
-                    tooltip: { trigger: 'axis', formatter: function (params) { return params[0].name + '<br/>' + params[0].seriesName + ' : ' + params[0].value.toLocaleString('id-ID'); } },
-                    legend: { data: [legendDataName], textStyle: { color: legendTextColor }, bottom: 0 },
-                    grid: { left: '3%', right: '4%', bottom: '10%', containLabel: true },
-                    xAxis: { type: 'category', boundaryGap: false, data: chartDataLabels, axisLine: { lineStyle: { color: axisLineColor } }, axisLabel: { color: textColor } },
-                    yAxis: { type: 'value', name: 'Jumlah', min: 0, axisLine: { lineStyle: { color: axisLineColor } }, axisLabel: { color: textColor, formatter: function (value) { return value.toLocaleString('id-ID'); } }, nameTextStyle: { color: textColor } },
-                    series: [{
-                        name: legendDataName, type: 'line', smooth: true,
-                        data: chartDataValues,
-                        itemStyle: { color: itemColor },
-                        areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, areaColorStops)}
-                    }]
-                };
-                myChart.setOption(option);
-                window.addEventListener('resize', () => myChart.resize());
+        // Fungsi untuk membuat Pie Chart
+        function createPieChart(elementId, titleText, data) {
+            const chartDom = document.getElementById(elementId);
+            if (!chartDom) { return; }
+            let existingChart = echarts.getInstanceByDom(chartDom);
+            if (existingChart) { existingChart.dispose(); }
+            const myChart = echarts.init(chartDom);
+            const option = {
+                title: { text: titleText, left: 'center', visibility: 'hidden' },
+                tooltip: { trigger: 'item', formatter: '{b} : {c} ({d}%)' },
+                legend: { orient: 'vertical', left: 'left', top: 'center', type: 'scroll' },
+                series: [{
+                    name: titleText, type: 'pie', radius: '70%', center: ['60%', '50%'],
+                    data: data,
+                    emphasis: { itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' } }
+                }]
+            };
+            myChart.setOption(option);
+            window.addEventListener('resize', () => myChart.resize());
+        }
+
+        const chartData = @json($chartData ?? null);
+        const pieChartData = @json($pieChartData ?? null);
+
+        if (!chartData) {
+            console.error('Variabel chartData utama tidak tersedia dari controller.');
+            return;
+        }
+
+        // Fungsi render helper untuk chart tren
+        function renderTrendChart(chartId, dataKey, seriesName, barColor, lineColor) {
+            const chartEl = document.getElementById(chartId);
+            if (chartEl) {
+                if (chartData[dataKey] && chartData[dataKey].labels && Array.isArray(chartData[dataKey].bulanan) && Array.isArray(chartData[dataKey].kumulatif)) {
+                    const isDataEffectivelyEmpty = chartData[dataKey].bulanan.every(val => val === 0);
+                    if (chartData[dataKey].labels.length > 0 && !isDataEffectivelyEmpty) {
+                        createMultiSeriesChart(chartId, chartData[dataKey].labels, [
+                            { name: `${seriesName} (Bulanan)`, type: 'bar', yAxisIndex: 0, data: chartData[dataKey].bulanan, color: barColor },
+                            { name: `Kumulatif ${seriesName}`, type: 'line', yAxisIndex: 1, data: chartData[dataKey].kumulatif, color: lineColor }
+                        ]);
+                    } else {
+                        chartEl.innerHTML = `<p class="text-center text-gray-500 py-5">Tidak ada data untuk ditampilkan pada chart ${seriesName}.</p>`;
+                    }
+                } else {
+                    console.warn(`Data untuk chart ${seriesName} tidak lengkap. Data diterima:`, chartData[dataKey]);
+                    chartEl.innerHTML = `<p class="text-center text-gray-500 py-5">Data chart ${seriesName} tidak tersedia.</p>`;
+                }
+            }
+        }
+        
+        // Fungsi render helper untuk pie chart
+        function renderPieChart(chartId, dataKey, title) {
+            const chartEl = document.getElementById(chartId);
+            if (chartEl && pieChartData && pieChartData[dataKey] && Array.isArray(pieChartData[dataKey]) && pieChartData[dataKey].length > 0) {
+                const allZero = pieChartData[dataKey].every(item => item.value === 0);
+                if(!allZero) {
+                    createPieChart(chartId, title, pieChartData[dataKey]);
+                } else {
+                    chartEl.innerHTML = `<p class="text-center text-gray-500 py-5">Tidak ada data untuk ditampilkan pada chart ${title}.</p>`;
+                }
+            } else {
+                console.warn(`Data untuk pie chart ${title} tidak lengkap. Data diterima:`, pieChartData ? pieChartData[dataKey] : 'pieChartData undefined');
+                if(chartEl) chartEl.innerHTML = `<p class="text-center text-gray-500 py-5">Data chart ${title} tidak tersedia.</p>`;
             }
         }
 
-        // Chart untuk Tren Penempatan oleh Kemnaker
-        createChart(
-            'echart-binapenta-penempatan-trend',
-            'Jml Penempatan Kemnaker',
-            @json($penempatanChartLabels ?? []), // Sesuaikan nama variabel
-            @json($penempatanChartDataValues ?? []), // Sesuaikan nama variabel
-            '#3b82f6', // Biru
-            [{offset: 0, color: 'rgba(59, 130, 246, 0.5)'}, {offset: 1, color: 'rgba(59, 130, 246, 0.1)'}]
-        );
+        // 1. Render Chart Tren Penempatan oleh Kemnaker
+        renderTrendChart('echart-binapenta-penempatan-trend', 'penempatan', 'Penempatan Kemnaker', '#3b82f6', '#1e40af');
+        
+        // 2. Render Chart Tren Lowongan Kerja Pasker
+        renderTrendChart('echart-binapenta-lowongan-pasker-trend', 'lowongan_pasker', 'Lowongan Pasker', '#10b981', '#059669');
 
-        // Chart untuk Tren Lowongan Kerja Baru (Pasker)
-        createChart(
-            'echart-binapenta-lowongan-trend',
-            'Jml Lowongan Pasker',
-            @json($lowonganPaskerChartLabels ?? []), // Sesuaikan nama variabel
-            @json($lowonganPaskerChartDataValues ?? []), // Sesuaikan nama variabel
-            '#10b981', // Hijau
-            [{offset: 0, color: 'rgba(16, 185, 129, 0.5)'}, {offset: 1, color: 'rgba(16, 185, 129, 0.1)'}]
-        );
+        // 3. Render Chart Tren TKA Disetujui (RPTKA)
+        renderTrendChart('echart-binapenta-tka-disetujui-trend', 'tka_disetujui', 'TKA Disetujui (RPTKA)', '#f59e0b', '#d97706');
+        
+        // 4. Render Pie Chart (Opsional) - Penempatan berdasarkan Jenis Kelamin
+        renderPieChart('echart-binapenta-penempatan-jk-pie', 'penempatan_jk', 'Penempatan berdasarkan Jenis Kelamin');
 
-        // Chart untuk Tren Persetujuan RPTKA
-        createChart(
-            'echart-binapenta-rptka-trend',
-            'Persetujuan RPTKA',
-            @json($rptkaDiterimaChartLabels ?? []), // Sesuaikan nama variabel
-            @json($rptkaDiterimaChartDataValues ?? []), // Sesuaikan nama variabel
-            '#8b5cf6', // Ungu/Violet
-            [{offset: 0, color: 'rgba(139, 92, 246, 0.5)'}, {offset: 1, color: 'rgba(139, 92, 246, 0.1)'}]
-        );
     });
 </script>
 @endpush

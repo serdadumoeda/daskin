@@ -3,123 +3,182 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+// Pastikan namespace dan nama model sudah benar sesuai dengan struktur folder Anda
+// Misalnya, jika model ada di app\Models\Binalavotas\JumlahKepesertaanPelatihan
+// maka gunakan App\Models\Binalavotas\JumlahKepesertaanPelatihan;
 use App\Models\JumlahKepesertaanPelatihan;
 use App\Models\JumlahSertifikasiKompetensi;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class BinalavotasDashboardController extends Controller
 {
+    private function calculateCumulative(array $data): array
+    {
+        $cumulative = [];
+        $sum = 0;
+        foreach ($data as $value) {
+            $sum += is_numeric($value) ? $value : 0;
+            $cumulative[] = $sum;
+        }
+        return $cumulative;
+    }
+
     public function index(Request $request)
     {
         $currentYear = date('Y');
-        $selectedYear = $request->input('year_filter', $currentYear);
-        $selectedMonth = $request->input('month_filter'); // Bisa null untuk semua bulan
+        // Menggunakan 'tahun' dan 'bulan' sesuai standar filter kita
+        $selectedYear = $request->input('tahun', $currentYear);
+        $selectedMonth = $request->input('bulan'); // Bisa null
 
         // --- Data untuk Kartu Ringkasan ---
-        $totalLulusInternal = JumlahKepesertaanPelatihan::query()
-            ->where('penyelenggara_pelatihan', 1) // 1: Internal
-            ->where('status_kelulusan', 1)      // 1: Lulus
+        $totalPesertaPelatihan = JumlahKepesertaanPelatihan::query()
             ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
             ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
             ->sum('jumlah');
 
-        $totalLulusEksternal = JumlahKepesertaanPelatihan::query()
-            ->where('penyelenggara_pelatihan', 2) // 2: Eksternal
-            ->where('status_kelulusan', 1)      // 1: Lulus
+        $totalLulusPelatihan = JumlahKepesertaanPelatihan::query()
+            ->where('status_kelulusan', 1) // Asumsi 1 = Lulus
             ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
             ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
             ->sum('jumlah');
-        
+
         $totalSertifikasi = JumlahSertifikasiKompetensi::query()
             ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
             ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
             ->sum('jumlah_sertifikasi');
 
-        // --- Data untuk Chart ---
-        $chartLabels = [];
-        for ($m=1; $m <= 12 ; $m++) { 
-            $chartLabels[] = Carbon::create()->month($m)->format('M');
+        // --- Logika Chart ---
+        $months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+        
+        $chartLabels = []; 
+        // Inisialisasi array data untuk chart
+        $pesertaPelatihanBulanan = []; $pesertaPelatihanKumulatif = [];
+        $lulusPelatihanBulanan = []; $lulusPelatihanKumulatif = [];
+        $sertifikasiBulanan = []; $sertifikasiKumulatif = [];
+
+        if ($selectedMonth) {
+            // === JIKA BULAN DIPILIH ===
+            $chartLabels = [$months[(int)$selectedMonth - 1]];
+
+            // Data Peserta Pelatihan (Total)
+            $jumlahPeserta = (int)JumlahKepesertaanPelatihan::query()
+                ->where('tahun', $selectedYear)->where('bulan', $selectedMonth)
+                ->sum('jumlah');
+            $pesertaPelatihanBulanan = [$jumlahPeserta];
+            $pesertaPelatihanKumulatif = [$jumlahPeserta];
+
+            // Data Peserta Lulus Pelatihan
+            $jumlahLulus = (int)JumlahKepesertaanPelatihan::query()
+                ->where('status_kelulusan', 1)
+                ->where('tahun', $selectedYear)->where('bulan', $selectedMonth)
+                ->sum('jumlah');
+            $lulusPelatihanBulanan = [$jumlahLulus];
+            $lulusPelatihanKumulatif = [$jumlahLulus];
+
+            // Data Sertifikasi Kompetensi
+            $jumlahSertifikasi = (int)JumlahSertifikasiKompetensi::query()
+                ->where('tahun', $selectedYear)->where('bulan', $selectedMonth)
+                ->sum('jumlah_sertifikasi');
+            $sertifikasiBulanan = [$jumlahSertifikasi];
+            $sertifikasiKumulatif = [$jumlahSertifikasi];
+
+        } else {
+            // === JIKA SEMUA BULAN (TAHUNAN) ===
+            $chartLabels = $months;
+
+            // Fungsi helper untuk mengambil data bulanan tahunan
+            $getAnnualMonthlyData = function ($model, $yearColumnName, $monthColumnName, $valueColumnName, $filter = null) use ($selectedYear) {
+                $query = $model::query()->where($yearColumnName, $selectedYear);
+                
+                if (is_array($filter)) {
+                    foreach ($filter as $col => $val) {
+                        $query->where($col, $val);
+                    }
+                }
+
+                $data = $query->select($monthColumnName, DB::raw("SUM({$valueColumnName}) as total_value"))
+                    ->groupBy($monthColumnName)
+                    ->orderBy($monthColumnName, 'asc')
+                    ->get()
+                    ->pluck('total_value', $monthColumnName);
+                
+                $monthlyValues = [];
+                for ($m = 1; $m <= 12; $m++) {
+                    $monthlyValues[] = (int)($data->get($m) ?? 0);
+                }
+                return $monthlyValues;
+            };
+
+            // Data Chart Peserta Pelatihan (Total)
+            $pesertaPelatihanBulanan = $getAnnualMonthlyData(new JumlahKepesertaanPelatihan, 'tahun', 'bulan', 'jumlah');
+            $pesertaPelatihanKumulatif = $this->calculateCumulative($pesertaPelatihanBulanan);
+
+            // Data Chart Peserta Lulus Pelatihan
+            $lulusPelatihanBulanan = $getAnnualMonthlyData(new JumlahKepesertaanPelatihan, 'tahun', 'bulan', 'jumlah', ['status_kelulusan' => 1]);
+            $lulusPelatihanKumulatif = $this->calculateCumulative($lulusPelatihanBulanan);
+
+            // Data Chart Sertifikasi Kompetensi
+            $sertifikasiBulanan = $getAnnualMonthlyData(new JumlahSertifikasiKompetensi, 'tahun', 'bulan', 'jumlah_sertifikasi');
+            $sertifikasiKumulatif = $this->calculateCumulative($sertifikasiBulanan);
         }
 
-        // 1. Tren Lulus Pelatihan Internal per Bulan
-        $lulusInternalPerBulan = JumlahKepesertaanPelatihan::select('bulan', DB::raw('SUM(jumlah) as total'))
-            ->where('tahun', $selectedYear)
-            ->where('penyelenggara_pelatihan', 1)
-            ->where('status_kelulusan', 1)
-            ->groupBy('bulan')
-            ->orderBy('bulan')
-            ->pluck('total', 'bulan');
-        $lulusInternalChartData = [];
-        for ($m=1; $m <= 12 ; $m++) { 
-            $lulusInternalChartData[] = $lulusInternalPerBulan->get($m, 0); 
-        }
+        // Ambil tahun yang tersedia untuk filter
+        $yearsPelatihan = JumlahKepesertaanPelatihan::select('tahun')->distinct();
+        $yearsSertifikasi = JumlahSertifikasiKompetensi::select('tahun')->distinct();
+        
+        $availableYears = $yearsPelatihan
+            ->union($yearsSertifikasi) // Menggabungkan tahun dari kedua tabel
+            ->orderBy('tahun', 'desc')
+            ->pluck('tahun');
 
-        // 2. Tren Lulus Pelatihan Eksternal per Bulan
-        $lulusEksternalPerBulan = JumlahKepesertaanPelatihan::select('bulan', DB::raw('SUM(jumlah) as total'))
-            ->where('tahun', $selectedYear)
-            ->where('penyelenggara_pelatihan', 2)
-            ->where('status_kelulusan', 1)
-            ->groupBy('bulan')
-            ->orderBy('bulan')
-            ->pluck('total', 'bulan');
-        $lulusEksternalChartData = [];
-        for ($m=1; $m <= 12 ; $m++) { 
-            $lulusEksternalChartData[] = $lulusEksternalPerBulan->get($m, 0);
+        if ($availableYears->isEmpty() && !$availableYears->contains($currentYear)) {
+            $availableYears->push($currentYear);
+            $availableYears = $availableYears->sortDesc()->values(); // Pastikan diurutkan lagi setelah push
         }
         
-        // 3. Tren Sertifikasi Kompetensi per Bulan
-        $sertifikasiPerBulan = JumlahSertifikasiKompetensi::select('bulan', DB::raw('SUM(jumlah_sertifikasi) as total'))
-            ->where('tahun', $selectedYear)
-            ->groupBy('bulan')
-            ->orderBy('bulan')
-            ->pluck('total', 'bulan');
-        $sertifikasiChartData = [];
-        for ($m=1; $m <= 12 ; $m++) { 
-            $sertifikasiChartData[] = $sertifikasiPerBulan->get($m, 0);
-        }
+        $viewData = compact(
+            'totalPesertaPelatihan', 'totalLulusPelatihan', 'totalSertifikasi',
+            'availableYears', 'selectedYear', 'selectedMonth'
+            // 'chartLabels' tidak perlu dikirim terpisah jika setiap chart_data sudah punya labels
+        );
+
+        $chartData = [
+            // Setiap chart sekarang membawa labelnya sendiri untuk fleksibilitas jika ada filter bulan
+            'peserta_pelatihan' => ['labels' => $chartLabels, 'bulanan' => $pesertaPelatihanBulanan, 'kumulatif' => $pesertaPelatihanKumulatif],
+            'lulus_pelatihan' => ['labels' => $chartLabels, 'bulanan' => $lulusPelatihanBulanan, 'kumulatif' => $lulusPelatihanKumulatif],
+            'sertifikasi' => ['labels' => $chartLabels, 'bulanan' => $sertifikasiBulanan, 'kumulatif' => $sertifikasiKumulatif],
+        ];
         
-        // 4. Komposisi Tipe Lembaga untuk Pelatihan Lulus (Internal & Eksternal Gabungan)
-        $pelatihanPerTipeLembaga = JumlahKepesertaanPelatihan::select('tipe_lembaga', DB::raw('SUM(jumlah) as total'))
+        // Data Pie Chart (Komposisi) - Opsional, contoh
+        // 1. Komposisi Peserta Pelatihan berdasarkan Penyelenggara
+        $pesertaPerPenyelenggara = JumlahKepesertaanPelatihan::select('penyelenggara_pelatihan', DB::raw('SUM(jumlah) as total'))
             ->where('tahun', $selectedYear)
-            ->where('status_kelulusan', 1)
             ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
-            ->groupBy('tipe_lembaga')
+            ->groupBy('penyelenggara_pelatihan')
             ->get()
             ->map(function ($item) {
-                $tipeText = (new JumlahKepesertaanPelatihan(['tipe_lembaga' => $item->tipe_lembaga]))->tipe_lembaga_text;
-                return ['name' => $tipeText, 'value' => $item->total];
-            });
+                // Asumsi ada accessor di model atau mapping manual
+                $penyelenggaraText = $item->penyelenggara_pelatihan == 1 ? 'Internal' : ($item->penyelenggara_pelatihan == 2 ? 'Eksternal' : 'Lainnya');
+                return ['name' => $penyelenggaraText, 'value' => (int)$item->total];
+            })->toArray();
 
-        // 5. Komposisi Jenis LSP untuk Sertifikasi
+        // 2. Komposisi Sertifikasi berdasarkan Jenis LSP
         $sertifikasiPerJenisLsp = JumlahSertifikasiKompetensi::select('jenis_lsp', DB::raw('SUM(jumlah_sertifikasi) as total'))
             ->where('tahun', $selectedYear)
             ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
             ->groupBy('jenis_lsp')
             ->get()
             ->map(function ($item) {
-                $lspText = (new JumlahSertifikasiKompetensi(['jenis_lsp' => $item->jenis_lsp]))->jenis_lsp_text;
-                return ['name' => $lspText, 'value' => $item->total];
-            });
-
-
-        $availableYears = JumlahKepesertaanPelatihan::select('tahun')->distinct()
-                            ->union(JumlahSertifikasiKompetensi::select('tahun')->distinct())
-                            ->orderBy('tahun', 'desc')->pluck('tahun');
+                 // Asumsi ada accessor di model atau mapping manual
+                $lspText = 'LSP P'.$item->jenis_lsp; // Contoh: LSP P1, LSP P2, LSP P3
+                return ['name' => $lspText, 'value' => (int)$item->total];
+            })->toArray();
         
-        return view('dashboards.binalavotas', compact(
-            'totalLulusInternal',
-            'totalLulusEksternal',
-            'totalSertifikasi',
-            'chartLabels', // Digunakan untuk semua chart tren bulanan
-            'lulusInternalChartData',
-            'lulusEksternalChartData',
-            'sertifikasiChartData',
-            'pelatihanPerTipeLembaga',
-            'sertifikasiPerJenisLsp',
-            'availableYears',
-            'selectedYear',
-            'selectedMonth'
-        ));
+        $pieChartData = [
+            'peserta_penyelenggara' => $pesertaPerPenyelenggara,
+            'sertifikasi_jenis_lsp' => $sertifikasiPerJenisLsp,
+        ];
+
+        return view('dashboards.binalavotas', array_merge($viewData, ['chartData' => $chartData], ['pieChartData' => $pieChartData]));
     }
 }
