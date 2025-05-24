@@ -152,11 +152,9 @@ Route::prefix('sekretariat-jenderal')->name('sekretariat-jenderal.')->middleware
         Route::delete('jumlah-regulasi-baru/{jumlah_regulasi_baru}', [JumlahRegulasiBaruController::class, 'destroy'])->name('jumlah-regulasi-baru.destroy');
     });
 <<<<<<< HEAD
-    Route::get('jumlah-regulasi-baru/{jumlah_regulasi_baru}', [JumlahRegulasiBaruController::class, 'show'])->name('jumlah-regulasi-baru.show')->middleware('role:' . $crudRolesSekjen . ',' . $readOnlyRoles);
     
 =======
 
-    // Ulangi pola yang sama untuk resource controller lainnya di Sekjen
 >>>>>>> 806c2a6 (add ikpa features)
     // JumlahPenangananKasusController
     Route::get('jumlah-penanganan-kasus', [JumlahPenangananKasusController::class, 'index'])->name('jumlah-penanganan-kasus.index')->middleware('role:' . $crudRolesSekjen . ',' . $readOnlyRoles);
@@ -197,7 +195,6 @@ Route::prefix('sekretariat-jenderal')->name('sekretariat-jenderal.')->middleware
     // MonevMonitoringMediaController
 =======
 
-    // MonevMonitoringMediaController (kecuali show)
 >>>>>>> 806c2a6 (add ikpa features)
     Route::get('monev-monitoring-media', [MonevMonitoringMediaController::class, 'index'])->name('monev-monitoring-media.index')->middleware('role:' . $crudRolesSekjen . ',' . $readOnlyRoles);
     Route::middleware('role:' . $crudRolesSekjen)->group(function() {
@@ -224,7 +221,6 @@ Route::prefix('sekretariat-jenderal')->name('sekretariat-jenderal.')->middleware
     // SdmMengikutiPelatihanController
 =======
 
-    // SdmMengikutiPelatihanController (kecuali show)
 >>>>>>> 806c2a6 (add ikpa features)
     Route::get('sdm-mengikuti-pelatihan', [SdmMengikutiPelatihanController::class, 'index'])->name('sdm-mengikuti-pelatihan.index')->middleware('role:' . $crudRolesSekjen . ',' . $readOnlyRoles);
     Route::middleware('role:' . $crudRolesSekjen)->group(function() {
@@ -345,7 +341,6 @@ Route::prefix('binwasnaker')->name('binwasnaker.')->middleware(['auth'])->group(
     // PelaporanWlkpOnlineController
 =======
 
-    // PelaporanWlkpOnlineController (kecuali show)
 >>>>>>> 806c2a6 (add ikpa features)
     Route::get('pelaporan-wlkp-online', [PelaporanWlkpOnlineController::class, 'index'])->name('pelaporan-wlkp-online.index')->middleware('role:' . $crudRolesBinwasnaker . ',' . $readOnlyRoles);
     Route::middleware('role:' . $crudRolesBinwasnaker)->group(function() {
@@ -398,8 +393,6 @@ Route::prefix('phi')->name('phi.')->middleware(['auth'])->group(function () use 
     
     // JumlahPhkController
 =======
-
-    // JumlahPhkController (kecuali show)
 >>>>>>> 806c2a6 (add ikpa features)
     Route::get('jumlah-phk', [JumlahPhkController::class, 'index'])->name('jumlah-phk.index')->middleware('role:' . $crudRolesPhi . ',' . $readOnlyRoles);
     Route::middleware('role:' . $crudRolesPhi)->group(function() {
@@ -415,7 +408,6 @@ Route::prefix('phi')->name('phi.')->middleware(['auth'])->group(function () use 
     // PerselisihanDitindaklanjutiController
 =======
 
-    // PerselisihanDitindaklanjutiController (kecuali show)
 >>>>>>> 806c2a6 (add ikpa features)
     Route::get('perselisihan-ditindaklanjuti', [PerselisihanDitindaklanjutiController::class, 'index'])->name('perselisihan-ditindaklanjuti.index')->middleware('role:' . $crudRolesPhi . ',' . $readOnlyRoles);
     Route::middleware('role:' . $crudRolesPhi)->group(function() {
@@ -438,11 +430,8 @@ Route::prefix('phi')->name('phi.')->middleware(['auth'])->group(function () use 
         Route::delete('mediasi-berhasil/{mediasi_berhasil}', [MediasiBerhasilController::class, 'destroy'])->name('mediasi-berhasil.destroy');
     });
 <<<<<<< HEAD
-    
-    // PerusahaanMenerapkanSusuController
 =======
 
-    // PerusahaanMenerapkanSusuController (kecuali show)
 >>>>>>> 806c2a6 (add ikpa features)
     Route::get('perusahaan-menerapkan-susu', [PerusahaanMenerapkanSusuController::class, 'index'])->name('perusahaan-menerapkan-susu.index')->middleware('role:' . $crudRolesPhi . ',' . $readOnlyRoles);
     Route::middleware('role:' . $crudRolesPhi)->group(function() {
