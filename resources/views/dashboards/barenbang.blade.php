@@ -66,24 +66,36 @@
                 $periodTextMain = "Sepanjang Tahun " . $yearToDisplayMain;
             }
         @endphp
+        
+        {{-- Mengadopsi gaya kartu dari main.blade.php --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-white p-5 rounded-lg shadow">
-                <div class="flex items-center justify-between mb-1">
-                    <h3 class="text-sm font-medium text-gray-600">Jumlah Kajian & Rekomendasi Kebijakan</h3>
-                    <a href="{{ route('barenbang.jumlah-kajian-rekomendasi.index') }}" class="text-xs text-primary hover:text-primary/80">Detail &rarr;</a>
+            <a href="{{ route('barenbang.jumlah-kajian-rekomendasi.index') }}" class="stat-card-link-wrapper">
+                <div class="stat-card">
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">Jumlah Kajian & Rekomendasi Kebijakan</p>
+                        <p class="stat-card-value">{{ number_format($totalKajianRekomendasi ?? 0) }}</p>
+                    </div>
+                    <div class="stat-card-icon-wrapper bg-purple-100">
+                        <i class="ri-lightbulb-flash-line text-purple-500 text-2xl"></i>
+                    </div>
                 </div>
-                <div class="text-3xl font-semibold text-gray-800">{{ number_format($totalKajianRekomendasi ?? 0) }}</div>
-                <p class="text-xs text-gray-400 mt-1">{{ $periodTextMain }}</p>
-            </div>
-            <div class="bg-white p-5 rounded-lg shadow">
-                <div class="flex items-center justify-between mb-1">
-                    <h3 class="text-sm font-medium text-gray-600">Jumlah Aplikasi Terintegrasi SiapKerja</h3>
-                    <a href="{{ route('barenbang.aplikasi-integrasi-siapkerja.index') }}" class="text-xs text-primary hover:text-primary/80">Detail &rarr;</a>
+                <div class="stat-card-footer">{{ $periodTextMain }}</div>
+            </a>
+            
+            <a href="{{ route('barenbang.aplikasi-integrasi-siapkerja.index') }}" class="stat-card-link-wrapper">
+                <div class="stat-card">
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">Jumlah Aplikasi Terintegrasi SiapKerja</p>
+                        <p class="stat-card-value">{{ number_format($totalAplikasiTerintegrasi ?? 0) }}</p>
+                    </div>
+                    <div class="stat-card-icon-wrapper bg-green-100">
+                        <i class="ri-link-m text-green-500 text-2xl"></i>
+                    </div>
                 </div>
-                <div class="text-3xl font-semibold text-gray-800">{{ number_format($totalAplikasiTerintegrasi ?? 0) }}</div>
-                <p class="text-xs text-gray-400 mt-1">{{ $periodTextMain }}</p>
-            </div>
+                <div class="stat-card-footer">{{ $periodTextMain }}</div>
+            </a>
         </div>
+        
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
             <div class="bg-white p-5 rounded-lg shadow">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Jumlah Kajian & Rekomendasi ({{ $yearToDisplayMain }})</h3>
@@ -135,15 +147,29 @@
 
         <h2 class="text-xl font-semibold text-gray-800 mb-4 mt-6">Data Ketenagakerjaan (Sumber: Sakernas BPS)</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div class="bg-white p-5 rounded-lg shadow">
-                <h3 class="text-sm font-medium text-gray-600">Tingkat Partisipasi Angkatan Kerja (TPAK)</h3>
-                <div class="text-3xl font-semibold text-gray-800">{{ number_format($latestTpak ?? 0, 2) }}%</div>
-                <p class="text-xs text-gray-400 mt-1">Periode: {{ $latestSakernasPeriod ?: 'Data belum tersedia' }}</p>
+             <div class="stat-card-link-wrapper">
+                <div class="stat-card">
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">Tingkat Partisipasi Angkatan Kerja (TPAK)</p>
+                        <p class="stat-card-value">{{ number_format($latestTpak ?? 0, 2) }}%</p>
+                    </div>
+                    <div class="stat-card-icon-wrapper bg-red-100">
+                        <i class="ri-user-voice-line text-red-500 text-2xl"></i>
+                    </div>
+                </div>
+                <div class="stat-card-footer">Periode: {{ $latestSakernasPeriod ?: 'Data belum tersedia' }}</div>
             </div>
-            <div class="bg-white p-5 rounded-lg shadow">
-                <h3 class="text-sm font-medium text-gray-600">Tingkat Pengangguran Terbuka (TPT)</h3>
-                <div class="text-3xl font-semibold text-gray-800">{{ number_format($latestTpt ?? 0, 2) }}%</div>
-                <p class="text-xs text-gray-400 mt-1">Periode: {{ $latestSakernasPeriod ?: 'Data belum tersedia' }}</p>
+             <div class="stat-card-link-wrapper">
+                <div class="stat-card">
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">Tingkat Pengangguran Terbuka (TPT)</p>
+                        <p class="stat-card-value">{{ number_format($latestTpt ?? 0, 2) }}%</p>
+                    </div>
+                    <div class="stat-card-icon-wrapper bg-yellow-100">
+                        <i class="ri-user-unfollow-line text-yellow-500 text-2xl"></i>
+                    </div>
+                </div>
+                <div class="stat-card-footer">Periode: {{ $latestSakernasPeriod ?: 'Data belum tersedia' }}</div>
             </div>
         </div>
 
