@@ -81,8 +81,8 @@
 
         <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper">
             <div class="stat-card">
-                <div class="stat-card-icon-wrapper bg-purple-100">
-                    <i class=" ri-team-line text-purple-500 text-2xl"></i>
+                <div class="stat-card-icon-wrapper bg-yellow-100">
+                    <i class=" ri-team-line text-yellow-500 text-2xl"></i>
                 </div>
                 <div class="stat-card-info">
                     <p class="stat-card-title">Peserta Pelatihan</p>
@@ -94,21 +94,20 @@
 
         <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper">
             <div class="stat-card">
-                <div class="stat-card-icon-wrapper bg-purple-100">
-                    <i class=" ri-user-2-fill text-purple-500 text-2xl"></i>
+                <div class="stat-card-icon-wrapper bg-red-100">
+                    <i class=" ri-user-2-fill text-red-500 text-2xl"></i>
                 </div>
                 <div class="stat-card-info">
                     <p class="stat-card-title">Lulusan Polteknaker Bekerja</p>
                     <p class="stat-card-value">{{ number_format($totalLulusanBekerja ?? 0) }} <span class="text-sm font-normal">Orang</span></p> 
                 </div>
             </div>
-           
         </a>
 
         <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper">
             <div class="stat-card">
-                <div class="stat-card-icon-wrapper bg-purple-100">
-                    <i class="ri-apps-2-line text-purple-500 text-2xl"></i>
+                <div class="stat-card-icon-wrapper bg-blue-100">
+                    <i class="ri-apps-2-line text-blue-500 text-2xl"></i>
                 </div>
                 <div class="stat-card-info">
                     <p class="stat-card-title">Rekomendasi Kebijakan</p>
@@ -120,8 +119,8 @@
 
         <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper">
             <div class="stat-card">
-                <div class="stat-card-icon-wrapper bg-purple-100">
-                    <i class="ri-bank-card-fill text-purple-500 text-2xl"></i>
+                <div class="stat-card-icon-wrapper bg-green-100">
+                    <i class="ri-bank-card-fill text-green-500 text-2xl"></i>
                 </div>
                 <div class="stat-card-info">
                     <p class="stat-card-title">Rata-rata IKPA</p>
