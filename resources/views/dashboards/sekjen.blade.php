@@ -70,8 +70,8 @@
         <a href="{{ route('sekretariat-jenderal.progress-mou.index') }}" class="stat-card-link-wrapper">
             <div class="stat-card">
                 <div class="stat-card-info">
-                    <p class="stat-card-title">Jumlah MoU</p>
-                    <p class="stat-card-value">{{ number_format($totalMoU ?? 0) }}</p>
+                    <p class="stat-card-title">Total MOU Baru</p>
+                    <p class="stat-card-value">{{ number_format($totalMouBaru ?? 0) }}</p>
                 </div>
                 <div class="stat-card-icon-wrapper bg-blue-100">
                     <i class="ri-honour-line text-blue-500 text-2xl"></i>
@@ -83,8 +83,8 @@
         <a href="{{ route('sekretariat-jenderal.jumlah-regulasi-baru.index') }}" class="stat-card-link-wrapper">
             <div class="stat-card">
                 <div class="stat-card-info">
-                    <p class="stat-card-title">Jumlah Regulasi Baru</p>
-                    <p class="stat-card-value">{{ number_format($totalRegulasi ?? 0) }}</p>
+                    <p class="stat-card-title">Total Regulasi Baru</p>
+                    <p class="stat-card-value">{{ number_format($totalRegulasiBaru ?? 0) }}</p>
                 </div>
                 <div class="stat-card-icon-wrapper bg-green-100">
                     <i class="ri-file-list-3-line text-green-500 text-2xl"></i>
@@ -96,8 +96,8 @@
         <a href="{{ route('sekretariat-jenderal.jumlah-penanganan-kasus.index') }}" class="stat-card-link-wrapper">
             <div class="stat-card">
                 <div class="stat-card-info">
-                    <p class="stat-card-title">Jumlah Penanganan Kasus</p>
-                    <p class="stat-card-value">{{ number_format($totalKasusDitangani ?? 0) }}</p>
+                    <p class="stat-card-title">Total Penanganan Kasus</p>
+                    <p class="stat-card-value">{{ number_format($totalPenangananKasus ?? 0) }}</p>
                 </div>
                 <div class="stat-card-icon-wrapper bg-purple-100">
                     <i class="ri-scales-2-line text-purple-500 text-2xl"></i>
@@ -112,8 +112,8 @@
         <a href="{{ route('sekretariat-jenderal.penyelesaian-bmn.index') }}" class="stat-card-link-wrapper">
             <div class="stat-card">
                 <div class="stat-card-info">
-                    <p class="stat-card-title">Jumlah Penyelesaian BMN</p>
-                    <p class="stat-card-value">Rp {{ number_format($totalNilaiPenyelesaianBmn ?? 0, 0, ',', '.') }}</p>
+                    <p class="stat-card-title">Total Kuantitas BMN Selesai</p>
+                    <p class="stat-card-value">{{ number_format($totalKuantitasBmn ?? 0) }}</p>
                 </div>
                 <div class="stat-card-icon-wrapper bg-orange-100">
                     <i class="ri-archive-drawer-line text-orange-500 text-2xl"></i>
@@ -125,8 +125,8 @@
         <a href="{{ route('sekretariat-jenderal.persentase-kehadiran.index') }}" class="stat-card-link-wrapper">
             <div class="stat-card">
                 <div class="stat-card-info">
-                    <p class="stat-card-title">Total SDM Hadir (WFO)</p>
-                    <p class="stat-card-value">{{ number_format($totalWFO ?? 0) }} <span class="text-sm">Orang</span></p>
+                    <p class="stat-card-title">Total Kehadiran WFO</p>
+                    <p class="stat-card-value">{{ number_format($totalOrangHadirWFO ?? 0) }} <span class="text-sm">Orang</span></p>
                 </div>
                 <div class="stat-card-icon-wrapper bg-yellow-100">
                     <i class="ri-user-follow-line text-yellow-500 text-2xl"></i>
@@ -147,6 +147,7 @@
             </div>
             <div class="stat-card-footer">{{ $periodText }}</div>
         </a>
+
     </section>
 
     {{-- Baris Ketiga: 2 Kartu --}}
@@ -156,7 +157,7 @@
         <a href="{{ route('sekretariat-jenderal.lulusan-polteknaker-bekerja.index') }}" class="stat-card-link-wrapper lg:col-span-1"> {{-- lg:col-span-1 agar tidak terlalu lebar jika hanya 2 item --}}
             <div class="stat-card">
                 <div class="stat-card-info">
-                    <p class="stat-card-title">Lulusan Polteknaker Bekerja</p>
+                    <p class="stat-card-title">Total Lulusan Polteknaker Bekerja</p>
                     <p class="stat-card-value">{{ number_format($totalLulusanBekerja ?? 0) }} <span class="text-sm">Orang</span></p>
                 </div>
                 <div class="stat-card-icon-wrapper bg-indigo-100">
@@ -169,7 +170,7 @@
         <a href="{{ route('sekretariat-jenderal.sdm-mengikuti-pelatihan.index') }}" class="stat-card-link-wrapper lg:col-span-1">
             <div class="stat-card">
                 <div class="stat-card-info">
-                    <p class="stat-card-title">SDM Mengikuti Pelatihan</p>
+                    <p class="stat-card-title">Total SDM Mengikuti Pelatihan</p>
                     <p class="stat-card-value">{{ number_format($totalSdmPelatihan ?? 0) }}</p>
                 </div>
                 <div class="stat-card-icon-wrapper bg-pink-100">
@@ -178,102 +179,145 @@
             </div>
             <div class="stat-card-footer">{{ $periodText }}</div>
         </a>
+        <a href="{{ route('sekretariat-jenderal.monev-monitoring-media.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Rata-rata IKPA</p>
+                    <p class="stat-card-value">{{ number_format($totalIkpa ?? 0, 2) }}</p>
+                </div>
+                <div class="stat-card-icon-wrapper bg-teal-100">
+                    <i class="ri-secure-payment-fill text-teal-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
     </section>
 
 
     {{-- Bagian Grafik --}}
-    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Jumlah MoU ({{ $yearToDisplay }})</h3>
-            <div id="echart-sekjen-mou-trend" style="width: 100%; height: 300px;"></div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-6">
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren IKPA</h3>
+            <div id="echart-sekjen-ikpa-trend" style="height: 350px;"></div>
         </div>
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Jumlah Regulasi Baru ({{ $yearToDisplay }})</h3>
-            <div id="echart-sekjen-regulasi-trend" style="width: 100%; height: 300px;"></div>
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Progress MOU Baru</h3>
+            <div id="echart-sekjen-mou-trend" style="height: 350px;"></div>
         </div>
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Jumlah Penanganan Kasus ({{ $yearToDisplay }})</h3>
-            <div id="echart-sekjen-kasus-trend" style="width: 100%; height: 300px;"></div>
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Jumlah Regulasi Baru</h3>
+            <div id="echart-sekjen-regulasi-trend" style="height: 350px;"></div>
         </div>
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Jumlah Penyelesaian BMN ({{ $yearToDisplay }})</h3>
-            <div id="echart-sekjen-bmn-trend" style="width: 100%; height: 300px;"></div>
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Jumlah Penanganan Kasus</h3>
+            <div id="echart-sekjen-penanganan-kasus-trend" style="height: 350px;"></div>
         </div>
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren % Kehadiran ({{ $yearToDisplay }})</h3>
-            <div id="echart-sekjen-kehadiran-trend" style="width: 100%; height: 300px;"></div>
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Penyelesaian BMN (Kuantitas)</h3>
+            <div id="echart-sekjen-penyelesaian-bmn-trend" style="height: 350px;"></div>
         </div>
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Monev Monitoring Media ({{ $yearToDisplay }})</h3>
-            <div id="echart-sekjen-media-trend" style="width: 100%; height: 300px;"></div>
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Kehadiran WFO</h3>
+            <div id="echart-sekjen-kehadiran-wfo-trend" style="height: 350px;"></div>
         </div>
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Lulusan Polteknaker Bekerja ({{ $yearToDisplay }})</h3>
-            <div id="echart-sekjen-polteknaker-trend" style="width: 100%; height: 300px;"></div>
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Monev Monitoring Media (Jumlah Berita)</h3>
+            <div id="echart-sekjen-monev-media-trend" style="height: 350px;"></div>
         </div>
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren SDM Mengikuti Pelatihan ({{ $yearToDisplay }})</h3>
-            <div id="echart-sekjen-sdm-pelatihan-trend" style="width: 100%; height: 300px;"></div>
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Lulusan Polteknaker Bekerja</h3>
+            <div id="echart-sekjen-lulusan-bekerja-trend" style="height: 350px;"></div>
         </div>
-    </section>
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren SDM Mengikuti Pelatihan</h3>
+            <div id="echart-sekjen-sdm-pelatihan-trend" style="height: 350px;"></div>
+        </div>
+    </div>
 </div>
 @endsection
 
 @push('scripts')
-{{-- ECharts sudah di-include di layouts.app.blade.php --}}
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const textColor = '#374151'; 
-        const axisLineColor = '#D1D5DB';
-        const legendTextColor = '#4B5563';
+    document.addEventListener("DOMContentLoaded", function () {
+        
+        function createMultiSeriesChart(elementId, labels, seriesConfig, yAxisName = 'Jumlah') {
+            const chartDom = document.getElementById(elementId);
+            if (!chartDom) { return; }
+            let existingChart = echarts.getInstanceByDom(chartDom);
+            if (existingChart) { existingChart.dispose(); }
+            const myChart = echarts.init(chartDom);
+            
+            const series = seriesConfig.map(s => ({
+                name: s.name, type: s.type, yAxisIndex: s.yAxisIndex || 0, stack: s.stack || null,
+                smooth: s.type === 'line', data: s.data, itemStyle: { color: s.color }, lineStyle: { color: s.color }
+            }));
+            const legendData = series.map(s => s.name);
+            const option = {
+                tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+                legend: { data: legendData, bottom: 0, type: 'scroll' },
+                grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
+                xAxis: [{ type: 'category', data: labels, axisPointer: { type: 'shadow' } }],
+                yAxis: [
+                    { type: 'value', name: yAxisName, min: 0, position: 'left', axisLabel: { formatter: '{value}' } },
+                    { type: 'value', name: 'Kumulatif', min: 0, position: 'right', splitLine: { show: false }, axisLabel: { formatter: '{value}' } }
+                ],
+                series: series
+            };
+            myChart.setOption(option);
+            window.addEventListener('resize', () => myChart.resize());
+        }
 
-        function createChart(chartId, legendDataName, chartDataLabels, chartDataValues, itemColor, areaColorStops, yAxisFormatter = null) {
-            var chartDom = document.getElementById(chartId);
-            if (chartDom) {
-                var myChart = echarts.init(chartDom, null);
-                var yAxisOptions = {
-                    type: 'value', name: 'Jumlah', min: 0,
-                    axisLine: { lineStyle: { color: axisLineColor } },
-                    axisLabel: { color: textColor, formatter: yAxisFormatter ? yAxisFormatter : function (value) { return value.toLocaleString('id-ID'); } },
-                    nameTextStyle: { color: textColor }
-                };
-                if (yAxisFormatter && legendDataName.includes('%')) { yAxisOptions.max = 100; }
+        const chartData = @json($chartData ?? null);
 
-                var option = {
-                    tooltip: { 
-                        trigger: 'axis', 
-                        formatter: function (params) { 
-                            let value = params[0].value;
-                            let formattedValue = yAxisFormatter ? yAxisFormatter(value) : value.toLocaleString('id-ID');
-                            return params[0].name + '<br/>' + params[0].seriesName + ' : ' + formattedValue; 
-                        } 
-                    },
-                    legend: { data: [legendDataName], textStyle: { color: legendTextColor }, bottom: 0 },
-                    grid: { left: '3%', right: '4%', bottom: '10%', containLabel: true },
-                    xAxis: { type: 'category', boundaryGap: false, data: chartDataLabels, axisLine: { lineStyle: { color: axisLineColor } }, axisLabel: { color: textColor } },
-                    yAxis: yAxisOptions,
-                    series: [{
-                        name: legendDataName, type: 'line', smooth: true,
-                        data: chartDataValues,
-                        itemStyle: { color: itemColor },
-                        areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, areaColorStops)}
-                    }]
-                };
-                myChart.setOption(option);
-                window.addEventListener('resize', () => myChart.resize());
+        if (!chartData) {
+            console.error('Variabel chartData utama tidak tersedia dari controller.');
+            // Fallback untuk semua chart jika data utama tidak ada
+            const chartIds = [
+                'echart-sekjen-ikpa-trend', 'echart-sekjen-mou-trend', 'echart-sekjen-regulasi-trend',
+                'echart-sekjen-penanganan-kasus-trend', 'echart-sekjen-penyelesaian-bmn-trend',
+                'echart-sekjen-kehadiran-wfo-trend', 'echart-sekjen-monev-media-trend',
+                'echart-sekjen-lulusan-bekerja-trend', 'echart-sekjen-sdm-pelatihan-trend'
+            ];
+            chartIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) { el.innerHTML = '<p class="text-center text-gray-500 py-5">Data chart tidak tersedia.</p>'; }
+            });
+            return;
+        }
+
+        // Fungsi render helper untuk chart tren
+        function renderTrendChart(chartId, dataKey, seriesName, barColor, lineColor, yAxisName = 'Jumlah') {
+            const chartEl = document.getElementById(chartId);
+            if (chartEl) {
+                if (chartData[dataKey] && chartData[dataKey].labels && Array.isArray(chartData[dataKey].bulanan) && Array.isArray(chartData[dataKey].kumulatif)) {
+                    const isDataEffectivelyEmpty = chartData[dataKey].bulanan.every(val => val === 0);
+                    if (chartData[dataKey].labels.length > 0 && !isDataEffectivelyEmpty) {
+                        createMultiSeriesChart(chartId, chartData[dataKey].labels, [
+                            { name: `${seriesName} (Bulanan)`, type: 'bar', yAxisIndex: 0, data: chartData[dataKey].bulanan, color: barColor },
+                            { name: `Kumulatif ${seriesName}`, type: 'line', yAxisIndex: 1, data: chartData[dataKey].kumulatif, color: lineColor }
+                        ], yAxisName);
+                    } else {
+                        chartEl.innerHTML = `<p class="text-center text-gray-500 py-5">Tidak ada data untuk ditampilkan pada chart ${seriesName}.</p>`;
+                    }
+                } else {
+                    console.warn(`Data untuk chart ${seriesName} tidak lengkap. Data diterima:`, chartData[dataKey]);
+                    chartEl.innerHTML = `<p class="text-center text-gray-500 py-5">Data chart ${seriesName} tidak tersedia.</p>`;
+                }
             }
         }
 
-        // Inisialisasi semua 8 chart
-        // Pastikan nama variabel chart (cth: $mouChartLabels) sesuai dengan yang dikirim controller
-        createChart('echart-sekjen-mou-trend', 'Jumlah MoU', @json($mouChartLabels ?? []), @json($mouChartDataValues ?? []), '#3b82f6', [{offset: 0, color: 'rgba(59, 130, 246, 0.5)'}, {offset: 1, color: 'rgba(59, 130, 246, 0.1)'}]);
-        createChart('echart-sekjen-regulasi-trend', 'Jumlah Regulasi Baru', @json($regulasiPerJenis->pluck('name') ?? []), @json($regulasiPerJenis ?? []), '#10b981', [{offset: 0, color: 'rgba(16, 185, 129, 0.5)'}, {offset: 1, color: 'rgba(16, 185, 129, 0.1)'}]);
-        createChart('echart-sekjen-kasus-trend', 'Jumlah Penanganan Kasus', @json($kasusChartLabels ?? []), @json($kasusChartDataValues ?? []), '#8b5cf6', [{offset: 0, color: 'rgba(139, 92, 246, 0.5)'}, {offset: 1, color: 'rgba(139, 92, 246, 0.1)'}]);
-        createChart('echart-sekjen-bmn-trend', 'Jumlah Penyelesaian BMN', @json($bmnChartLabels ?? []), @json($bmnChartDataValues ?? []), '#f97316', [{offset: 0, color: 'rgba(249, 115, 22, 0.5)'}, {offset: 1, color: 'rgba(249, 115, 22, 0.1)'}]);
-        createChart('echart-sekjen-kehadiran-trend', '% Kehadiran', @json($kehadiranChartLabels ?? []), @json($kehadiranWFOData ?? []), '#f59e0b', [{offset: 0, color: 'rgba(245, 158, 11, 0.5)'}, {offset: 1, color: 'rgba(245, 158, 11, 0.1)'}], function (value) { return parseFloat(value).toLocaleString('id-ID', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '%'; });
-        createChart('echart-sekjen-media-trend', 'Monev Monitoring Media', @json($monevMediaChartLabels ?? []), @json($monevMediaChartDataValues ?? []), '#06b6d4', [{offset: 0, color: 'rgba(6, 182, 212, 0.5)'}, {offset: 1, color: 'rgba(6, 182, 212, 0.1)'}]);
-        createChart('echart-sekjen-polteknaker-trend', 'Lulusan Polteknaker Bekerja', @json($lulusanPolteknakerChartLabels ?? []), @json($lulusanPolteknakerChartDataValues ?? []), '#6366f1', [{offset: 0, color: 'rgba(99, 102, 241, 0.5)'}, {offset: 1, color: 'rgba(99, 102, 241, 0.1)'}]);
-        createChart('echart-sekjen-sdm-pelatihan-trend', 'SDM Mengikuti Pelatihan', @json($sdmPelatihanChartLabels ?? []), @json($sdmPelatihanChartDataValues ?? []), '#ec4899', [{offset: 0, color: 'rgba(236, 72, 153, 0.5)'}, {offset: 1, color: 'rgba(236, 72, 153, 0.1)'}]);
+        // Render semua chart tren
+        renderTrendChart('echart-sekjen-ikpa-trend', 'ikpa', 'IKPA', '#8b5cf6', '#6d28d9', 'Nilai Rata-rata'); // IKPA mungkin perlu nama sumbu Y berbeda
+        renderTrendChart('echart-sekjen-mou-trend', 'mou', 'MOU Baru', '#3b82f6', '#1e40af');
+        renderTrendChart('echart-sekjen-regulasi-trend', 'regulasi', 'Regulasi Baru', '#10b981', '#059669');
+        renderTrendChart('echart-sekjen-penanganan-kasus-trend', 'penanganan_kasus', 'Penanganan Kasus', '#ef4444', '#b91c1c');
+        renderTrendChart('echart-sekjen-penyelesaian-bmn-trend', 'penyelesaian_bmn', 'Penyelesaian BMN (Kuantitas)', '#f59e0b', '#d97706');
+        renderTrendChart('echart-sekjen-kehadiran-wfo-trend', 'kehadiran_wfo', 'Kehadiran WFO', '#ec4899', '#be185d');
+        renderTrendChart('echart-sekjen-monev-media-trend', 'monev_media', 'Berita Monev Media', '#6366f1', '#4338ca');
+        renderTrendChart('echart-sekjen-lulusan-bekerja-trend', 'lulusan_bekerja', 'Lulusan Polteknaker Bekerja', '#22c55e', '#15803d');
+        renderTrendChart('echart-sekjen-sdm-pelatihan-trend', 'sdm_pelatihan', 'SDM Mengikuti Pelatihan', '#06b6d4', '#0e7490');
+
     });
 </script>
 @endpush
