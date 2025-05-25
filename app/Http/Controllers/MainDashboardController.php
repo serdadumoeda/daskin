@@ -15,7 +15,7 @@ use App\Models\LulusanPolteknakerBekerja;   // Sekjen (untuk Polteknaker)
 use App\Models\JumlahKajianRekomendasi;     // Barenbang
 use App\Models\MediasiBerhasil;             // PHI (Persentase Penyelesaian Kasus HI)
 use App\Models\PelaporanWlkpOnline;         // Binwasnaker (Indikasi Kepatuhan)
-use App\Models\Ikpa;                        // Sekjen
+use App\Models\IKPA;                        // Sekjen
 // Tambahkan model lain yang relevan dengan IKU Permenaker jika ada
 
 class MainDashboardController extends Controller
@@ -149,7 +149,7 @@ class MainDashboardController extends Controller
             ->sum('jumlah');
             
         // 7. Rata-rata IKPA (Sekjen)
-        $avgIkpaKementerian = Ikpa::query()
+        $avgIkpaKementerian = IKPA::query()
             ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
             ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
             ->avg('nilai_akhir');

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Ikpa; // Sesuaikan jika nama model berbeda
+use App\Models\IKPA; // Sesuaikan jika nama model berbeda
 use App\Models\ProgressMou;
 use App\Models\JumlahRegulasiBaru;
 use App\Models\JumlahPenangananKasus;
@@ -79,7 +79,7 @@ class SekjenDashboardController extends Controller
         $chartLabels = $selectedMonth ? [$months[(int)$selectedMonth - 1]] : $months;
 
         // --- Data untuk Kartu Ringkasan ---
-        $totalIkpa = Ikpa::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->avg('nilai_akhir'); // Rata-rata IKPA
+        $totalIkpa = IKPA::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->avg('nilai_akhir'); // Rata-rata IKPA
         $totalMouBaru = ProgressMou::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->count();
         $totalRegulasiBaru = JumlahRegulasiBaru::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_regulasi');
         $totalPenangananKasus = JumlahPenangananKasus::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_perkara');
@@ -92,7 +92,7 @@ class SekjenDashboardController extends Controller
 
         // --- Logika Chart ---
         // 1. IKPA
-        $ikpaBulanan = $this->getMonthlyData(new Ikpa, 'tahun', 'bulan', 'nilai_akhir', $selectedYear, $selectedMonth, 'AVG'); // IKPA biasanya rata-rata
+        $ikpaBulanan = $this->getMonthlyData(new IKPA, 'tahun', 'bulan', 'nilai_akhir', $selectedYear, $selectedMonth, 'AVG'); // IKPA biasanya rata-rata
         $ikpaKumulatif = $this->calculateCumulative($ikpaBulanan); // Kumulatif dari rata-rata mungkin kurang bermakna, bisa dipertimbangkan ulang
 
         // 2. Progress MOU (Jumlah MOU baru per bulan)
@@ -135,7 +135,7 @@ class SekjenDashboardController extends Controller
 
         // Ambil tahun yang tersedia untuk filter
         // Ini perlu disesuaikan untuk mengambil tahun dari semua tabel yang relevan
-        $yearsIkpa = Ikpa::select('tahun')->distinct();
+        $yearsIkpa = IKPA::select('tahun')->distinct();
         $yearsMou = ProgressMou::select('tahun')->distinct();
         $yearsRegulasi = JumlahRegulasiBaru::select('tahun')->distinct();
         $yearsKasus = JumlahPenangananKasus::select('tahun')->distinct();
