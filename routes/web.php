@@ -95,32 +95,42 @@ Route::get('/dashboard', [MainDashboardController::class, 'index'])
 Route::prefix('inspektorat-jenderal')->name('inspektorat.')->middleware(['auth'])->group(function () use ($allEselonViewRolesItjen, $crudRolesItjen, $readOnlyRoles) {
     Route::get('/', [ItjenDashboardController::class, 'index'])->name('dashboard')->middleware('role:' . $allEselonViewRolesItjen);
 
-    Route::prefix('progress-temuan-bpk')->name('progress-temuan-bpk.')->group(function () use ($crudRolesItjen, $readOnlyRoles) {
-        Route::get('/', [ProgressTemuanBpkController::class, 'index'])->name('index')->middleware('role:' . $crudRolesItjen . ',' . $readOnlyRoles);
-        Route::get('/{progressTemuanBpk}', [ProgressTemuanBpkController::class, 'show'])->name('show')->middleware('role:' . $crudRolesItjen . ',' . $readOnlyRoles);
-        // CRUD Routes - Hanya untuk role ITJEN dan Superadmin
-        Route::middleware('role:' . $crudRolesItjen)->group(function () {
-            Route::get('/create', [ProgressTemuanBpkController::class, 'create'])->name('create');
-            Route::post('/', [ProgressTemuanBpkController::class, 'store'])->name('store');
-            Route::get('/{progressTemuanBpk}/edit', [ProgressTemuanBpkController::class, 'edit'])->name('edit');
-            Route::put('/{progressTemuanBpk}', [ProgressTemuanBpkController::class, 'update'])->name('update');
-            Route::delete('/{progressTemuanBpk}', [ProgressTemuanBpkController::class, 'destroy'])->name('destroy');
-            Route::post('/import', [ProgressTemuanBpkController::class, 'importExcel'])->name('import');
-        });
+    Route::get('progress-temuan-bpk', [ProgressTemuanBpkController::class, 'index'])->name('progress-temuan-bpk.index')->middleware('role:' . $crudRolesItjen . ',' . $readOnlyRoles);
+    Route::middleware('role:' . $crudRolesItjen)->group(function() {
+        Route::resource('progress-temuan-bpk', ProgressTemuanBpkController::class)->except(['index']);
+        Route::post('progress-temuan-bpk/import', [ProgressTemuanBpkController::class, 'importExcel'])->name('progress-temuan-bpk.import');
     });
-    Route::prefix('progress-temuan-internal')->name('progress-temuan-internal.')->group(function () use ($crudRolesItjen, $readOnlyRoles) {
-        Route::get('/', [ProgressTemuanInternalController::class, 'index'])->name('index')->middleware('role:' . $crudRolesItjen . ',' . $readOnlyRoles);
-        Route::get('/{progressTemuanInternal}', [ProgressTemuanInternalController::class, 'show'])->name('show')->middleware('role:' . $crudRolesItjen . ',' . $readOnlyRoles);
-        // CRUD Routes - Hanya untuk role ITJEN dan Superadmin
-        Route::middleware('role:' . $crudRolesItjen)->group(function () {
-            Route::get('/create', [ProgressTemuanInternalController::class, 'create'])->name('create');
-            Route::post('/', [ProgressTemuanInternalController::class, 'store'])->name('store');
-            Route::get('/{progressTemuanInternal}/edit', [ProgressTemuanInternalController::class, 'edit'])->name('edit');
-            Route::put('/{progressTemuanInternal}', [ProgressTemuanInternalController::class, 'update'])->name('update');
-            Route::delete('/{progressTemuanInternal}', [ProgressTemuanInternalController::class, 'destroy'])->name('destroy');
-            Route::post('/import', [ProgressTemuanInternalController::class, 'importExcel'])->name('import');
-        });
+    // Route::prefix('progress-temuan-bpk')->name('progress-temuan-bpk.')->group(function () use ($crudRolesItjen, $readOnlyRoles) {
+    //     Route::get('/', [ProgressTemuanBpkController::class, 'index'])->name('index')->middleware('role:' . $crudRolesItjen . ',' . $readOnlyRoles);
+    //     Route::get('/{progressTemuanBpk}', [ProgressTemuanBpkController::class, 'show'])->name('show')->middleware('role:' . $crudRolesItjen . ',' . $readOnlyRoles);
+    //     // CRUD Routes - Hanya untuk role ITJEN dan Superadmin
+    //     Route::middleware('role:' . $crudRolesItjen)->group(function () {
+    //         Route::get('/create', [ProgressTemuanBpkController::class, 'create'])->name('create');
+    //         Route::post('/', [ProgressTemuanBpkController::class, 'store'])->name('store');
+    //         Route::get('/{progressTemuanBpk}/edit', [ProgressTemuanBpkController::class, 'edit'])->name('edit');
+    //         Route::put('/{progressTemuanBpk}', [ProgressTemuanBpkController::class, 'update'])->name('update');
+    //         Route::delete('/{progressTemuanBpk}', [ProgressTemuanBpkController::class, 'destroy'])->name('destroy');
+    //         Route::post('/import', [ProgressTemuanBpkController::class, 'importExcel'])->name('import');
+    //     });
+    // });
+    Route::get('progress-temuan-internal', [ProgressTemuanInternalController::class, 'index'])->name('progress-temuan-internal.index')->middleware('role:' . $crudRolesItjen . ',' . $readOnlyRoles);
+    Route::middleware('role:' . $crudRolesItjen)->group(function() {
+        Route::resource('progress-temuan-internal', ProgressTemuanInternalController::class)->except(['index']);
+        Route::post('progress-temuan-internal/import', [ProgressTemuanInternalController::class, 'importExcel'])->name('progress-temuan-internal.import');
     });
+    // Route::prefix('progress-temuan-internal')->name('progress-temuan-internal.')->group(function () use ($crudRolesItjen, $readOnlyRoles) {
+    //     Route::get('/', [ProgressTemuanInternalController::class, 'index'])->name('index')->middleware('role:' . $crudRolesItjen . ',' . $readOnlyRoles);
+    //     Route::get('/{progressTemuanInternal}', [ProgressTemuanInternalController::class, 'show'])->name('show')->middleware('role:' . $crudRolesItjen . ',' . $readOnlyRoles);
+    //     // CRUD Routes - Hanya untuk role ITJEN dan Superadmin
+    //     Route::middleware('role:' . $crudRolesItjen)->group(function () {
+    //         Route::get('/create', [ProgressTemuanInternalController::class, 'create'])->name('create');
+    //         Route::post('/', [ProgressTemuanInternalController::class, 'store'])->name('store');
+    //         Route::get('/{progressTemuanInternal}/edit', [ProgressTemuanInternalController::class, 'edit'])->name('edit');
+    //         Route::put('/{progressTemuanInternal}', [ProgressTemuanInternalController::class, 'update'])->name('update');
+    //         Route::delete('/{progressTemuanInternal}', [ProgressTemuanInternalController::class, 'destroy'])->name('destroy');
+    //         Route::post('/import', [ProgressTemuanInternalController::class, 'importExcel'])->name('import');
+    //     });
+    // });
 });
 
 // Sekretariat Jenderal
