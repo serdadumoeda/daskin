@@ -1,232 +1,227 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard PHI & Jamsosnak')
-@section('page_title', 'PHI & Jaminan Sosial Tenaga Kerja')
+@section('title', 'Dashboard PHI & Jamsos')
+@section('page_title', 'PHI & Jamsos')
 
 @section('header_filters')
-    <form method="GET" action="{{ route('phi.dashboard') }}" class="w-full">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 items-end">
-            <div class="flex-grow">
-                <label for="year_filter_phi" class="text-sm text-gray-600 whitespace-nowrap">Tahun:</label>
-                <select name="year_filter" id="year_filter_phi" class="form-input mt-1 w-full bg-white">
-                    @if($availableYears->isEmpty() && $selectedYear)
-                         <option value="{{ $selectedYear }}" selected>{{ $selectedYear }}</option>
-                    @elseif($availableYears->isEmpty())
-                        <option value="{{ date('Y') }}" selected>{{ date('Y') }}</option>
-                    @else
-                        @foreach($availableYears as $year)
-                            <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>{{ $year }}</option>
-                        @endforeach
-                    @endif
-                </select>
-            </div>
-            <div class="flex-grow">
-                <label for="month_filter_phi" class="text-sm text-gray-600 whitespace-nowrap">Bulan:</label>
-                <select name="month_filter" id="month_filter_phi" class="form-input mt-1 w-full bg-white">
-                    <option value="">Semua Bulan</option>
-                    @for ($i = 1; $i <= 12; $i++)
-                        <option value="{{ $i }}" {{ $selectedMonth == $i ? 'selected' : '' }}>{{ \Carbon\Carbon::create()->month($i)->isoFormat('MMMM') }}</option>
-                    @endfor
-                </select>
-            </div>
-            <div class="flex items-center space-x-2 pt-5">
-                <button type="submit" class="w-full sm:w-auto px-4 py-1.5 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium">
-                    <i class="ri-filter-3-line mr-1"></i> Terapkan
-                </button>
-                 <a href="{{ route('phi.dashboard') }}" class="w-full sm:w-auto px-4 py-1.5 bg-gray-200 text-gray-700 rounded-button hover:bg-gray-300 text-sm font-medium">
-                    Reset
-                </a>
-            </div>
+    <form method="GET" action="{{ route('phi.dashboard') }}" class="flex flex-col sm:flex-row items-center gap-3 w-full">
+        {{-- Tahun --}}
+        <div class="flex-1 w-full sm:w-auto">
+            <label for="tahun" class="sr-only">Tahun</label>
+            <select name="tahun" id="tahun" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+                @php
+                    $currentLoopYear = date('Y');
+                @endphp
+                @for ($yearOption = $currentLoopYear + 1; $yearOption >= $currentLoopYear - 4; $yearOption--)
+                    <option value="{{ $yearOption }}" {{ $selectedYear == $yearOption ? 'selected' : '' }}>{{ $yearOption }}</option>
+                @endfor
+            </select>
+        </div>
+
+        {{-- Bulan --}}
+        <div class="flex-1 w-full sm:w-auto">
+            <label for="bulan" class="sr-only">Bulan</label>
+            <select name="bulan" id="bulan" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+                <option value="">Semua Bulan (Tahunan)</option>
+                {{-- Pastikan array ini ditulis dengan benar --}}
+                @foreach (['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'] as $monthKey => $monthName)
+                    <option value="{{ $monthKey + 1 }}" {{ $selectedMonth == ($monthKey + 1) ? 'selected' : '' }}>{{ $monthName }}</option>
+                @endforeach
+            </select>
+        </div>
+        
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+            <button type="submit" class="w-full sm:w-auto text-sm font-medium text-filter-btn-apply-text bg-filter-btn-apply-bg border border-filter-btn-apply-border hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-md px-4 py-2 transition-colors duration-200">
+                Terapkan
+            </button>
+            <a href="{{ route('phi.dashboard') }}" class="w-full sm:w-auto text-center text-sm font-medium text-filter-btn-clear-text bg-filter-btn-clear-bg border border-filter-btn-clear-border hover:bg-red-200 focus:ring-4 focus:outline-none focus:ring-red-100 rounded-md px-4 py-2 transition-colors duration-200">
+                Bersihkan
+            </a>
         </div>
     </form>
 @endsection
 
 @section('content')
-<div class="space-y-6">
+<div class="space-y-8">
+
+
+    <!-- <h2 class="text-xl font-semibold text-gray-800 -mb-4">Kinerja Umum PHI & Jamsos</h2> -->
     @php
-        $yearToDisplayPhi = $selectedYear ?: date('Y');
-        $monthValuePhi = null; 
+        $yearToDisplay = $selectedYear ?: date('Y');
+        $monthValue = null;
         if ($selectedMonth && is_numeric($selectedMonth)) {
-            $monthValuePhi = (int)$selectedMonth;
+            $monthValue = (int)$selectedMonth;
         }
 
-        if ($monthValuePhi && $monthValuePhi >= 1 && $monthValuePhi <= 12) {
-            $endMonthNamePhi = \Carbon\Carbon::create()->month($monthValuePhi)->isoFormat('MMMM');
-            $periodTextPhi = "Periode: Januari - " . $endMonthNamePhi . " " . $yearToDisplayPhi;
+        if ($monthValue && $monthValue >= 1 && $monthValue <= 12) {
+            $endMonthName = \Carbon\Carbon::create()->month($monthValue)->isoFormat('MMMM');
+            $periodText = "Periode: Januari - " . $endMonthName . " " . $yearToDisplay;
         } else {
-            $periodTextPhi = "Sepanjang Tahun " . $yearToDisplayPhi;
+            $periodText = "Sepanjang Tahun " . $yearToDisplay;
         }
     @endphp
 
-    {{-- Baris 1: Kartu Ringkasan --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-white p-5 rounded-lg shadow">
-            <div class="flex items-center justify-between mb-1">
-                {{-- Judul Disesuaikan --}}
-                <h3 class="text-sm font-medium text-gray-600">Jumlah PHK</h3>
-                <a href="{{ route('phi.jumlah-phk.index') }}" class="text-xs text-primary hover:text-primary/80">Detail &rarr;</a>
+    {{-- Kartu Statistik PHI & Jamsos --}}
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {{-- Kartu Jumlah PHK --}}
+        <a href="{{ route('phi.jumlah-phk.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Jumlah PHK</p>
+                    {{-- Pastikan variabel $totalPhk digunakan dengan benar --}}
+                    <p class="stat-card-value">{{ number_format($totalTkPhk ?? 0) }} </p>
+                    <p class="text-xs text-gray-500">{{ number_format($totalPerusahaanPhk ?? 0) }} Perusahaan</p>
+                </div>
+                <div class="stat-card-icon-wrapper bg-red-100">
+                    <i class="ri-user-unfollow-fill text-red-500 text-2xl"></i>
+                </div>
             </div>
-            <div class="text-3xl font-semibold text-gray-800">{{ number_format($totalTkPhk ?? 0) }} <span class="text-sm font-normal">TK</span></div>
-            <p class="text-xs text-gray-500">{{ number_format($totalPerusahaanPhk ?? 0) }} Perusahaan</p>
-            {{-- Periode Ditambahkan --}}
-            <p class="text-xs text-gray-400 mt-1">{{ $periodTextPhi }}</p>
-        </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
 
-        <div class="bg-white p-5 rounded-lg shadow">
-            <div class="flex items-center justify-between mb-1">
-                {{-- Judul Disesuaikan --}}
-                <h3 class="text-sm font-medium text-gray-600">Jumlah perselisihan yang ditindaklanjuti</h3>
-                <a href="{{ route('phi.perselisihan-ditindaklanjuti.index') }}" class="text-xs text-primary hover:text-primary/80">Detail &rarr;</a>
+        {{-- Kartu Perselisihan (TL) --}}
+        <a href="{{ route('phi.perselisihan-ditindaklanjuti.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Perselisihan (TL)</p>
+                    {{-- Pastikan variabel $totalPerselisihan digunakan dengan benar --}}
+                    <p class="stat-card-value">{{ number_format($totalPerselisihanDitindaklanjuti ?? 0) }} </p>
+                </div>
+                <div class="stat-card-icon-wrapper bg-yellow-100">
+                    <i class="ri-auction-line text-yellow-500 text-2xl"></i>
+                </div>
             </div>
-            <div class="text-3xl font-semibold text-gray-800">{{ number_format($totalPerselisihanDitindaklanjuti ?? 0) }} <span class="text-sm font-normal">Kasus</span></div>
-            {{-- <p class="text-xs text-gray-500">dari {{ number_format($totalPerselisihan ?? 0) }} total perselisihan</p> --}}
-            {{-- Periode Ditambahkan --}}
-            <p class="text-xs text-gray-400 mt-1">{{ $periodTextPhi }}</p>
-        </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
 
-        <div class="bg-white p-5 rounded-lg shadow">
-            <div class="flex items-center justify-between mb-1">
-                {{-- Judul Disesuaikan --}}
-                <h3 class="text-sm font-medium text-gray-600">Jumlah mediasi yang berhasil</h3>
-                <a href="{{ route('phi.mediasi-berhasil.index') }}" class="text-xs text-primary hover:text-primary/80">Detail &rarr;</a>
+        {{-- Kartu Mediasi Berhasil --}}
+        <a href="{{ route('phi.mediasi-berhasil.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Mediasi Berhasil</p>
+                    <p class="stat-card-value">{{ number_format($totalMediasiBerhasil ?? 0) }}</p>
+                </div>
+                <div class="stat-card-icon-wrapper bg-green-100">
+                    <i class="ri-shake-hands-line text-green-500 text-2xl"></i>
+                </div>
             </div>
-            <div class="text-3xl font-semibold text-gray-800">{{ number_format($totalMediasiBerhasil ?? 0) }} <span class="text-sm font-normal">Kasus</span></div>
-            {{-- <p class="text-xs text-gray-500">dari {{ number_format($totalMediasi ?? 0) }} total mediasi</p> --}}
-            {{-- Periode Ditambahkan --}}
-            <p class="text-xs text-gray-400 mt-1">{{ $periodTextPhi }}</p>
-        </div>
-
-        <div class="bg-white p-5 rounded-lg shadow">
-            <div class="flex items-center justify-between mb-1">
-                {{-- Judul Disesuaikan --}}
-                <h3 class="text-sm font-medium text-gray-600">Jumlah Perusahaan yang menerapkan SUSU</h3>
-                <a href="{{ route('phi.perusahaan-menerapkan-susu.index') }}" class="text-xs text-primary hover:text-primary/80">Detail &rarr;</a>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
+        
+        {{-- Kartu Perusahaan Penerap SUSU --}}
+        <a href="{{ route('phi.perusahaan-menerapkan-susu.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Perusahaan Penerap SUSU</p>
+                    <p class="stat-card-value">{{ number_format($totalPerusahaanSusu ?? 0) }}</p>
+                </div>
+                <div class="stat-card-icon-wrapper bg-blue-100">
+                    <i class="ri-currency-line text-blue-500 text-2xl"></i>
+                </div>
             </div>
-            <div class="text-3xl font-semibold text-gray-800">{{ number_format($totalPerusahaanSusu ?? 0) }} <span class="text-sm font-normal">Perusahaan</span></div>
-            {{-- Periode Ditambahkan --}}
-            <p class="text-xs text-gray-400 mt-1">{{ $periodTextPhi }}</p>
-        </div>
-    </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
+    </section>
 
-    {{-- Baris untuk Chart Utama --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+    {{-- Bagian Grafik --}}
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Jumlah Tenaga Kerja di PHK per Bulan (Tahun {{ $selectedYear }})</h3>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Jumlah PHK ({{ $yearToDisplay }})</h3>
             <div id="echart-phi-phk-trend" style="width: 100%; height: 300px;"></div>
         </div>
         <div class="bg-white p-5 rounded-lg shadow">
-            {{-- Judul Chart dan ID Diubah --}}
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Jumlah Perselisihan Ditindaklanjuti per Bulan (Tahun {{ $selectedYear }})</h3>
-            <div id="echart-phi-perselisihan-tl-trend" style="width: 100%; height: 300px;"></div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Perselisihan Ditindaklanjuti ({{ $yearToDisplay }})</h3>
+            <div id="echart-phi-perselisihan-trend" style="width: 100%; height: 300px;"></div>
         </div>
-    </div>
-     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Mediasi vs Mediasi Berhasil per Bulan (Tahun {{ $selectedYear }})</h3>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Mediasi Berhasil ({{ $yearToDisplay }})</h3>
             <div id="echart-phi-mediasi-trend" style="width: 100%; height: 300px;"></div>
         </div>
         <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Perusahaan Menerapkan SUSU per Bulan (Tahun {{ $selectedYear }})</h3>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Perusahaan Menerapkan SUSU ({{ $yearToDisplay }})</h3>
             <div id="echart-phi-susu-trend" style="width: 100%; height: 300px;"></div>
         </div>
-    </div>
+    </section>
 </div>
 @endsection
 
 @push('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // 1. Chart Tren PHK
-        var phkChartDom = document.getElementById('echart-phi-phk-trend');
-        if (phkChartDom) {
-            var phkChart = echarts.init(phkChartDom);
-            var phkOption = {
-                tooltip: { trigger: 'axis', formatter: function (params) { let res = params[0].name + '<br/>'; params.forEach(function(item){ res += item.seriesName + ' : ' + item.value.toLocaleString('id-ID') + '<br/>'; }); return res; } },
-                legend: { data: ['Jumlah TK di PHK'], bottom: 5 },
-                grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
-                xAxis: { type: 'category', boundaryGap: false, data: @json($phkChartLabels) },
-                yAxis: { type: 'value', name: 'Jumlah Tenaga Kerja', min: 0, axisLabel: { formatter: function (value) { return value.toLocaleString('id-ID'); } } },
-                series: [{
-                    name: 'Jumlah TK di PHK', type: 'line', smooth: true,
-                    data: @json($phkChartDataValues),
-                    itemStyle: { color: '#ef4444' }, 
-                    areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{offset: 0, color: 'rgba(239, 68, 68, 0.5)'}, {offset: 1, color: 'rgba(239, 68, 68, 0.1)'}])}
-                }]
+    document.addEventListener("DOMContentLoaded", function () {
+        
+        function createMultiSeriesChart(elementId, labels, seriesConfig) {
+            const chartDom = document.getElementById(elementId);
+            if (!chartDom) {
+                console.error('Element chart tidak ditemukan:', elementId);
+                return;
+            }
+            const myChart = echarts.init(chartDom);
+            
+            const series = seriesConfig.map(s => ({
+                name: s.name, type: s.type, yAxisIndex: s.yAxisIndex || 0, stack: s.stack || null,
+                smooth: s.type === 'line', data: s.data, itemStyle: { color: s.color }, lineStyle: { color: s.color }
+            }));
+            
+            const legendData = series.map(s => s.name);
+
+            const option = {
+                tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+                legend: { data: legendData, bottom: 0, type: 'scroll' }, // Tambahkan type: 'scroll' jika legenda terlalu banyak
+                grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true }, // Bottom disesuaikan untuk legenda
+                xAxis: [{ type: 'category', data: labels, axisPointer: { type: 'shadow' } }],
+                yAxis: [
+                    { type: 'value', name: 'Jumlah', min: 0, position: 'left' },
+                    { type: 'value', name: 'Kumulatif', min: 0, position: 'right', splitLine: { show: false } }
+                ],
+                series: series
             };
-            phkChart.setOption(phkOption);
-            window.addEventListener('resize', () => phkChart.resize());
+            myChart.setOption(option);
+            window.addEventListener('resize', () => myChart.resize());
         }
 
-        // 2. Chart Tren Jumlah Perselisihan Ditindaklanjuti (BARU - Line Chart)
-        var perselisihanTlChartDom = document.getElementById('echart-phi-perselisihan-tl-trend'); // ID Baru
-        if (perselisihanTlChartDom) {
-            var perselisihanTlChart = echarts.init(perselisihanTlChartDom);
-            var perselisihanTlOption = {
-                tooltip: { trigger: 'axis', formatter: function (params) { let res = params[0].name + '<br/>'; params.forEach(function(item){ res += item.seriesName + ' : ' + item.value.toLocaleString('id-ID') + '<br/>'; }); return res; } },
-                legend: { data: ['Jml Perselisihan Ditindaklanjuti'], bottom: 5 },
-                grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
-                xAxis: { type: 'category', boundaryGap: false, data: @json($perselisihanTlChartLabels) }, // Data dari controller
-                yAxis: { type: 'value', name: 'Jumlah Kasus', min: 0, axisLabel: { formatter: function (value) { return value.toLocaleString('id-ID'); } } },
-                series: [{
-                    name: 'Jml Perselisihan Ditindaklanjuti', type: 'line', smooth: true,
-                    data: @json($perselisihanTlChartDataValues), // Data dari controller
-                    itemStyle: { color: '#f97316' }, // Orange
-                    areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{offset: 0, color: 'rgba(249, 115, 22, 0.5)'}, {offset: 1, color: 'rgba(249, 115, 22, 0.1)'}])}
-                }]
-            };
-            perselisihanTlChart.setOption(perselisihanTlOption);
-            window.addEventListener('resize', () => perselisihanTlChart.resize());
-        }
+        const labels = @json($chartLabels ?? []);
+        const chartData = @json($chartData ?? null);
 
-        // 3. Chart Tren Mediasi vs Berhasil
-        var mediasiChartDom = document.getElementById('echart-phi-mediasi-trend');
-        if (mediasiChartDom) {
-            var mediasiChart = echarts.init(mediasiChartDom);
-            var mediasiOption = {
-                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow'}, formatter: function (params) { let res = params[0].name + '<br/>'; params.forEach(function(item){ res += item.seriesName + ' : ' + item.value.toLocaleString('id-ID') + '<br/>'; }); return res; } },
-                legend: { data: ['Total Mediasi', 'Mediasi Berhasil'], top: 5 },
-                grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-                xAxis: { type: 'category', data: @json($mediasiChartLabels) },
-                yAxis: { type: 'value', name: 'Jumlah Kasus', min: 0, axisLabel: { formatter: function (value) { return value.toLocaleString('id-ID'); } } },
-                series: [
-                    {
-                        name: 'Total Mediasi', type: 'bar', barMaxWidth: 20,
-                        data: @json($mediasiTotalData),
-                        itemStyle: { color: '#f59e0b' } 
-                    },
-                    {
-                        name: 'Mediasi Berhasil', type: 'bar', barMaxWidth: 20,
-                        data: @json($mediasiBerhasilData),
-                        itemStyle: { color: '#10b981' } 
-                    }
-                ]
-            };
-            mediasiChart.setOption(mediasiOption);
-            window.addEventListener('resize', () => mediasiChart.resize());
+        if (!chartData) {
+            console.error('Data chart tidak tersedia dari controller.');
+            return;
         }
         
-        // 4. Chart Tren Perusahaan Menerapkan SUSU
-        var susuChartDom = document.getElementById('echart-phi-susu-trend');
-        if (susuChartDom) {
-            var susuChart = echarts.init(susuChartDom);
-            var susuOption = {
-                tooltip: { trigger: 'axis', formatter: function (params) { let res = params[0].name + '<br/>'; params.forEach(function(item){ res += item.seriesName + ' : ' + item.value.toLocaleString('id-ID') + '<br/>'; }); return res; } },
-                legend: { data: ['Jumlah Perusahaan SUSU'], bottom: 5 },
-                grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
-                xAxis: { type: 'category', boundaryGap: false, data: @json($susuChartLabels) },
-                yAxis: { type: 'value', name: 'Jumlah Perusahaan', min: 0, axisLabel: { formatter: function (value) { return value.toLocaleString('id-ID'); } } },
-                series: [{
-                    name: 'Jumlah Perusahaan SUSU', type: 'line', smooth: true,
-                    data: @json($susuChartDataValues),
-                    itemStyle: { color: '#8b5cf6' }, 
-                    areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{offset: 0, color: 'rgba(139, 92, 246, 0.5)'}, {offset: 1, color: 'rgba(139, 92, 246, 0.1)'}])}
-                }]
-            };
-            susuChart.setOption(susuOption);
-            window.addEventListener('resize', () => susuChart.resize());
+        // 1. Chart PHK (2 Batang + 1 Garis)
+        if (chartData.phk) {
+            createMultiSeriesChart('echart-phi-phk-trend', labels, [
+                { name: 'Jml TK PHK', type: 'bar', yAxisIndex: 0, data: chartData.phk.tk, color: '#ef4444' },
+                { name: 'Jml Perusahaan PHK', type: 'bar', yAxisIndex: 0, data: chartData.phk.perusahaan, color: '#10b981' },
+                { name: 'Kumulatif TK PHK', type: 'line', yAxisIndex: 1, data: chartData.phk.kumulatif, color: '#a855f7' }
+            ]);
         }
 
+        // 2. Chart Perselisihan (2 Batang Identik + 1 Garis) - TELAH DIPERBARUI
+        if (chartData.perselisihan) {
+            createMultiSeriesChart('echart-phi-perselisihan-trend', labels, [
+                { name: 'Perselisihan Ditindaklanjuti', type: 'bar', yAxisIndex: 0, data: chartData.perselisihan.ditindaklanjuti, color: '#f59e0b' },
+                { name: 'Jumlah Perselisihan', type: 'bar', yAxisIndex: 0, data: chartData.perselisihan.total_perselisihan, color: '#84cc16' }, // Batang baru
+                { name: 'Kumulatif Total', type: 'line', yAxisIndex: 1, data: chartData.perselisihan.kumulatif, color: '#14b8a6' }
+            ]);
+        }
+
+        // 3. Chart Mediasi (2 Batang + 1 Garis)
+        if (chartData.mediasi) {
+            createMultiSeriesChart('echart-phi-mediasi-trend', labels, [
+                { name: 'Total Mediasi', type: 'bar', yAxisIndex: 0, data: chartData.mediasi.total, color: '#22c55e' },
+                { name: 'Mediasi Berhasil', type: 'bar', yAxisIndex: 0, data: chartData.mediasi.berhasil, color: '#f97316' },
+                { name: 'Kumulatif Berhasil', type: 'line', yAxisIndex: 1, data: chartData.mediasi.kumulatif, color: '#3b82f6' }
+            ]);
+        }
+        
+        // 4. Chart SUSU (1 Batang + 1 Garis)
+        if (chartData.susu) {
+            createMultiSeriesChart('echart-phi-susu-trend', labels, [
+                { name: 'Perusahaan Terapkan SUSU', type: 'bar', yAxisIndex: 0, data: chartData.susu.susu, color: '#3b82f6' },
+                { name: 'Kumulatif', type: 'line', yAxisIndex: 1, data: chartData.susu.kumulatif, color: '#ef4444' }
+            ]);
+        }
     });
 </script>
 @endpush

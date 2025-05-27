@@ -4,197 +4,258 @@
 @section('page_title', 'Binalavotas')
 
 @section('header_filters')
-    <form method="GET" action="{{ route('binalavotas.dashboard') }}" class="w-full">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 items-end">
-            <div class="flex-grow">
-                <label for="year_filter_binalavotas" class="text-sm text-gray-600 whitespace-nowrap">Tahun:</label>
-                <select name="year_filter" id="year_filter_binalavotas" class="form-input mt-1 w-full bg-white">
-                    @foreach($availableYears as $year)
-                        <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>{{ $year }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="flex-grow">
-                <label for="month_filter_binalavotas" class="text-sm text-gray-600 whitespace-nowrap">Bulan:</label>
-                <select name="month_filter" id="month_filter_binalavotas" class="form-input mt-1 w-full bg-white">
-                    <option value="">Semua Bulan</option>
-                    @for ($i = 1; $i <= 12; $i++)
-                        <option value="{{ $i }}" {{ $selectedMonth == $i ? 'selected' : '' }}>{{ \Carbon\Carbon::create()->month($i)->isoFormat('MMMM') }}</option>
-                    @endfor
-                </select>
-            </div>
-            <div class="flex items-center space-x-2 pt-5">
-                <button type="submit" class="w-full sm:w-auto px-4 py-1.5 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium">
-                    <i class="ri-filter-3-line mr-1"></i> Terapkan
-                </button>
-                 <a href="{{ route('binalavotas.dashboard') }}" class="w-full sm:w-auto px-4 py-1.5 bg-gray-200 text-gray-700 rounded-button hover:bg-gray-300 text-sm font-medium">
-                    Reset
-                </a>
-            </div>
+    <form method="GET" action="{{ route('binalavotas.dashboard') }}" class="flex flex-col sm:flex-row items-center gap-3 w-full">
+        {{-- Tahun --}}
+        <div class="flex-1 w-full sm:w-auto">
+            <label for="tahun" class="sr-only">Tahun</label>
+            <select name="tahun" id="tahun" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+                @php
+                    $currentLoopYear = date('Y');
+                @endphp
+                @for ($yearOption = $currentLoopYear + 1; $yearOption >= $currentLoopYear - 4; $yearOption--)
+                    <option value="{{ $yearOption }}" {{ $selectedYear == $yearOption ? 'selected' : '' }}>{{ $yearOption }}</option>
+                @endfor
+            </select>
+        </div>
+
+        {{-- Bulan --}}
+        <div class="flex-1 w-full sm:w-auto">
+            <label for="bulan" class="sr-only">Bulan</label>
+            <select name="bulan" id="bulan" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+                <option value="">Semua Bulan (Tahunan)</option>
+                {{-- Pastikan array ini ditulis dengan benar --}}
+                @foreach (['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'] as $monthKey => $monthName)
+                    <option value="{{ $monthKey + 1 }}" {{ $selectedMonth == ($monthKey + 1) ? 'selected' : '' }}>{{ $monthName }}</option>
+                @endforeach
+            </select>
+        </div>
+        
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+            <button type="submit" class="w-full sm:w-auto text-sm font-medium text-filter-btn-apply-text bg-filter-btn-apply-bg border border-filter-btn-apply-border hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-md px-4 py-2 transition-colors duration-200">
+                Terapkan
+            </button>
+            <a href="{{ route('binalavotas.dashboard') }}" class="w-full sm:w-auto text-center text-sm font-medium text-filter-btn-clear-text bg-filter-btn-clear-bg border border-filter-btn-clear-border hover:bg-red-200 focus:ring-4 focus:outline-none focus:ring-red-100 rounded-md px-4 py-2 transition-colors duration-200">
+                Bersihkan
+            </a>
         </div>
     </form>
 @endsection
 
 @section('content')
-<div class="space-y-6">
-    {{-- Baris 1: Kartu Ringkasan --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="bg-white p-5 rounded-lg shadow">
-            <div class="flex items-center justify-between mb-1">
-                <h3 class="text-sm font-medium text-gray-600">Lulus Pelatihan Internal</h3>
-                <a href="{{ route('binalavotas.jumlah-kepesertaan-pelatihan.index', ['penyelenggara_filter' => 1, 'status_kelulusan_filter' => 1]) }}" class="text-xs text-primary hover:text-primary/80">Detail &rarr;</a>
+<div class="space-y-8">
+
+
+
+    <!-- <h2 class="text-xl font-semibold text-gray-800 -mb-4">Kinerja Umum Binalavotas</h2> -->
+    @php
+        $currentSelectedYear = $selectedYear ?? date('Y'); // Menggunakan $selectedYear dari controller atau tahun ini
+        $currentSelectedMonth = $selectedMonth ?? null; // Menggunakan $selectedMonth dari controller
+
+        $yearToDisplay = $currentSelectedYear;
+        $monthValue = null;
+        if ($currentSelectedMonth && is_numeric($currentSelectedMonth)) {
+            $monthValue = (int)$currentSelectedMonth;
+        }
+
+        if ($monthValue && $monthValue >= 1 && $monthValue <= 12) {
+            $endMonthName = \Carbon\Carbon::create()->month($monthValue)->isoFormat('MMMM');
+            $periodText = "Periode: Januari - " . $endMonthName . " " . $yearToDisplay;
+        } else {
+            $periodText = "Sepanjang Tahun " . $yearToDisplay;
+        }
+    @endphp
+
+    {{-- Kartu Statistik Binalavotas --}}
+    {{-- Pastikan variabel total dan rute sesuai dengan yang ada di BinalavotasDashboardController --}}
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {{-- Kartu Lulus Pelatihan Internal --}}
+        <a href="{{ route('binalavotas.dashboard') }}#internal" class="stat-card-link-wrapper"> {{-- Ganti rute jika ada halaman detail --}}
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Total Peserta Pelatihan</p>
+                    <p class="stat-card-value">{{ number_format($totalPesertaPelatihan ?? 0) }}</p> {{-- Sesuaikan nama variabel --}}
+                </div>
+                <div class="stat-card-icon-wrapper bg-blue-100">
+                    <i class="ri-home-heart-line text-blue-500 text-2xl"></i>
+                </div>
             </div>
-            <div class="text-3xl font-semibold text-gray-800">{{ number_format($totalLulusInternal ?? 0) }} <span class="text-sm font-normal">Peserta</span></div>
-            <div class="mt-3 h-32 chart-container" id="echart-binalavotas-lulus-internal"></div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
+
+        {{-- Kartu Lulus Pelatihan Eksternal --}}
+        <a href="{{ route('binalavotas.dashboard') }}#eksternal" class="stat-card-link-wrapper"> {{-- Ganti rute jika ada halaman detail --}}
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Total Lulus Pelatihan</p>
+                    <p class="stat-card-value">{{ number_format($totalLulusPelatihan ?? 0) }}</p> {{-- Sesuaikan nama variabel --}}
+                </div>
+                <div class="stat-card-icon-wrapper bg-purple-100">
+                    <i class="ri-flight-takeoff-line text-purple-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
+        
+        {{-- Kartu Jumlah Sertifikasi Kompetensi --}}
+        <a href="{{ route('binalavotas.jumlah-sertifikasi-kompetensi.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Jml Sertifikasi Kompetensi</p>
+                    <p class="stat-card-value">{{ number_format($totalSertifikasi ?? 0) }}</p> {{-- Sesuaikan nama variabel --}}
+                </div>
+                <div class="stat-card-icon-wrapper bg-green-100">
+                    <i class="ri-shield-star-line text-green-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
+    </section>
+
+    {{-- Bagian Grafik --}}
+    {{-- Pastikan ID chart dan variabel data chart sesuai dengan yang ada di BinalavotasDashboardController --}}
+    
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Jumlah Peserta Pelatihan</h3>
+                <div id="echart-binalavotas-peserta-pelatihan-trend" style="height: 400px;"></div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Jumlah Lulus Pelatihan</h3>
+                <div id="echart-binalavotas-lulus-pelatihan-trend" style="height: 400px;"></div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-md lg:col-span-2">
+                <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Jumlah Sertifikasi Kompetensi</h3>
+                <div id="echart-binalavotas-sertifikasi-trend" style="height: 400px;"></div>
+            </div>
         </div>
 
-        <div class="bg-white p-5 rounded-lg shadow">
-            <div class="flex items-center justify-between mb-1">
-                <h3 class="text-sm font-medium text-gray-600">Lulus Pelatihan Eksternal</h3>
-                <a href="{{ route('binalavotas.jumlah-kepesertaan-pelatihan.index', ['penyelenggara_filter' => 2, 'status_kelulusan_filter' => 1]) }}" class="text-xs text-primary hover:text-primary/80">Detail &rarr;</a>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="font-semibold text-lg text-gray-800 mb-4">Komposisi Peserta Pelatihan by Penyelenggara</h3>
+                <div id="echart-binalavotas-peserta-penyelenggara-pie" style="height: 400px;"></div>
             </div>
-            <div class="text-3xl font-semibold text-gray-800">{{ number_format($totalLulusEksternal ?? 0) }} <span class="text-sm font-normal">Peserta</span></div>
-             <div class="mt-3 h-32 chart-container" id="echart-binalavotas-lulus-eksternal"></div>
-        </div>
-
-        <div class="bg-white p-5 rounded-lg shadow">
-            <div class="flex items-center justify-between mb-1">
-                <h3 class="text-sm font-medium text-gray-600">Sertifikasi Kompetensi</h3>
-                <a href="{{ route('binalavotas.jumlah-sertifikasi-kompetensi.index') }}" class="text-xs text-primary hover:text-primary/80">Detail &rarr;</a>
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="font-semibold text-lg text-gray-800 mb-4">Komposisi Sertifikasi by Jenis LSP</h3>
+                <div id="echart-binalavotas-sertifikasi-jenis-lsp-pie" style="height: 400px;"></div>
             </div>
-            <div class="text-3xl font-semibold text-gray-800">{{ number_format($totalSertifikasi ?? 0) }} <span class="text-sm font-normal">Sertifikat</span></div>
-            <div class="mt-3 h-32 chart-container" id="echart-binalavotas-sertifikasi"></div>
         </div>
-    </div>
-
-    {{-- Baris untuk Chart Utama --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Komposisi Tipe Lembaga Pelatihan (Lulus - Tahun {{ $selectedYear }}{{ $selectedMonth ? ' - '.\Carbon\Carbon::create()->month($selectedMonth)->isoFormat('MMMM') : '' }})</h3>
-            <div id="echart-binalavotas-tipe-lembaga" style="width: 100%; height: 350px;"></div>
-        </div>
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Komposisi Jenis LSP Sertifikasi (Tahun {{ $selectedYear }}{{ $selectedMonth ? ' - '.\Carbon\Carbon::create()->month($selectedMonth)->isoFormat('MMMM') : '' }})</h3>
-            <div id="echart-binalavotas-jenis-lsp" style="width: 100%; height: 350px;"></div>
-        </div>
-    </div>
+    
 </div>
 @endsection
 
 @push('scripts')
-{{-- ECharts sudah di-include di layouts/app.blade.php --}}
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // 1. Chart Tren Lulus Pelatihan Internal
-        var lulusInternalChartDom = document.getElementById('echart-binalavotas-lulus-internal');
-        if (lulusInternalChartDom) {
-            var lulusInternalChart = echarts.init(lulusInternalChartDom);
-            var lulusInternalOption = {
-                tooltip: { trigger: 'axis' },
-                grid: { left: '3%', right: '10%', bottom: '3%', top: '15%', containLabel: true },
-                xAxis: { type: 'category', boundaryGap: false, data: @json($chartLabels) },
-                yAxis: { type: 'value', min: 0 },
-                series: [{
-                    name: 'Lulus Internal', type: 'line', smooth: true,
-                    data: @json($lulusInternalChartData),
-                    itemStyle: { color: '#3b82f6' }, 
-                    areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{offset: 0, color: 'rgba(59, 130, 246, 0.3)'}, {offset: 1, color: 'rgba(59, 130, 246, 0)'}])}
-                }]
+    document.addEventListener("DOMContentLoaded", function () {
+        
+        // Fungsi untuk membuat chart tren bulanan & kumulatif
+        function createMultiSeriesChart(elementId, labels, seriesConfig) {
+            const chartDom = document.getElementById(elementId);
+            if (!chartDom) { return; }
+            let existingChart = echarts.getInstanceByDom(chartDom);
+            if (existingChart) { existingChart.dispose(); }
+            const myChart = echarts.init(chartDom);
+            
+            const series = seriesConfig.map(s => ({
+                name: s.name, type: s.type, yAxisIndex: s.yAxisIndex || 0, stack: s.stack || null,
+                smooth: s.type === 'line', data: s.data, itemStyle: { color: s.color }, lineStyle: { color: s.color }
+            }));
+            const legendData = series.map(s => s.name);
+            const option = {
+                tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+                legend: { data: legendData, bottom: 0, type: 'scroll' },
+                grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
+                xAxis: [{ type: 'category', data: labels, axisPointer: { type: 'shadow' } }],
+                yAxis: [
+                    { type: 'value', name: 'Jumlah', min: 0, position: 'left', axisLabel: { formatter: '{value}' } },
+                    { type: 'value', name: 'Kumulatif', min: 0, position: 'right', splitLine: { show: false }, axisLabel: { formatter: '{value}' } }
+                ],
+                series: series
             };
-            lulusInternalChart.setOption(lulusInternalOption);
-            window.addEventListener('resize', () => lulusInternalChart.resize());
+            myChart.setOption(option);
+            window.addEventListener('resize', () => myChart.resize());
         }
 
-        // 2. Chart Tren Lulus Pelatihan Eksternal
-        var lulusEksternalChartDom = document.getElementById('echart-binalavotas-lulus-eksternal');
-        if (lulusEksternalChartDom) {
-            var lulusEksternalChart = echarts.init(lulusEksternalChartDom);
-            var lulusEksternalOption = {
-                tooltip: { trigger: 'axis' },
-                grid: { left: '3%', right: '10%', bottom: '3%', top: '15%', containLabel: true },
-                xAxis: { type: 'category', boundaryGap: false, data: @json($chartLabels) },
-                yAxis: { type: 'value', min: 0 },
+        // Fungsi untuk membuat Pie Chart
+        function createPieChart(elementId, titleText, data) {
+            const chartDom = document.getElementById(elementId);
+            if (!chartDom) { return; }
+            let existingChart = echarts.getInstanceByDom(chartDom);
+            if (existingChart) { existingChart.dispose(); }
+            const myChart = echarts.init(chartDom);
+            const option = {
+                title: { text: titleText, left: 'center', visibility: 'hidden' }, // Judul disembunyikan jika sudah ada di HTML
+                tooltip: { trigger: 'item', formatter: '{b} : {c} ({d}%)' },
+                legend: { orient: 'vertical', left: 'left', top: 'center', type: 'scroll' },
                 series: [{
-                    name: 'Lulus Eksternal', type: 'line', smooth: true,
-                    data: @json($lulusEksternalChartData),
-                    itemStyle: { color: '#10b981' }, 
-                    areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{offset: 0, color: 'rgba(16, 185, 129, 0.3)'}, {offset: 1, color: 'rgba(16, 185, 129, 0)'}])}
+                    name: titleText, type: 'pie', radius: '70%', center: ['60%', '50%'], // Center disesuaikan agar legenda muat
+                    data: data,
+                    emphasis: { itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' } }
                 }]
             };
-            lulusEksternalChart.setOption(lulusEksternalOption);
-            window.addEventListener('resize', () => lulusEksternalChart.resize());
+            myChart.setOption(option);
+            window.addEventListener('resize', () => myChart.resize());
+        }
+
+        const chartData = @json($chartData ?? null);
+        const pieChartData = @json($pieChartData ?? null);
+
+        if (!chartData) {
+            console.error('Variabel chartData utama tidak tersedia dari controller.');
+            // Anda bisa menambahkan fallback di sini jika perlu
+            return;
+        }
+
+        // Fungsi render helper untuk chart tren
+        function renderTrendChart(chartId, dataKey, seriesName, barColor, lineColor) {
+            const chartEl = document.getElementById(chartId);
+            if (chartEl) {
+                if (chartData[dataKey] && chartData[dataKey].labels && Array.isArray(chartData[dataKey].bulanan) && Array.isArray(chartData[dataKey].kumulatif)) {
+                    const isDataEffectivelyEmpty = chartData[dataKey].bulanan.every(val => val === 0);
+                    if (chartData[dataKey].labels.length > 0 && !isDataEffectivelyEmpty) {
+                        createMultiSeriesChart(chartId, chartData[dataKey].labels, [
+                            { name: `${seriesName} (Bulanan)`, type: 'bar', yAxisIndex: 0, data: chartData[dataKey].bulanan, color: barColor },
+                            { name: `Kumulatif ${seriesName}`, type: 'line', yAxisIndex: 1, data: chartData[dataKey].kumulatif, color: lineColor }
+                        ]);
+                    } else {
+                        chartEl.innerHTML = `<p class="text-center text-gray-500 py-5">Tidak ada data untuk ditampilkan pada chart ${seriesName}.</p>`;
+                    }
+                } else {
+                    console.warn(`Data untuk chart ${seriesName} tidak lengkap. Data diterima:`, chartData[dataKey]);
+                    chartEl.innerHTML = `<p class="text-center text-gray-500 py-5">Data chart ${seriesName} tidak tersedia.</p>`;
+                }
+            }
         }
         
-        // 3. Chart Tren Sertifikasi Kompetensi
-        var sertifikasiChartDom = document.getElementById('echart-binalavotas-sertifikasi');
-        if (sertifikasiChartDom) {
-            var sertifikasiChart = echarts.init(sertifikasiChartDom);
-            var sertifikasiOption = {
-                tooltip: { trigger: 'axis' },
-                grid: { left: '3%', right: '10%', bottom: '3%', top: '15%', containLabel: true },
-                xAxis: { type: 'category', boundaryGap: false, data: @json($chartLabels) },
-                yAxis: { type: 'value', min: 0 },
-                series: [{
-                    name: 'Jumlah Sertifikasi', type: 'line', smooth: true,
-                    data: @json($sertifikasiChartData),
-                    itemStyle: { color: '#f59e0b' }, 
-                    areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{offset: 0, color: 'rgba(245, 158, 11, 0.3)'}, {offset: 1, color: 'rgba(245, 158, 11, 0)'}])}
-                }]
-            };
-            sertifikasiChart.setOption(sertifikasiOption);
-            window.addEventListener('resize', () => sertifikasiChart.resize());
+        // Fungsi render helper untuk pie chart
+        function renderPieChart(chartId, dataKey, title) {
+            const chartEl = document.getElementById(chartId);
+            if (chartEl && pieChartData && pieChartData[dataKey] && Array.isArray(pieChartData[dataKey]) && pieChartData[dataKey].length > 0) {
+                 // Cek apakah semua value 0
+                const allZero = pieChartData[dataKey].every(item => item.value === 0);
+                if(!allZero) {
+                    createPieChart(chartId, title, pieChartData[dataKey]);
+                } else {
+                    chartEl.innerHTML = `<p class="text-center text-gray-500 py-5">Tidak ada data untuk ditampilkan pada chart ${title}.</p>`;
+                }
+            } else {
+                console.warn(`Data untuk pie chart ${title} tidak lengkap atau tidak tersedia. Data diterima:`, pieChartData ? pieChartData[dataKey] : 'pieChartData undefined');
+                if(chartEl) chartEl.innerHTML = `<p class="text-center text-gray-500 py-5">Data chart ${title} tidak tersedia.</p>`;
+            }
         }
 
-        // 4. Chart Komposisi Tipe Lembaga Pelatihan (Lulus)
-        var tipeLembagaChartDom = document.getElementById('echart-binalavotas-tipe-lembaga');
-        if (tipeLembagaChartDom) {
-            var tipeLembagaChart = echarts.init(tipeLembagaChartDom);
-            var tipeLembagaOption = {
-                tooltip: { trigger: 'item', formatter: '{a} <br/>{b}: {c} ({d}%)' },
-                legend: { 
-                    orient: 'horizontal', 
-                    bottom: 0, 
-                    data: @json(collect($pelatihanPerTipeLembaga)->pluck('name')),
-                    textStyle: { fontSize: 10 }
-                },
-                series: [{
-                    name: 'Tipe Lembaga (Lulus)', type: 'pie', radius: ['45%', '70%'], center: ['50%', '45%'],
-                    avoidLabelOverlap: false,
-                    label: { show: false, position: 'center' },
-                    emphasis: { label: { show: true, fontSize: '16', fontWeight: 'bold' } },
-                    labelLine: { show: false },
-                    data: @json($pelatihanPerTipeLembaga)
-                }]
-            };
-            tipeLembagaChart.setOption(tipeLembagaOption);
-            window.addEventListener('resize', () => tipeLembagaChart.resize());
-        }
+        // 1. Render Chart Tren Peserta Pelatihan
+        renderTrendChart('echart-binalavotas-peserta-pelatihan-trend', 'peserta_pelatihan', 'Peserta Pelatihan', '#3b82f6', '#1e40af');
         
-        // 5. Chart Komposisi Jenis LSP Sertifikasi
-        var jenisLspChartDom = document.getElementById('echart-binalavotas-jenis-lsp');
-        if (jenisLspChartDom) {
-            var jenisLspChart = echarts.init(jenisLspChartDom);
-            var jenisLspOption = {
-                tooltip: { trigger: 'item', formatter: '{a} <br/>{b}: {c} ({d}%)' },
-                legend: { 
-                    orient: 'horizontal', 
-                    bottom: 0, 
-                    data: @json(collect($sertifikasiPerJenisLsp)->pluck('name')),
-                    textStyle: { fontSize: 10 }
-                },
-                series: [{
-                    name: 'Jenis LSP', type: 'pie', radius: ['45%', '70%'], center: ['50%', '45%'],
-                    avoidLabelOverlap: false,
-                    label: { show: false, position: 'center' },
-                    emphasis: { label: { show: true, fontSize: '16', fontWeight: 'bold' } },
-                    labelLine: { show: false },
-                    data: @json($sertifikasiPerJenisLsp)
-                }]
-            };
-            jenisLspChart.setOption(jenisLspOption);
-            window.addEventListener('resize', () => jenisLspChart.resize());
-        }
+        // 2. Render Chart Tren Lulus Pelatihan
+        renderTrendChart('echart-binalavotas-lulus-pelatihan-trend', 'lulus_pelatihan', 'Lulus Pelatihan', '#10b981', '#059669');
 
+        // 3. Render Chart Tren Sertifikasi Kompetensi
+        renderTrendChart('echart-binalavotas-sertifikasi-trend', 'sertifikasi', 'Sertifikasi Kompetensi', '#f59e0b', '#d97706');
+
+        // 4. Render Pie Charts (Opsional)
+        renderPieChart('echart-binalavotas-peserta-penyelenggara-pie', 'peserta_penyelenggara', 'Peserta by Penyelenggara');
+        renderPieChart('echart-binalavotas-sertifikasi-jenis-lsp-pie', 'sertifikasi_jenis_lsp', 'Sertifikasi by Jenis LSP');
     });
 </script>
 @endpush

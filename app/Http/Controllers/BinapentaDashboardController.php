@@ -3,21 +3,32 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+// Pastikan namespace dan nama model sudah benar
 use App\Models\JumlahPenempatanKemnaker;
 use App\Models\JumlahLowonganPasker;
-// HAPUS: use App\Models\JumlahTkaDisetujui;
-use App\Models\PersetujuanRptka; // TAMBAHKAN: Model baru
+use App\Models\JumlahTkaDisetujui; // Mengganti PersetujuanRptka dengan JumlahTkaDisetujui jika ini model yang benar
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
-use Illuminate\Support\Str; // Tambahkan ini jika belum ada
+use Illuminate\Support\Str;
 
 class BinapentaDashboardController extends Controller
 {
+    private function calculateCumulative(array $data): array
+    {
+        $cumulative = [];
+        $sum = 0;
+        foreach ($data as $value) {
+            $sum += is_numeric($value) ? $value : 0;
+            $cumulative[] = $sum;
+        }
+        return $cumulative;
+    }
+
     public function index(Request $request)
     {
         $currentYear = date('Y');
-        $selectedYear = $request->input('year_filter', $currentYear);
-        $selectedMonth = $request->input('month_filter'); 
+        // Menggunakan 'tahun' dan 'bulan' sesuai standar filter kita
+        $selectedYear = $request->input('tahun', $currentYear);
+        $selectedMonth = $request->input('bulan'); // Bisa null
 
         // --- Data untuk Kartu Ringkasan ---
         $totalPenempatanKemnaker = JumlahPenempatanKemnaker::query()
@@ -30,141 +41,112 @@ class BinapentaDashboardController extends Controller
             ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
             ->sum('jumlah_lowongan');
         
-        // HAPUS Data TKA Lama
-        // $totalTkaDisetujui = JumlahTkaDisetujui::query()
-        //     ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
-        //     ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
-        //     ->sum('jumlah_tka');
-        // $totalTkaTidakDisetujui = 0; // Ini placeholder, akan dihapus
-
-        // HAPUS Penempatan Disabilitas dari sini jika tidak ingin ditampilkan lagi sebagai kartu terpisah
-        // $totalPenempatanDisabilitas = JumlahPenempatanKemnaker::query()
-        //     ->where('status_disabilitas', 1) 
-        //     ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
-        //     ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
-        //     ->sum('jumlah');
-
-        // TAMBAHKAN Data Persetujuan RPTKA Diterima
-        $totalRptkaDiterima = PersetujuanRptka::query()
-            ->where('status_pengajuan', 1) // Asumsi 1 = Diterima
+        // Menggunakan model JumlahTkaDisetujui untuk RPTKA
+        $totalTkaDisetujui = JumlahTkaDisetujui::query()
             ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
             ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
-            ->sum('jumlah');
+            ->sum('jumlah_tka');
 
 
-        // --- Data untuk Chart ---
-        // 1. Tren Penempatan Kemnaker per Bulan (Tetap)
-        $penempatanPerBulan = JumlahPenempatanKemnaker::select('bulan', DB::raw('SUM(jumlah) as total'))
-            ->where('tahun', $selectedYear)
-            ->groupBy('bulan')
-            ->orderBy('bulan')
-            ->pluck('total', 'bulan');
-            
-        $penempatanChartLabels = [];
-        $penempatanChartDataValues = [];
-        for ($m=1; $m <= 12 ; $m++) { 
-            $penempatanChartLabels[] = Carbon::create()->month($m)->format('M');
-            $penempatanChartDataValues[] = $penempatanPerBulan->get($m, 0); 
+        // --- Logika Chart ---
+        $months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+        
+        $chartLabels = []; 
+        // Inisialisasi array data untuk chart
+        $penempatanBulanan = []; $penempatanKumulatif = [];
+        $lowonganPaskerBulanan = []; $lowonganPaskerKumulatif = [];
+        $tkaDisetujuiBulanan = []; $tkaDisetujuiKumulatif = [];
+
+        if ($selectedMonth) {
+            // === JIKA BULAN DIPILIH ===
+            $chartLabels = [$months[(int)$selectedMonth - 1]];
+
+            $penempatanBulanan = [(int)JumlahPenempatanKemnaker::query()->where('tahun', $selectedYear)->where('bulan', $selectedMonth)->sum('jumlah')];
+            $penempatanKumulatif = $penempatanBulanan;
+
+            $lowonganPaskerBulanan = [(int)JumlahLowonganPasker::query()->where('tahun', $selectedYear)->where('bulan', $selectedMonth)->sum('jumlah_lowongan')];
+            $lowonganPaskerKumulatif = $lowonganPaskerBulanan;
+
+            $tkaDisetujuiBulanan = [(int)JumlahTkaDisetujui::query()->where('tahun', $selectedYear)->where('bulan', $selectedMonth)->sum('jumlah_tka')];
+            $tkaDisetujuiKumulatif = $tkaDisetujuiBulanan;
+
+        } else {
+            // === JIKA SEMUA BULAN (TAHUNAN) ===
+            $chartLabels = $months;
+
+            // Fungsi helper untuk mengambil data bulanan tahunan
+            $getAnnualMonthlyData = function ($model, $yearColumnName, $monthColumnName, $valueColumnName) use ($selectedYear) {
+                $data = $model::query()->where($yearColumnName, $selectedYear)
+                    ->select($monthColumnName, DB::raw("SUM({$valueColumnName}) as total_value"))
+                    ->groupBy($monthColumnName)
+                    ->orderBy($monthColumnName, 'asc')
+                    ->get()
+                    ->pluck('total_value', $monthColumnName);
+                
+                $monthlyValues = [];
+                for ($m = 1; $m <= 12; $m++) {
+                    $monthlyValues[] = (int)($data->get($m) ?? 0);
+                }
+                return $monthlyValues;
+            };
+
+            // Data Chart Penempatan Kemnaker
+            $penempatanBulanan = $getAnnualMonthlyData(new JumlahPenempatanKemnaker, 'tahun', 'bulan', 'jumlah');
+            $penempatanKumulatif = $this->calculateCumulative($penempatanBulanan);
+
+            // Data Chart Lowongan Pasker
+            $lowonganPaskerBulanan = $getAnnualMonthlyData(new JumlahLowonganPasker, 'tahun', 'bulan', 'jumlah_lowongan');
+            $lowonganPaskerKumulatif = $this->calculateCumulative($lowonganPaskerBulanan);
+
+            // Data Chart TKA Disetujui (RPTKA)
+            $tkaDisetujuiBulanan = $getAnnualMonthlyData(new JumlahTkaDisetujui, 'tahun', 'bulan', 'jumlah_tka');
+            $tkaDisetujuiKumulatif = $this->calculateCumulative($tkaDisetujuiBulanan);
         }
 
-        // 2. Tren Lowongan Pasker per Bulan (Tetap)
-        $lowonganPaskerPerBulan = JumlahLowonganPasker::select('bulan', DB::raw('SUM(jumlah_lowongan) as total'))
-            ->where('tahun', $selectedYear)
-            ->groupBy('bulan')
-            ->orderBy('bulan')
-            ->pluck('total', 'bulan');
-        $lowonganPaskerChartLabels = [];
-        $lowonganPaskerChartDataValues = [];
-        for ($m=1; $m <= 12 ; $m++) { 
-            $lowonganPaskerChartLabels[] = Carbon::create()->month($m)->format('M');
-            $lowonganPaskerChartDataValues[] = $lowonganPaskerPerBulan->get($m, 0);
+        // Ambil tahun yang tersedia untuk filter
+        $yearsPenempatan = JumlahPenempatanKemnaker::select('tahun')->distinct();
+        $yearsLowongan = JumlahLowonganPasker::select('tahun')->distinct();
+        $yearsTka = JumlahTkaDisetujui::select('tahun')->distinct();
+        
+        $availableYears = $yearsPenempatan
+            ->union($yearsLowongan)
+            ->union($yearsTka)
+            ->orderBy('tahun', 'desc')
+            ->pluck('tahun');
+
+        if ($availableYears->isEmpty() && !$availableYears->contains($currentYear)) {
+            $availableYears->push($currentYear);
+            $availableYears = $availableYears->sortDesc()->values();
         }
         
-        // HAPUS Chart TKA Disetujui Lama
-        // $tkaDisetujuiPerBulan = JumlahTkaDisetujui::select('bulan', DB::raw('SUM(jumlah_tka) as total'))
-        //     ->where('tahun', $selectedYear)
-        //     ->groupBy('bulan')
-        //     ->orderBy('bulan')
-        //     ->pluck('total', 'bulan');
-        // $tkaDisetujuiChartLabels = [];
-        // $tkaDisetujuiChartDataValues = [];
-        // for ($m=1; $m <= 12 ; $m++) { 
-        //     $tkaDisetujuiChartLabels[] = Carbon::create()->month($m)->format('M');
-        //     $tkaDisetujuiChartDataValues[] = $tkaDisetujuiPerBulan->get($m, 0);
-        // }
+        $viewData = compact(
+            'totalPenempatanKemnaker', 'totalLowonganPasker', 'totalTkaDisetujui',
+            'availableYears', 'selectedYear', 'selectedMonth'
+        );
 
-        // TAMBAHKAN Chart Tren Persetujuan RPTKA (Diterima) per Bulan
-        $rptkaDiterimaPerBulan = PersetujuanRptka::select('bulan', DB::raw('SUM(jumlah) as total'))
-            ->where('status_pengajuan', 1) // Diterima
-            ->where('tahun', $selectedYear)
-            ->groupBy('bulan')
-            ->orderBy('bulan')
-            ->pluck('total', 'bulan');
-        $rptkaDiterimaChartLabels = [];
-        $rptkaDiterimaChartDataValues = [];
-        for ($m=1; $m <= 12 ; $m++) { 
-            $rptkaDiterimaChartLabels[] = Carbon::create()->month($m)->format('M');
-            $rptkaDiterimaChartDataValues[] = $rptkaDiterimaPerBulan->get($m, 0);
-        }
-
-
-        // 4. Komposisi Penempatan Berdasarkan Jenis Kelamin (Tetap)
+        $chartData = [
+            'penempatan' => ['labels' => $chartLabels, 'bulanan' => $penempatanBulanan, 'kumulatif' => $penempatanKumulatif],
+            'lowongan_pasker' => ['labels' => $chartLabels, 'bulanan' => $lowonganPaskerBulanan, 'kumulatif' => $lowonganPaskerKumulatif],
+            'tka_disetujui' => ['labels' => $chartLabels, 'bulanan' => $tkaDisetujuiBulanan, 'kumulatif' => $tkaDisetujuiKumulatif],
+        ];
+        
+        // Komposisi Pie Chart (Contoh, Anda bisa kembangkan)
+        // Penempatan berdasarkan Jenis Kelamin
         $penempatanPerJenisKelamin = JumlahPenempatanKemnaker::select('jenis_kelamin', DB::raw('SUM(jumlah) as total'))
             ->where('tahun', $selectedYear)
             ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
             ->groupBy('jenis_kelamin')
             ->get()
             ->map(function ($item) {
-                // Asumsi model JumlahPenempatanKemnaker punya accessor jenis_kelamin_text
-                $jkText = (new JumlahPenempatanKemnaker(['jenis_kelamin' => $item->jenis_kelamin]))->jenis_kelamin_text ?? 'N/A';
-                return ['name' => $jkText, 'value' => $item->total];
-            });
-        
-        // 5. Komposisi Lowongan Pasker Berdasarkan Lapangan Usaha (Tetap)
-        $lowonganPerKbli = JumlahLowonganPasker::select('lapangan_usaha_kbli', DB::raw('SUM(jumlah_lowongan) as total'))
-            ->where('tahun', $selectedYear)
-            ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
-            ->groupBy('lapangan_usaha_kbli')
-            ->orderBy('total', 'desc')
-            ->limit(5) 
-            ->get()
-            ->map(function ($item) {
-                // Asumsi model JumlahLowonganPasker punya accessor lapangan_usaha_kbli_text
-                // Jika tidak, tampilkan kode KBLI langsung atau deskripsi dari tabel KBLI jika ada relasi
-                $kbliText = (new JumlahLowonganPasker(['lapangan_usaha_kbli' => $item->lapangan_usaha_kbli]))->lapangan_usaha_kbli_text ?? $item->lapangan_usaha_kbli;
-                return ['name' => Str::limit($kbliText, 20), 'value' => $item->total];
-            });
+                // Anda mungkin perlu accessor di model untuk teks jenis kelamin
+                $jkText = $item->jenis_kelamin == 1 ? 'Laki-laki' : ($item->jenis_kelamin == 2 ? 'Perempuan' : 'N/A');
+                return ['name' => $jkText, 'value' => (int)$item->total];
+            })->toArray();
 
+        $pieChartData = [
+            'penempatan_jk' => $penempatanPerJenisKelamin,
+        ];
 
-        $availableYears = PersetujuanRptka::select('tahun')->distinct() 
-                            ->orderBy('tahun', 'desc')->pluck('tahun');
-        if ($availableYears->isEmpty() && !$availableYears->contains($currentYear)) {
-            $availableYears->push($currentYear);
-            $availableYears = $availableYears->sortDesc();
-        }
-        
-        return view('dashboards.binapenta', compact(
-            'totalPenempatanKemnaker',
-            'totalLowonganPasker',
-            // HAPUS 'totalTkaDisetujui',
-            // HAPUS 'totalTkaTidakDisetujui',
-            // HAPUS 'totalPenempatanDisabilitas',
-            'totalRptkaDiterima', // TAMBAHKAN
-
-            'penempatanChartLabels',
-            'penempatanChartDataValues',
-            'lowonganPaskerChartLabels',
-            'lowonganPaskerChartDataValues',
-            // HAPUS 'tkaDisetujuiChartLabels',
-            // HAPUS 'tkaDisetujuiChartDataValues',
-            'rptkaDiterimaChartLabels', // TAMBAHKAN
-            'rptkaDiterimaChartDataValues', // TAMBAHKAN
-
-            'penempatanPerJenisKelamin',
-            'lowonganPerKbli',
-            'availableYears',
-            'selectedYear',
-            'selectedMonth'
-        ));
+        return view('dashboards.binapenta', array_merge($viewData, ['chartData' => $chartData], ['pieChartData' => $pieChartData]));
     }
 }

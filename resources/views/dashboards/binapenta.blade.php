@@ -1,224 +1,250 @@
 @extends('layouts.app')
 
 @section('title', 'Dashboard Binapenta')
-@section('page_title', 'Binapenta & PKK')
+@section('page_title', 'Binapenta')
 
 @section('header_filters')
-    <form method="GET" action="{{ route('binapenta.dashboard') }}" class="w-full">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 items-end">
-            <div class="flex-grow">
-                <label for="year_filter_binapenta" class="text-sm text-gray-600 whitespace-nowrap">Tahun:</label>
-                <select name="year_filter" id="year_filter_binapenta" class="form-input mt-1 w-full bg-white">
-                    @if($availableYears->isEmpty() && $selectedYear)
-                         <option value="{{ $selectedYear }}" selected>{{ $selectedYear }}</option>
-                    @elseif($availableYears->isEmpty())
-                        <option value="{{ date('Y') }}" selected>{{ date('Y') }}</option>
-                    @else
-                        @foreach($availableYears as $year)
-                            <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>{{ $year }}</option>
-                        @endforeach
-                    @endif
-                </select>
-            </div>
-            <div class="flex-grow">
-                <label for="month_filter_binapenta" class="text-sm text-gray-600 whitespace-nowrap">Bulan:</label>
-                <select name="month_filter" id="month_filter_binapenta" class="form-input mt-1 w-full bg-white">
-                    <option value="">Semua Bulan</option> {{-- value="" akan membuat $selectedMonth jadi string kosong atau null --}}
-                    @for ($i = 1; $i <= 12; $i++)
-                        <option value="{{ $i }}" {{ (int)$selectedMonth == $i ? 'selected' : '' }}>{{ \Carbon\Carbon::create()->month($i)->isoFormat('MMMM') }}</option>
-                    @endfor
-                </select>
-            </div>
-            <div class="flex items-center space-x-2 pt-5">
-                <button type="submit" class="w-full sm:w-auto px-4 py-1.5 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium">
-                    <i class="ri-filter-3-line mr-1"></i> Terapkan
-                </button>
-                 <a href="{{ route('binapenta.dashboard') }}" class="w-full sm:w-auto px-4 py-1.5 bg-gray-200 text-gray-700 rounded-button hover:bg-gray-300 text-sm font-medium">
-                    Reset
-                </a>
-            </div>
+<form method="GET" action="{{ route('binapenta.dashboard') }}" class="flex flex-col sm:flex-row items-center gap-3 w-full">
+        {{-- Tahun --}}
+        <div class="flex-1 w-full sm:w-auto">
+            <label for="tahun" class="sr-only">Tahun</label>
+            <select name="tahun" id="tahun" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+                @php
+                    $currentLoopYear = date('Y');
+                @endphp
+                @for ($yearOption = $currentLoopYear + 1; $yearOption >= $currentLoopYear - 4; $yearOption--)
+                    <option value="{{ $yearOption }}" {{ $selectedYear == $yearOption ? 'selected' : '' }}>{{ $yearOption }}</option>
+                @endfor
+            </select>
+        </div>
+
+        {{-- Bulan --}}
+        <div class="flex-1 w-full sm:w-auto">
+            <label for="bulan" class="sr-only">Bulan</label>
+            <select name="bulan" id="bulan" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+                <option value="">Semua Bulan (Tahunan)</option>
+                {{-- Pastikan array ini ditulis dengan benar --}}
+                @foreach (['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'] as $monthKey => $monthName)
+                    <option value="{{ $monthKey + 1 }}" {{ $selectedMonth == ($monthKey + 1) ? 'selected' : '' }}>{{ $monthName }}</option>
+                @endforeach
+            </select>
+        </div>
+        
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+            <button type="submit" class="w-full sm:w-auto text-sm font-medium text-filter-btn-apply-text bg-filter-btn-apply-bg border border-filter-btn-apply-border hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-md px-4 py-2 transition-colors duration-200">
+                Terapkan
+            </button>
+            <a href="{{ route('binapenta.dashboard') }}" class="w-full sm:w-auto text-center text-sm font-medium text-filter-btn-clear-text bg-filter-btn-clear-bg border border-filter-btn-clear-border hover:bg-red-200 focus:ring-4 focus:outline-none focus:ring-red-100 rounded-md px-4 py-2 transition-colors duration-200">
+                Bersihkan
+            </a>
         </div>
     </form>
 @endsection
 
 @section('content')
-<div class="space-y-6">
+<div class="space-y-8">
+
+
+
+    <!-- <h2 class="text-xl font-semibold text-gray-800 -mb-4">Kinerja Umum Binapenta</h2> -->
     @php
-        $yearToDisplay = $selectedYear ?: date('Y');
+        $currentSelectedYear = $selectedYear ?? date('Y');
+        $currentSelectedMonth = $selectedMonth ?? null;
+
+        $yearToDisplay = $currentSelectedYear;
         $monthValue = null;
-        if ($selectedMonth && is_numeric($selectedMonth)) {
-            $monthValue = (int)$selectedMonth;
+        if ($currentSelectedMonth && is_numeric($currentSelectedMonth)) {
+            $monthValue = (int)$currentSelectedMonth;
         }
 
         if ($monthValue && $monthValue >= 1 && $monthValue <= 12) {
-            $endMonthNameBinapenta = \Carbon\Carbon::create()->month($monthValue)->isoFormat('MMMM');
-            $periodTextBinapenta = "Periode: Januari - " . $endMonthNameBinapenta . " " . $yearToDisplay;
+            $endMonthName = \Carbon\Carbon::create()->month($monthValue)->isoFormat('MMMM');
+            $periodText = "Periode: Januari - " . $endMonthName . " " . $yearToDisplay;
         } else {
-            $periodTextBinapenta = "Sepanjang Tahun " . $yearToDisplay;
+            $periodText = "Sepanjang Tahun " . $yearToDisplay;
         }
     @endphp
 
-    {{-- Baris 1: Kartu Ringkasan --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="bg-white p-5 rounded-lg shadow">
-            <div class="flex items-center justify-between mb-1">
-                <h3 class="text-sm font-medium text-gray-600">Jumlah Penempatan oleh Kemnaker</h3>
-                <a href="{{ route('binapenta.jumlah-penempatan-kemnaker.index') }}" class="text-xs text-primary hover:text-primary/80">Detail &rarr;</a>
+    {{-- Kartu Statistik Binapenta --}}
+    {{-- Pastikan variabel total dan rute sesuai dengan yang ada di BinapentaDashboardController --}}
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {{-- Kartu Jml Penempatan oleh Kemnaker --}}
+        <a href="{{ route('binapenta.jumlah-penempatan-kemnaker.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Jml Penempatan oleh Kemnaker</p>
+                    <p class="stat-card-value">{{ number_format($totalPenempatanKemnaker ?? 0) }} <span class="text-sm font-normal">Orang</span></p> {{-- Sesuaikan nama variabel --}}
+                </div>
+                <div class="stat-card-icon-wrapper bg-blue-100">
+                    <i class="ri-user-add-line text-blue-500 text-2xl"></i>
+                </div>
             </div>
-            <div class="text-3xl font-semibold text-gray-800">{{ number_format($totalPenempatanKemnaker ?? 0) }} <span class="text-sm font-normal">Orang</span></div>
-            <p class="text-xs text-gray-400 mt-1">{{ $periodTextBinapenta }}</p>
-        </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
 
-        <div class="bg-white p-5 rounded-lg shadow">
-            <div class="flex items-center justify-between mb-1">
-                <h3 class="text-sm font-medium text-gray-600">Jumlah Lowongan Pekerjaan Baru di Pasker</h3>
-                <a href="{{ route('binapenta.jumlah-lowongan-pasker.index') }}" class="text-xs text-primary hover:text-primary/80">Detail &rarr;</a>
+        {{-- Kartu Jml Lowongan Kerja Baru (Pasker) --}}
+        <a href="{{ route('binapenta.jumlah-lowongan-pasker.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Jml Lowongan Kerja Baru (Pasker)</p>
+                    <p class="stat-card-value">{{ number_format($totalLowonganPasker ?? 0) }} <span class="text-sm font-normal">Lowongan</span></p> {{-- Sesuaikan nama variabel --}}
+                </div>
+                <div class="stat-card-icon-wrapper bg-green-100">
+                    <i class="ri-briefcase-4-line text-green-500 text-2xl"></i>
+                </div>
             </div>
-            <div class="text-3xl font-semibold text-gray-800">{{ number_format($totalLowonganPasker ?? 0) }} <span class="text-sm font-normal">Lowongan</span></div>
-            <p class="text-xs text-gray-400 mt-1">{{ $periodTextBinapenta }}</p>
-        </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
+        
+        {{-- Kartu Persetujuan RPTKA --}}
+        <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Persetujuan RPTKA</p>
+                    <p class="stat-card-value">{{ number_format($totalTkaDisetujui ?? 0) }} <span class="text-sm font-normal">TKA</span></p> {{-- Sesuaikan nama variabel --}}
+                </div>
+                <div class="stat-card-icon-wrapper bg-purple-100">
+                    <i class="ri-user-shared-line text-purple-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
+    </section>
 
-        <div class="bg-white p-5 rounded-lg shadow">
-            <div class="flex items-center justify-between mb-1">
-                <h3 class="text-sm font-medium text-gray-600">Total Persetujuan RPTKA (Diterima)</h3>
-                <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="text-xs text-primary hover:text-primary/80">Detail &rarr;</a>
-            </div>
-            <div class="text-3xl font-semibold text-gray-800">{{ number_format($totalRptkaDiterima ?? 0) }} <span class="text-sm font-normal">TKA</span></div>
-            <p class="text-xs text-gray-400 mt-1">{{ $periodTextBinapenta }}</p>
+    {{-- Bagian Grafik --}}
+    {{-- Pastikan ID chart dan variabel data chart sesuai dengan yang ada di BinapentaDashboardController --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Penempatan oleh Kemnaker</h3>
+            <div id="echart-binapenta-penempatan-trend" style="height: 400px;"></div>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Lowongan Kerja Pasker</h3>
+            <div id="echart-binapenta-lowongan-pasker-trend" style="height: 400px;"></div>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-md"> <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Persetujuan RPTKA (TKA Disetujui)</h3>
+            <div id="echart-binapenta-tka-disetujui-trend" style="height: 400px;"></div>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h3 class="font-semibold text-lg text-gray-800 mb-4">Komposisi Penempatan berdasarkan Jenis Kelamin</h3>
+            <div id="echart-binapenta-penempatan-jk-pie" style="height: 400px;"></div>
         </div>
     </div>
+
     
-    {{-- Baris untuk Chart Utama --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Penempatan oleh Kemnaker per Bulan (Tahun {{ $selectedYear }})</h3>
-            <div id="echart-binapenta-penempatan-trend" style="width: 100%; height: 300px;"></div>
-        </div>
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Komposisi Penempatan berdasarkan Jenis Kelamin (Tahun {{ $selectedYear }}{{ ($selectedMonth && is_numeric($selectedMonth) && $selectedMonth >=1 && $selectedMonth <=12) ? ' - '.\Carbon\Carbon::create()->month((int)$selectedMonth)->isoFormat('MMMM') : '' }})</h3>
-            <div id="echart-binapenta-penempatan-gender" style="width: 100%; height: 300px;"></div>
-        </div>
-    </div>
-     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Lowongan Pasker per Bulan (Tahun {{ $selectedYear }})</h3>
-            <div id="echart-binapenta-lowongan-trend" style="width: 100%; height: 300px;"></div>
-        </div>
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Top 5 Lapangan Usaha Lowongan Pasker (Tahun {{ $selectedYear }}{{ ($selectedMonth && is_numeric($selectedMonth) && $selectedMonth >=1 && $selectedMonth <=12) ? ' - '.\Carbon\Carbon::create()->month((int)$selectedMonth)->isoFormat('MMMM') : '' }})</h3>
-            <div id="echart-binapenta-lowongan-kbli" style="width: 100%; height: 300px;"></div>
-        </div>
-    </div>
-     <div class="bg-white p-5 rounded-lg shadow mt-6">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Persetujuan RPTKA (Diterima) per Bulan (Tahun {{ $selectedYear }})</h3>
-        <div id="echart-binapenta-rptka-diterima-trend" style="width: 100%; height: 300px;"></div>
-    </div>
-</div>
 @endsection
 
 @push('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // 1. Chart Tren Penempatan Kemnaker
-        var penempatanChartDom = document.getElementById('echart-binapenta-penempatan-trend');
-        if (penempatanChartDom) {
-            var penempatanChart = echarts.init(penempatanChartDom);
-            var penempatanOption = {
-                tooltip: { trigger: 'axis', formatter: function (params) { let res = params[0].name + '<br/>'; params.forEach(function(item){ res += item.seriesName + ' : ' + item.value.toLocaleString('id-ID') + '<br/>'; }); return res; } },
-                legend: { data: ['Jumlah Penempatan'], bottom: 5 },
+    document.addEventListener("DOMContentLoaded", function () {
+        
+        // Fungsi untuk membuat chart tren bulanan & kumulatif
+        function createMultiSeriesChart(elementId, labels, seriesConfig) {
+            const chartDom = document.getElementById(elementId);
+            if (!chartDom) { return; }
+            let existingChart = echarts.getInstanceByDom(chartDom);
+            if (existingChart) { existingChart.dispose(); }
+            const myChart = echarts.init(chartDom);
+            
+            const series = seriesConfig.map(s => ({
+                name: s.name, type: s.type, yAxisIndex: s.yAxisIndex || 0, stack: s.stack || null,
+                smooth: s.type === 'line', data: s.data, itemStyle: { color: s.color }, lineStyle: { color: s.color }
+            }));
+            const legendData = series.map(s => s.name);
+            const option = {
+                tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+                legend: { data: legendData, bottom: 0, type: 'scroll' },
                 grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
-                xAxis: { type: 'category', boundaryGap: false, data: @json($penempatanChartLabels) },
-                yAxis: { type: 'value', name: 'Jumlah Orang', min: 0, axisLabel: { formatter: function (value) { return value.toLocaleString('id-ID'); } } },
-                series: [{
-                    name: 'Jumlah Penempatan', type: 'line', smooth: true,
-                    data: @json($penempatanChartDataValues),
-                    itemStyle: { color: '#3b82f6' }, 
-                    areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{offset: 0, color: 'rgba(59, 130, 246, 0.5)'}, {offset: 1, color: 'rgba(59, 130, 246, 0.1)'}])}
-                }]
+                xAxis: [{ type: 'category', data: labels, axisPointer: { type: 'shadow' } }],
+                yAxis: [
+                    { type: 'value', name: 'Jumlah', min: 0, position: 'left', axisLabel: { formatter: '{value}' } },
+                    { type: 'value', name: 'Kumulatif', min: 0, position: 'right', splitLine: { show: false }, axisLabel: { formatter: '{value}' } }
+                ],
+                series: series
             };
-            penempatanChart.setOption(penempatanOption);
-            window.addEventListener('resize', () => penempatanChart.resize());
+            myChart.setOption(option);
+            window.addEventListener('resize', () => myChart.resize());
         }
 
-        // 2. Chart Komposisi Penempatan berdasarkan Jenis Kelamin
-        var penempatanGenderChartDom = document.getElementById('echart-binapenta-penempatan-gender');
-        if (penempatanGenderChartDom) {
-            var penempatanGenderChart = echarts.init(penempatanGenderChartDom);
-            var penempatanGenderOption = {
-                tooltip: { trigger: 'item', formatter: function(params) { return `${params.seriesName}<br/>${params.name}: ${params.value.toLocaleString('id-ID')} (${params.percent}%)`; } },
-                legend: { orient: 'vertical', left: 'left', data: @json(collect($penempatanPerJenisKelamin)->pluck('name')) },
+        // Fungsi untuk membuat Pie Chart
+        function createPieChart(elementId, titleText, data) {
+            const chartDom = document.getElementById(elementId);
+            if (!chartDom) { return; }
+            let existingChart = echarts.getInstanceByDom(chartDom);
+            if (existingChart) { existingChart.dispose(); }
+            const myChart = echarts.init(chartDom);
+            const option = {
+                title: { text: titleText, left: 'center', visibility: 'hidden' },
+                tooltip: { trigger: 'item', formatter: '{b} : {c} ({d}%)' },
+                legend: { orient: 'vertical', left: 'left', top: 'center', type: 'scroll' },
                 series: [{
-                    name: 'Jenis Kelamin', type: 'pie', radius: '70%', center: ['60%', '50%'],
-                    data: @json($penempatanPerJenisKelamin),
+                    name: titleText, type: 'pie', radius: '70%', center: ['60%', '50%'],
+                    data: data,
                     emphasis: { itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' } }
                 }]
             };
-            penempatanGenderChart.setOption(penempatanGenderOption);
-            window.addEventListener('resize', () => penempatanGenderChart.resize());
+            myChart.setOption(option);
+            window.addEventListener('resize', () => myChart.resize());
         }
 
-        // 3. Chart Tren Lowongan Pasker
-        var lowonganPaskerChartDom = document.getElementById('echart-binapenta-lowongan-trend');
-        if (lowonganPaskerChartDom) {
-            var lowonganPaskerChart = echarts.init(lowonganPaskerChartDom);
-            var lowonganPaskerOption = {
-                tooltip: { trigger: 'axis', formatter: function (params) { let res = params[0].name + '<br/>'; params.forEach(function(item){ res += item.seriesName + ' : ' + item.value.toLocaleString('id-ID') + '<br/>'; }); return res; } },
-                legend: { data: ['Jumlah Lowongan Pasker'], bottom: 5 },
-                grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
-                xAxis: { type: 'category', boundaryGap: false, data: @json($lowonganPaskerChartLabels) },
-                yAxis: { type: 'value', name: 'Jumlah Lowongan', min: 0, axisLabel: { formatter: function (value) { return value.toLocaleString('id-ID'); } } },
-                series: [{
-                    name: 'Jumlah Lowongan Pasker', type: 'line', smooth: true,
-                    data: @json($lowonganPaskerChartDataValues),
-                    itemStyle: { color: '#10b981' }, 
-                    areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{offset: 0, color: 'rgba(16, 185, 129, 0.5)'}, {offset: 1, color: 'rgba(16, 185, 129, 0.1)'}])}
-                }]
-            };
-            lowonganPaskerChart.setOption(lowonganPaskerOption);
-            window.addEventListener('resize', () => lowonganPaskerChart.resize());
+        const chartData = @json($chartData ?? null);
+        const pieChartData = @json($pieChartData ?? null);
+
+        if (!chartData) {
+            console.error('Variabel chartData utama tidak tersedia dari controller.');
+            return;
         }
 
-        // 4. Chart Top 5 KBLI Lowongan Pasker
-        var lowonganKbliChartDom = document.getElementById('echart-binapenta-lowongan-kbli');
-        if (lowonganKbliChartDom) {
-            var lowonganKbliChart = echarts.init(lowonganKbliChartDom);
-            var lowonganKbliOption = {
-                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: function(params) { var tar = params[0]; return tar.name + '<br/>' + tar.seriesName + ' : ' + tar.value.toLocaleString('id-ID'); } },
-                legend: { data: ['Jumlah Lowongan'], top: 5 },
-                grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-                xAxis: { type: 'category', data: @json(collect($lowonganPerKbli)->pluck('name')), axisLabel: { interval: 0, rotate: 30, fontSize: 10 } },
-                yAxis: { type: 'value', name: 'Jumlah Lowongan', min: 0, axisLabel: { formatter: function (value) { return value.toLocaleString('id-ID'); } } },
-                series: [{
-                    name: 'Jumlah Lowongan', type: 'bar', barMaxWidth: 30,
-                    data: @json(collect($lowonganPerKbli)->pluck('value')),
-                    itemStyle: { color: '#f59e0b' } 
-                }]
-            };
-            lowonganKbliChart.setOption(lowonganKbliOption);
-            window.addEventListener('resize', () => lowonganKbliChart.resize());
+        // Fungsi render helper untuk chart tren
+        function renderTrendChart(chartId, dataKey, seriesName, barColor, lineColor) {
+            const chartEl = document.getElementById(chartId);
+            if (chartEl) {
+                if (chartData[dataKey] && chartData[dataKey].labels && Array.isArray(chartData[dataKey].bulanan) && Array.isArray(chartData[dataKey].kumulatif)) {
+                    const isDataEffectivelyEmpty = chartData[dataKey].bulanan.every(val => val === 0);
+                    if (chartData[dataKey].labels.length > 0 && !isDataEffectivelyEmpty) {
+                        createMultiSeriesChart(chartId, chartData[dataKey].labels, [
+                            { name: `${seriesName} (Bulanan)`, type: 'bar', yAxisIndex: 0, data: chartData[dataKey].bulanan, color: barColor },
+                            { name: `Kumulatif ${seriesName}`, type: 'line', yAxisIndex: 1, data: chartData[dataKey].kumulatif, color: lineColor }
+                        ]);
+                    } else {
+                        chartEl.innerHTML = `<p class="text-center text-gray-500 py-5">Tidak ada data untuk ditampilkan pada chart ${seriesName}.</p>`;
+                    }
+                } else {
+                    console.warn(`Data untuk chart ${seriesName} tidak lengkap. Data diterima:`, chartData[dataKey]);
+                    chartEl.innerHTML = `<p class="text-center text-gray-500 py-5">Data chart ${seriesName} tidak tersedia.</p>`;
+                }
+            }
         }
         
-        // 5. Chart Tren Persetujuan RPTKA Diterima
-        var rptkaDiterimaChartDom = document.getElementById('echart-binapenta-rptka-diterima-trend');
-        if (rptkaDiterimaChartDom) {
-            var rptkaDiterimaChart = echarts.init(rptkaDiterimaChartDom);
-            var rptkaDiterimaOption = {
-                tooltip: { trigger: 'axis', formatter: function (params) { let res = params[0].name + '<br/>'; params.forEach(function(item){ res += item.seriesName + ' : ' + item.value.toLocaleString('id-ID') + '<br/>'; }); return res; } },
-                legend: { data: ['Jumlah RPTKA Diterima'], bottom: 5 },
-                grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
-                xAxis: { type: 'category', boundaryGap: false, data: @json($rptkaDiterimaChartLabels) },
-                yAxis: { type: 'value', name: 'Jumlah TKA', min: 0, axisLabel: { formatter: function (value) { return value.toLocaleString('id-ID'); } } },
-                series: [{
-                    name: 'Jumlah RPTKA Diterima', type: 'line', smooth: true,
-                    data: @json($rptkaDiterimaChartDataValues),
-                    itemStyle: { color: '#8b5cf6' }, 
-                    areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{offset: 0, color: 'rgba(139, 92, 246, 0.5)'}, {offset: 1, color: 'rgba(139, 92, 246, 0.1)'}])}
-                }]
-            };
-            rptkaDiterimaChart.setOption(rptkaDiterimaOption);
-            window.addEventListener('resize', () => rptkaDiterimaChart.resize());
+        // Fungsi render helper untuk pie chart
+        function renderPieChart(chartId, dataKey, title) {
+            const chartEl = document.getElementById(chartId);
+            if (chartEl && pieChartData && pieChartData[dataKey] && Array.isArray(pieChartData[dataKey]) && pieChartData[dataKey].length > 0) {
+                const allZero = pieChartData[dataKey].every(item => item.value === 0);
+                if(!allZero) {
+                    createPieChart(chartId, title, pieChartData[dataKey]);
+                } else {
+                    chartEl.innerHTML = `<p class="text-center text-gray-500 py-5">Tidak ada data untuk ditampilkan pada chart ${title}.</p>`;
+                }
+            } else {
+                console.warn(`Data untuk pie chart ${title} tidak lengkap. Data diterima:`, pieChartData ? pieChartData[dataKey] : 'pieChartData undefined');
+                if(chartEl) chartEl.innerHTML = `<p class="text-center text-gray-500 py-5">Data chart ${title} tidak tersedia.</p>`;
+            }
         }
+
+        // 1. Render Chart Tren Penempatan oleh Kemnaker
+        renderTrendChart('echart-binapenta-penempatan-trend', 'penempatan', 'Penempatan Kemnaker', '#3b82f6', '#1e40af');
+        
+        // 2. Render Chart Tren Lowongan Kerja Pasker
+        renderTrendChart('echart-binapenta-lowongan-pasker-trend', 'lowongan_pasker', 'Lowongan Pasker', '#10b981', '#059669');
+
+        // 3. Render Chart Tren TKA Disetujui (RPTKA)
+        renderTrendChart('echart-binapenta-tka-disetujui-trend', 'tka_disetujui', 'TKA Disetujui (RPTKA)', '#f59e0b', '#d97706');
+        
+        // 4. Render Pie Chart (Opsional) - Penempatan berdasarkan Jenis Kelamin
+        renderPieChart('echart-binapenta-penempatan-jk-pie', 'penempatan_jk', 'Penempatan berdasarkan Jenis Kelamin');
+
     });
 </script>
 @endpush
