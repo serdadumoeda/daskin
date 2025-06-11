@@ -28,9 +28,6 @@ class PerselisihanDitindaklanjutiController extends Controller
         if ($request->filled('provinsi_filter')) {
             $query->where('provinsi', 'like', '%' . $request->provinsi_filter . '%');
         }
-        if ($request->filled('kbli_filter')) {
-            $query->where('kbli', 'like', '%' . $request->kbli_filter . '%');
-        }
         if ($request->filled('jenis_perselisihan_filter')) {
             $query->where('jenis_perselisihan', $request->jenis_perselisihan_filter);
         }
@@ -41,7 +38,7 @@ class PerselisihanDitindaklanjutiController extends Controller
 
         $sortBy = $request->input('sort_by', 'tahun');
         $sortDirection = $request->input('sort_direction', 'desc');
-        $sortableColumns = ['tahun', 'bulan', 'provinsi', 'kbli', 'jenis_perselisihan', 'cara_penyelesaian', 'jumlah_perselisihan', 'jumlah_ditindaklanjuti'];
+        $sortableColumns = ['tahun', 'bulan', 'provinsi', 'jenis_perselisihan', 'cara_penyelesaian', 'jumlah_perselisihan', 'jumlah_ditindaklanjuti'];
 
         if (in_array($sortBy, $sortableColumns) && in_array(strtolower($sortDirection), ['asc', 'desc'])) {
             $query->orderBy($sortBy, $sortDirection);
@@ -51,7 +48,7 @@ class PerselisihanDitindaklanjutiController extends Controller
 
         $perselisihanDitindaklanjutis = $query->paginate(10)->appends($request->except('page'));
         $availableYears = PerselisihanDitindaklanjuti::select('tahun')->distinct()->orderBy('tahun', 'desc')->pluck('tahun');
-        
+
         $jenisPerselisihanOptions = PerselisihanDitindaklanjuti::getJenisPerselisihanOptions();
         $caraPenyelesaianOptions = PerselisihanDitindaklanjuti::getCaraPenyelesaianOptions();
 
@@ -79,7 +76,6 @@ class PerselisihanDitindaklanjutiController extends Controller
             'tahun' => 'required|integer|digits:4|min:2000|max:' . (date('Y') + 5),
             'bulan' => 'required|integer|min:1|max:12',
             'provinsi' => 'required|string|max:255',
-            'kbli' => 'required|string|max:50',
             'jenis_perselisihan' => ['required', 'string', Rule::in(array_keys(PerselisihanDitindaklanjuti::getJenisPerselisihanOptions()))],
             'cara_penyelesaian' => ['required', 'string', Rule::in(array_keys(PerselisihanDitindaklanjuti::getCaraPenyelesaianOptions()))],
             'jumlah_perselisihan' => 'required|integer|min:0',
@@ -118,7 +114,6 @@ class PerselisihanDitindaklanjutiController extends Controller
             'tahun' => 'required|integer|digits:4|min:2000|max:' . (date('Y') + 5),
             'bulan' => 'required|integer|min:1|max:12',
             'provinsi' => 'required|string|max:255',
-            'kbli' => 'required|string|max:50',
             'jenis_perselisihan' => ['required', 'string', Rule::in(array_keys(PerselisihanDitindaklanjuti::getJenisPerselisihanOptions()))],
             'cara_penyelesaian' => ['required', 'string', Rule::in(array_keys(PerselisihanDitindaklanjuti::getCaraPenyelesaianOptions()))],
             'jumlah_perselisihan' => 'required|integer|min:0',
@@ -157,7 +152,7 @@ class PerselisihanDitindaklanjutiController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->route($this->routeNamePrefix . 'index') 
+            return redirect()->route($this->routeNamePrefix . 'index')
                         ->withErrors($validator)
                         ->with('error', 'Gagal mengimpor data. Pastikan file valid.');
         }
