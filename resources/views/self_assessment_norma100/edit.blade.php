@@ -15,8 +15,6 @@
         @method('PUT')
         @include('self_assessment_norma100._form', [
             'selfAssessmentNorma100' => $selfAssessmentNorma100,
-            'skalaPerusahaanOptions' => $skalaPerusahaanOptions,
-            'hasilAssessmentOptions' => $hasilAssessmentOptions
         ])
     </form>
 </div>
