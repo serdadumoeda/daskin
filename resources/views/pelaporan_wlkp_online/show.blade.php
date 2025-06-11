@@ -16,10 +16,8 @@
         <div><strong class="text-gray-600 w-48 inline-block">Tahun:</strong> <span class="text-gray-800">{{ $pelaporanWlkpOnline->tahun }}</span></div>
         <div><strong class="text-gray-600 w-48 inline-block">Bulan:</strong> <span class="text-gray-800">{{ \Carbon\Carbon::create()->month($pelaporanWlkpOnline->bulan)->isoFormat('MMMM') }}</span></div>
         <div><strong class="text-gray-600 w-48 inline-block">Provinsi:</strong> <span class="text-gray-800">{{ $pelaporanWlkpOnline->provinsi }}</span></div>
-        <div><strong class="text-gray-600 w-48 inline-block">KBLI:</strong> <span class="text-gray-800">{{ $pelaporanWlkpOnline->kbli }}</span></div>
-        <div><strong class="text-gray-600 w-48 inline-block">Skala Perusahaan:</strong> <span class="text-gray-800">{{ $pelaporanWlkpOnline->skala_perusahaan }}</span></div>
         <div><strong class="text-gray-600 w-48 inline-block">Jumlah Perusahaan Melapor:</strong> <span class="text-gray-800">{{ number_format($pelaporanWlkpOnline->jumlah_perusahaan_melapor) }}</span></div>
-        
+
         <div class="border-t pt-3 mt-3"></div>
         <div><strong class="text-gray-600 w-48 inline-block">Dibuat pada:</strong> <span class="text-gray-800">{{ $pelaporanWlkpOnline->created_at->isoFormat('D MMMM finalList, HH:mm') }}</span></div>
         <div><strong class="text-gray-600 w-48 inline-block">Diperbarui pada:</strong> <span class="text-gray-800">{{ $pelaporanWlkpOnline->updated_at->isoFormat('D MMMM finalList, HH:mm') }}</span></div>

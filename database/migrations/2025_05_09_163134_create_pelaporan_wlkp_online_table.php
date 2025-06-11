@@ -16,16 +16,12 @@ return new class extends Migration
             $table->year('tahun');
             $table->tinyInteger('bulan')->comment('1-12');
             $table->string('provinsi');
-            $table->string('kbli')->comment('Klasifikasi Baku Lapangan Usaha Indonesia');
-            $table->string('skala_perusahaan')->comment('Mikro, Kecil, Menengah, Besar');
             // Ini adalah kolom yang menyebabkan error, pastikan namanya benar
-            $table->integer('jumlah_perusahaan_melapor')->default(0)->comment('Jumlah perusahaan yang melaporkan WLKP'); 
+            $table->integer('jumlah_perusahaan_melapor')->default(0)->comment('Jumlah perusahaan yang melaporkan WLKP');
             $table->timestamps();
 
             $table->index(['tahun', 'bulan']);
             $table->index('provinsi');
-            $table->index('kbli');
-            $table->index('skala_perusahaan');
         });
     }
 

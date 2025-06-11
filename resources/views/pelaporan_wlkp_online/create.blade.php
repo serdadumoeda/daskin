@@ -14,7 +14,6 @@
     <form action="{{ route('binwasnaker.pelaporan-wlkp-online.store') }}" method="POST">
         @include('pelaporan_wlkp_online._form', [
             'pelaporanWlkpOnline' => $pelaporanWlkpOnline,
-            'skalaPerusahaanOptions' => $skalaPerusahaanOptions
         ])
     </form>
 </div>
