@@ -13,14 +13,12 @@ return new class extends Migration
             $table->year('tahun');
             $table->tinyInteger('bulan')->comment('1-12');
             $table->string('provinsi');
-            $table->string('kbli')->comment('Klasifikasi Baku Lapangan Usaha Indonesia, e.g., kategori A, B, 01, 10, etc.');
             $table->integer('jumlah_perusahaan_phk')->default(0)->comment('Jumlah Perusahaan yang melakukan PHK');
             $table->integer('jumlah_tk_phk')->default(0)->comment('Jumlah Tenaga Kerja yang di PHK');
             $table->timestamps();
 
             $table->index(['tahun', 'bulan']);
             $table->index('provinsi');
-            $table->index('kbli');
         });
     }
 

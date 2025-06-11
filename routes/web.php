@@ -202,9 +202,6 @@ Route::prefix('sekretariat-jenderal')->name('sekretariat-jenderal.')->middleware
 
 
     // MonevMonitoringMediaController
-
-
-
     Route::get('monev-monitoring-media', [MonevMonitoringMediaController::class, 'index'])->name('monev-monitoring-media.index')->middleware('role:' . $crudRolesSekjen . ',' . $readOnlyRoles);
     Route::middleware('role:' . $crudRolesSekjen)->group(function() {
         Route::get('monev-monitoring-media/create', [MonevMonitoringMediaController::class, 'create'])->name('monev-monitoring-media.create');
@@ -228,7 +225,6 @@ Route::prefix('sekretariat-jenderal')->name('sekretariat-jenderal.')->middleware
 
 
     // SdmMengikutiPelatihanController
-
     Route::get('sdm-mengikuti-pelatihan', [SdmMengikutiPelatihanController::class, 'index'])->name('sdm-mengikuti-pelatihan.index')->middleware('role:' . $crudRolesSekjen . ',' . $readOnlyRoles);
     Route::middleware('role:' . $crudRolesSekjen)->group(function() {
         Route::get('sdm-mengikuti-pelatihan/create', [SdmMengikutiPelatihanController::class, 'create'])->name('sdm-mengikuti-pelatihan.create');
@@ -406,8 +402,9 @@ Route::prefix('phi')->name('phi.')->middleware(['auth'])->group(function () use 
     // JumlahPhkController
     Route::get('jumlah-phk', [JumlahPhkController::class, 'index'])->name('jumlah-phk.index')->middleware('role:' . $crudRolesPhi . ',' . $readOnlyRoles);
     Route::middleware('role:' . $crudRolesPhi)->group(function() {
-        Route::get('jumlah-phk/create', [JumlahPhkController::class, 'create'])->name('jumlah-phk.create');
-        Route::post('jumlah-phk', [JumlahPhkController::class, 'store'])->name('jumlah-phk.store');
+        // Route::get('jumlah-phk/create', [JumlahPhkController::class, 'create'])->name('jumlah-phk.create');
+        // Route::post('jumlah-phk', [JumlahPhkController::class, 'store'])->name('jumlah-phk.store');
+        Route::resource('jumlah-phk', JumlahPhkController::class)->except('index', 'show');
         Route::post('jumlah-phk/import', [JumlahPhkController::class, 'importExcel'])->name('jumlah-phk.import');
     });
 

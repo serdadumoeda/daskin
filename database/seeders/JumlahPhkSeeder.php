@@ -17,12 +17,12 @@ class JumlahPhkSeeder extends Seeder
 
         // Daftar contoh provinsi di Indonesia
         $daftarProvinsi = [
-            'Aceh', 'Sumatera Utara', 'Sumatera Barat', 'Riau', 'Jambi', 'Sumatera Selatan', 
-            'Bengkulu', 'Lampung', 'Kepulauan Bangka Belitung', 'Kepulauan Riau', 
-            'DKI Jakarta', 'Jawa Barat', 'Jawa Tengah', 'DI Yogyakarta', 'Jawa Timur', 'Banten', 
-            'Bali', 'Nusa Tenggara Barat', 'Nusa Tenggara Timur', 
-            'Kalimantan Barat', 'Kalimantan Tengah', 'Kalimantan Selatan', 'Kalimantan Timur', 'Kalimantan Utara', 
-            'Sulawesi Utara', 'Sulawesi Tengah', 'Sulawesi Selatan', 'Sulawesi Tenggara', 'Gorontalo', 'Sulawesi Barat', 
+            'Aceh', 'Sumatera Utara', 'Sumatera Barat', 'Riau', 'Jambi', 'Sumatera Selatan',
+            'Bengkulu', 'Lampung', 'Kepulauan Bangka Belitung', 'Kepulauan Riau',
+            'DKI Jakarta', 'Jawa Barat', 'Jawa Tengah', 'DI Yogyakarta', 'Jawa Timur', 'Banten',
+            'Bali', 'Nusa Tenggara Barat', 'Nusa Tenggara Timur',
+            'Kalimantan Barat', 'Kalimantan Tengah', 'Kalimantan Selatan', 'Kalimantan Timur', 'Kalimantan Utara',
+            'Sulawesi Utara', 'Sulawesi Tengah', 'Sulawesi Selatan', 'Sulawesi Tenggara', 'Gorontalo', 'Sulawesi Barat',
             'Maluku', 'Maluku Utara', 'Papua Barat', 'Papua'
         ];
 
@@ -46,7 +46,7 @@ class JumlahPhkSeeder extends Seeder
             'M72', // Aktivitas Penelitian Dan Pengembangan Ilmu Pengetahuan
             'N82', // Aktivitas Administrasi Kantor, Aktivitas Penunjang Kantor Dan Aktivitas Penunjang Usaha Lainnya
         ];
-        
+
         $tahunSekarang = (int) $now->year;
 
         for ($i = 0; $i < 20; $i++) {
@@ -54,13 +54,12 @@ class JumlahPhkSeeder extends Seeder
             $bulan = rand(1, 12);
             $jumlahPerusahaanPhk = rand(1, 7); // Jumlah perusahaan yang melakukan PHK
             // Jumlah TK yang di-PHK, minimal sama dengan jumlah perusahaan, maksimal 25x jumlah perusahaan
-            $jumlahTkPhk = rand($jumlahPerusahaanPhk, $jumlahPerusahaanPhk * 25); 
+            $jumlahTkPhk = rand($jumlahPerusahaanPhk, $jumlahPerusahaanPhk * 25);
 
             $newData[] = [
                 'tahun' => $tahun,
                 'bulan' => $bulan,
                 'provinsi' => $faker->randomElement($daftarProvinsi),
-                'kbli' => $faker->randomElement($daftarKbli),
                 'jumlah_perusahaan_phk' => $jumlahPerusahaanPhk,
                 'jumlah_tk_phk' => $jumlahTkPhk,
                 'created_at' => $now,
