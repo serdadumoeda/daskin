@@ -16,11 +16,10 @@
         <div><strong class="text-gray-600 w-48 inline-block">Tahun:</strong> <span class="text-gray-800">{{ $persentaseKehadiran->tahun }}</span></div>
         <div><strong class="text-gray-600 w-48 inline-block">Bulan:</strong> <span class="text-gray-800">{{ \Carbon\Carbon::create()->month($persentaseKehadiran->bulan)->isoFormat('MMMM') }}</span></div>
         <div><strong class="text-gray-600 w-48 inline-block">Unit Kerja Eselon I:</strong> <span class="text-gray-800">{{ $persentaseKehadiran->unitKerjaEselonI->nama_unit_kerja_eselon_i ?? $persentaseKehadiran->kode_unit_kerja_eselon_i }}</span></div>
-        <div><strong class="text-gray-600 w-48 inline-block">Satuan Kerja:</strong> <span class="text-gray-800">{{ $persentaseKehadiran->satuanKerja->nama_satuan_kerja ?? $persentaseKehadiran->kode_satuan_kerja }}</span></div>
         <div><strong class="text-gray-600 w-48 inline-block">Status ASN:</strong> <span class="text-gray-800">{{ $persentaseKehadiran->status_asn_text }}</span></div>
         <div><strong class="text-gray-600 w-48 inline-block">Status Kehadiran:</strong> <span class="text-gray-800">{{ $persentaseKehadiran->status_kehadiran_text }}</span></div>
         <div><strong class="text-gray-600 w-48 inline-block">Jumlah Orang:</strong> <span class="text-gray-800">{{ number_format($persentaseKehadiran->jumlah_orang) }}</span></div>
-        
+
         <div class="border-t pt-3 mt-3"></div>
         <div><strong class="text-gray-600 w-48 inline-block">Dibuat pada:</strong> <span class="text-gray-800">{{ $persentaseKehadiran->created_at->isoFormat('D MMMM YYYY, HH:mm') }}</span></div>
         <div><strong class="text-gray-600 w-48 inline-block">Diperbarui pada:</strong> <span class="text-gray-800">{{ $persentaseKehadiran->updated_at->isoFormat('D MMMM YYYY, HH:mm') }}</span></div>

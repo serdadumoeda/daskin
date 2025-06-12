@@ -13,7 +13,6 @@ return new class extends Migration
             $table->year('tahun');
             $table->tinyInteger('bulan')->comment('1-12');
             $table->string('kode_unit_kerja_eselon_i'); // Diasumsikan dari PDF kolom (4)
-            $table->string('kode_satuan_kerja');      // Diasumsikan dari PDF kolom (5)
             $table->tinyInteger('status_asn')->comment('1: ASN, 2: Non ASN');
             $table->tinyInteger('status_kehadiran')->comment('1: WFO, 2: Cuti, 3: Dinas Luar, 4: Sakit, 5: Tugas Belajar, 6: Tanpa Keterangan');
             $table->integer('jumlah_orang')->default(0);
@@ -24,16 +23,9 @@ return new class extends Migration
                   ->on('unit_kerja_eselon_i')
                   ->onDelete('cascade')
                   ->onUpdate('cascade');
-            
-            $table->foreign('kode_satuan_kerja')
-                  ->references('kode_sk')
-                  ->on('satuan_kerja')
-                  ->onDelete('cascade')
-                  ->onUpdate('cascade');
-            
+
             $table->index(['tahun', 'bulan']);
             $table->index('kode_unit_kerja_eselon_i');
-            $table->index('kode_satuan_kerja');
             $table->index('status_asn');
             $table->index('status_kehadiran');
         });

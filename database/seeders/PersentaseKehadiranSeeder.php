@@ -64,7 +64,7 @@ class PersentaseKehadiranSeeder extends Seeder
                     $jumlahOrang = rand(0, 2);
                     break;
             }
-            
+
             // Pastikan kombinasi unik per bulan per satker per status jika diperlukan,
             // namun untuk seeder 20 data acak, ini mungkin tidak krusial.
             // Jika ingin memastikan data lebih terdistribusi per bulan/satker,
@@ -74,7 +74,6 @@ class PersentaseKehadiranSeeder extends Seeder
                 'tahun' => $tahun,
                 'bulan' => $bulan,
                 'kode_unit_kerja_eselon_i' => $selectedSatuanKerja['kode_uke1'],
-                'kode_satuan_kerja' => $selectedSatuanKerja['kode_sk'],
                 'status_asn' => $statusAsn,
                 'status_kehadiran' => $statusKehadiran,
                 'jumlah_orang' => $jumlahOrang,
@@ -82,7 +81,7 @@ class PersentaseKehadiranSeeder extends Seeder
                 'updated_at' => $now,
             ];
         }
-        
+
         // Hapus logika pengisian $kehadiranData yang lama
 
         // Insert data menggunakan create() untuk memicu event model
