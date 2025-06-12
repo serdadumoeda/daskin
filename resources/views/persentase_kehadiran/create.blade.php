@@ -13,9 +13,8 @@
     </div>
     <form action="{{ route('sekretariat-jenderal.persentase-kehadiran.store') }}" method="POST">
         @include('persentase_kehadiran._form', [
-            'persentaseKehadiran' => $persentaseKehadiran, 
+            'persentaseKehadiran' => $persentaseKehadiran,
             'unitKerjaEselonIs' => $unitKerjaEselonIs, 
-            'satuanKerjas' => $satuanKerjas,
             'statusAsnOptions' => $statusAsnOptions,
             'statusKehadiranOptions' => $statusKehadiranOptions
         ])
