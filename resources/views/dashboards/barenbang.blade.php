@@ -9,8 +9,8 @@
 
 @section('content')
 
-<div class="space-y-8">
-<h2 class="text-xl font-semibold text-gray-800 mb-4 mt-6">Kinerja Umum Barenbang</h2>
+<div class="space-y-6">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4 mt-6">Kinerja Umum Barenbang</h2>
     {{-- Filter dan Seksi Data Barenbang Utama (Kajian & Aplikasi) --}}
     <section>
     {{-- Filter untuk Data Kajian, Rekomendasi, Aplikasi --}}
@@ -140,7 +140,7 @@
         <form method="GET" action="{{ route('barenbang.dashboard') }}" class="flex flex-col sm:flex-row items-center gap-3 w-full mb-6">
             {{-- Tahun --}}
             <div class="flex-1 w-full sm:w-auto">
-                <label for="tahun_sakernas" class="sr-only">Tahun</label>
+                {{-- <label for="tahun_sakernas" class="sr-only">Tahun</label> --}}
                 {{-- Menggunakan class dari UI baru --}}
                 <select name="tahun_sakernas" id="tahun_sakernas" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
                     {{-- Logika & Variabel dari form Sakernas --}}
@@ -152,7 +152,7 @@
 
             {{-- Periode Sakernas --}}
             <div class="flex-1 w-full sm:w-auto">
-                <label for="periode_sakernas" class="sr-only">Periode Sakernas</label>
+                {{-- <label for="periode_sakernas" class="sr-only">Periode Sakernas</label> --}}
                 {{-- Menggunakan class dari UI baru --}}
                 <select name="periode_sakernas" id="periode_sakernas" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
                     {{-- Opsi statis & logika dari form Sakernas --}}
