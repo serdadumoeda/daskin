@@ -10,7 +10,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 use App\Imports\ProgressTemuanBpkImport; // Pastikan nama import class ini benar
 use Maatwebsite\Excel\Facades\Excel;
-use Exception; 
+use Exception;
 use Illuminate\Support\Facades\Log;
 
 class ProgressTemuanBpkController extends Controller
@@ -25,7 +25,7 @@ class ProgressTemuanBpkController extends Controller
         $temuanKerugianRp = (float)($data['temuan_kerugian_negara_rp'] ?? 0);
         $tindakLanjutKerugianRp = (float)($data['tindak_lanjut_kerugian_negara_rp'] ?? 0);
 
-        $calculatedData = $data; 
+        $calculatedData = $data;
         $calculatedData['persentase_tindak_lanjut_administratif'] = ($temuanAdminKasus > 0)
             ? round(($tindakLanjutAdminKasus / $temuanAdminKasus) * 100, 2)
             : 0;
@@ -52,7 +52,7 @@ class ProgressTemuanBpkController extends Controller
         $sortBy = $request->input('sort_by', 'tahun');
         $sortDirection = $request->input('sort_direction', 'desc');
         $sortableColumns = [
-            'tahun', 'bulan', 
+            'tahun', 'bulan',
             'temuan_administratif_kasus', 'temuan_kerugian_negara_rp',
             'tindak_lanjut_administratif_kasus', 'tindak_lanjut_kerugian_negara_rp',
             'persentase_tindak_lanjut_administratif', 'persentase_tindak_lanjut_kerugian_negara'
@@ -69,8 +69,8 @@ class ProgressTemuanBpkController extends Controller
         $unitKerjaEselonIs = UnitKerjaEselonI::orderBy('nama_unit_kerja_eselon_i')->get();
 
         return view('progress_temuan_bpk.index', compact(
-            'progressTemuanBpks', 
-            'availableYears', 
+            'progressTemuanBpks',
+            'availableYears',
             'unitKerjaEselonIs',
             'sortBy',
             'sortDirection'
@@ -80,8 +80,8 @@ class ProgressTemuanBpkController extends Controller
     public function create()
     {
         $unitKerjaEselonIs = UnitKerjaEselonI::orderBy('nama_unit_kerja_eselon_i')->get();
-        $satuanKerjas = SatuanKerja::orderBy('nama_satuan_kerja')->get(); 
-        $progressTemuanBpk = new ProgressTemuanBpk(); 
+        $satuanKerjas = SatuanKerja::orderBy('nama_satuan_kerja')->get();
+        $progressTemuanBpk = new ProgressTemuanBpk();
         return view('progress_temuan_bpk.create', compact('progressTemuanBpk', 'unitKerjaEselonIs', 'satuanKerjas'));
     }
 
@@ -103,7 +103,7 @@ class ProgressTemuanBpkController extends Controller
                         ->withErrors($validator)
                         ->withInput();
         }
-        
+
         $validatedData = $validator->validated();
         $dataToStore = $this->calculatePercentages($validatedData);
 
@@ -122,7 +122,7 @@ class ProgressTemuanBpkController extends Controller
     public function edit(ProgressTemuanBpk $progressTemuanBpk)
     {
         $unitKerjaEselonIs = UnitKerjaEselonI::orderBy('nama_unit_kerja_eselon_i')->get();
-        $satuanKerjas = SatuanKerja::orderBy('nama_satuan_kerja')->get(); 
+        $satuanKerjas = SatuanKerja::orderBy('nama_satuan_kerja')->get();
         return view('progress_temuan_bpk.edit', compact('progressTemuanBpk', 'unitKerjaEselonIs', 'satuanKerjas'));
     }
 
@@ -166,7 +166,7 @@ class ProgressTemuanBpkController extends Controller
                              ->with('error', 'Gagal menghapus data. Kemungkinan data terkait dengan entitas lain.');
         }
     }
-    
+
     public function importExcel(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -174,7 +174,7 @@ class ProgressTemuanBpkController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->route($this->routeNamePrefix . 'index') 
+            return redirect()->route($this->routeNamePrefix . 'index')
                         ->withErrors($validator)
                         ->with('error', 'Gagal mengimpor data. Pastikan file valid.');
         }

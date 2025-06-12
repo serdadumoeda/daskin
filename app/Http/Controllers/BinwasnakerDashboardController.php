@@ -26,7 +26,7 @@ class BinwasnakerDashboardController extends Controller
     {
         $currentYear = date('Y');
         $selectedYear = $request->input('tahun', $currentYear);
-        $selectedMonth = $request->input('bulan'); 
+        $selectedMonth = $request->input('bulan');
 
         // --- Data untuk Kartu Ringkasan ---
         $totalWlkpReported = PelaporanWlkpOnline::query()
@@ -35,15 +35,15 @@ class BinwasnakerDashboardController extends Controller
             ->sum('jumlah_perusahaan_melapor');
 
         $totalPengaduanNorma = PengaduanPelanggaranNorma::query()
-            ->when($selectedYear, fn($q) => $q->where('tahun_pengaduan', $selectedYear))
-            ->when($selectedMonth, fn($q) => $q->where('bulan_pengaduan', $selectedMonth))
-            ->sum('jumlah_kasus');
-        
+            ->when($selectedYear, fn($q) => $q->where('tahun_tindak_lanjut', $selectedYear))
+            ->when($selectedMonth, fn($q) => $q->where('bulan_tindak_lanjut', $selectedMonth))
+            ->sum('jumlah_pengaduan_tindak_lanjut');
+
         $totalPenerapanSmk3 = PenerapanSmk3::query()
             ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
             ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
-            ->sum('jumlah_perusahaan'); 
-        
+            ->sum('jumlah_perusahaan');
+
         $totalSelfAssessment = SelfAssessmentNorma100::query() // Menggunakan model yang benar
             ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
             ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
@@ -51,7 +51,7 @@ class BinwasnakerDashboardController extends Controller
 
         // --- Logika Chart ---
         $months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
-        
+
         $chartWlkpLabels = []; $wlkpDataBulanan = []; $wlkpDataKumulatif = [];
         $pengaduanChartLabels = []; $pengaduanDataBulanan = []; $pengaduanDataKumulatif = [];
         $smk3ChartLabels = []; $smk3DataBulanan = []; $smk3DataKumulatif = [];
@@ -69,10 +69,10 @@ class BinwasnakerDashboardController extends Controller
 
             // Pengaduan
             $pengaduanChartLabels = $singleMonthLabel;
-            $jumlahPengaduan = PengaduanPelanggaranNorma::query()->where('tahun_pengaduan', $selectedYear)->where('bulan_pengaduan', $selectedMonth)->sum('jumlah_kasus');
+            $jumlahPengaduan = PengaduanPelanggaranNorma::query()->where('tahun_tindak_lanjut', $selectedYear)->where('bulan_tindak_lanjut', $selectedMonth)->sum('jumlah_pengaduan_tindak_lanjut');
             $pengaduanDataBulanan = [$jumlahPengaduan];
             $pengaduanDataKumulatif = [$jumlahPengaduan];
-            
+
             // SMK3
             $smk3ChartLabels = $singleMonthLabel;
             $jumlahSmk3 = PenerapanSmk3::query()->where('tahun', $selectedYear)->where('bulan', $selectedMonth)->sum('jumlah_perusahaan');
@@ -101,7 +101,7 @@ class BinwasnakerDashboardController extends Controller
                     ->orderBy($monthColumn, 'asc')
                     ->get()
                     ->pluck('total_value', $monthColumn);
-                
+
                 $monthlyValues = [];
                 for ($m = 1; $m <= 12; $m++) {
                     $monthlyValues[] = $data->get($m, 0);
@@ -114,7 +114,7 @@ class BinwasnakerDashboardController extends Controller
             $wlkpDataKumulatif = $this->calculateCumulative($wlkpDataBulanan);
 
             // Data Pengaduan
-            $pengaduanDataBulanan = $getAnnualMonthlyData(new PengaduanPelanggaranNorma, $selectedYear, 'tahun_pengaduan', 'bulan_pengaduan', 'jumlah_kasus');
+            $pengaduanDataBulanan = $getAnnualMonthlyData(new PengaduanPelanggaranNorma, $selectedYear, 'tahun_tindak_lanjut', 'bulan_tindak_lanjut', 'jumlah_pengaduan_tindak_lanjut');
             $pengaduanDataKumulatif = $this->calculateCumulative($pengaduanDataBulanan);
 
             // Data SMK3
@@ -128,10 +128,10 @@ class BinwasnakerDashboardController extends Controller
 
         // Ambil tahun yang tersedia untuk filter
         $yearsWlkp = PelaporanWlkpOnline::select('tahun')->distinct();
-        $yearsPengaduan = PengaduanPelanggaranNorma::select('tahun_pengaduan as tahun')->distinct();
+        $yearsPengaduan = PengaduanPelanggaranNorma::select('tahun_tindak_lanjut as tahun')->distinct();
         $yearsSmk3 = PenerapanSmk3::select('tahun')->distinct();
         $yearsSa = SelfAssessmentNorma100::select('tahun')->distinct(); // Tambahkan tahun dari SA
-        
+
         $availableYears = $yearsWlkp
             ->union($yearsPengaduan)
             ->union($yearsSmk3)
@@ -143,7 +143,7 @@ class BinwasnakerDashboardController extends Controller
             $availableYears->push($currentYear);
             $availableYears = $availableYears->sortDesc()->values();
         }
-        
+
         $viewData = compact(
             'totalWlkpReported', 'totalPengaduanNorma', 'totalPenerapanSmk3', 'totalSelfAssessment',
             'availableYears', 'selectedYear', 'selectedMonth'
@@ -155,7 +155,7 @@ class BinwasnakerDashboardController extends Controller
             'smk3' => ['labels' => $smk3ChartLabels, 'bulanan' => $smk3DataBulanan, 'kumulatif' => $smk3DataKumulatif],
             'sa' => ['labels' => $saChartLabels, 'bulanan' => $saDataBulanan, 'kumulatif' => $saDataKumulatif], // Pastikan ini dikirim
         ];
-        
+
         // ==== SANGAT PENTING UNTUK DEBUGGING ====
         // Hapus komentar pada baris di bawah ini untuk melihat data SA yang dikirim ke view:
         // echo "<pre>DEBUGGING DATA SA:\n";

@@ -12,16 +12,10 @@ class PengaduanPelanggaranNorma extends Model
     protected $table = 'pengaduan_pelanggaran_norma';
 
     protected $fillable = [
-        'tahun_pengaduan',
-        'bulan_pengaduan',
         'tahun_tindak_lanjut',
         'bulan_tindak_lanjut',
-        'provinsi',
-        'kbli',
-        'jenis_pelanggaran',
         'jenis_tindak_lanjut',
-        'hasil_tindak_lanjut',
-        'jumlah_kasus', // Sebelumnya 'Jumlah' di PDF
+        'jumlah_pengaduan_tindak_lanjut', // Sebelumnya 'Jumlah' di PDF
     ];
 
     /**
@@ -30,11 +24,9 @@ class PengaduanPelanggaranNorma extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'tahun_pengaduan' => 'integer',
-        'bulan_pengaduan' => 'integer',
         'tahun_tindak_lanjut' => 'integer', // Nullable
         'bulan_tindak_lanjut' => 'integer', // Nullable
-        'jumlah_kasus' => 'integer',
+        'jumlah_pengaduan_tindak_lanjut' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

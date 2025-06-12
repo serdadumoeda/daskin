@@ -27,13 +27,10 @@ class JumlahPhkController extends Controller
         if ($request->filled('provinsi_filter')) {
             $query->where('provinsi', 'like', '%' . $request->provinsi_filter . '%');
         }
-        if ($request->filled('kbli_filter')) {
-            $query->where('kbli', 'like', '%' . $request->kbli_filter . '%');
-        }
 
         $sortBy = $request->input('sort_by', 'tahun');
         $sortDirection = $request->input('sort_direction', 'desc');
-        $sortableColumns = ['tahun', 'bulan', 'provinsi', 'kbli', 'jumlah_perusahaan_phk', 'jumlah_tk_phk'];
+        $sortableColumns = ['tahun', 'bulan', 'provinsi', 'jumlah_perusahaan_phk', 'jumlah_tk_phk'];
 
         if (in_array($sortBy, $sortableColumns) && in_array(strtolower($sortDirection), ['asc', 'desc'])) {
             $query->orderBy($sortBy, $sortDirection);
@@ -43,7 +40,7 @@ class JumlahPhkController extends Controller
 
         $jumlahPhks = $query->paginate(10)->appends($request->except('page'));
         $availableYears = JumlahPhk::select('tahun')->distinct()->orderBy('tahun', 'desc')->pluck('tahun');
-        
+
         return view('jumlah_phk.index', compact(
             'jumlahPhks',
             'availableYears',
@@ -64,7 +61,6 @@ class JumlahPhkController extends Controller
             'tahun' => 'required|integer|digits:4|min:2000|max:' . (date('Y') + 5),
             'bulan' => 'required|integer|min:1|max:12',
             'provinsi' => 'required|string|max:255',
-            'kbli' => 'required|string|max:50',
             'jumlah_perusahaan_phk' => 'required|integer|min:0',
             'jumlah_tk_phk' => 'required|integer|min:0',
         ]);
@@ -97,7 +93,6 @@ class JumlahPhkController extends Controller
             'tahun' => 'required|integer|digits:4|min:2000|max:' . (date('Y') + 5),
             'bulan' => 'required|integer|min:1|max:12',
             'provinsi' => 'required|string|max:255',
-            'kbli' => 'required|string|max:50',
             'jumlah_perusahaan_phk' => 'required|integer|min:0',
             'jumlah_tk_phk' => 'required|integer|min:0',
         ]);
@@ -134,7 +129,7 @@ class JumlahPhkController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->route($this->routeNamePrefix . 'index') 
+            return redirect()->route($this->routeNamePrefix . 'index')
                         ->withErrors($validator)
                         ->with('error', 'Gagal mengimpor data. Pastikan file valid.');
         }

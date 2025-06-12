@@ -13,17 +13,11 @@
     </div>
 
     <div class="space-y-3 text-sm">
-        <div><strong class="text-gray-600 w-48 inline-block">Tahun Pengaduan:</strong> <span class="text-gray-800">{{ $pengaduanPelanggaranNorma->tahun_pengaduan }}</span></div>
-        <div><strong class="text-gray-600 w-48 inline-block">Bulan Pengaduan:</strong> <span class="text-gray-800">{{ $pengaduanPelanggaranNorma->bulan_pengaduan ? \Carbon\Carbon::create()->month($pengaduanPelanggaranNorma->bulan_pengaduan)->isoFormat('MMMM') : '-' }}</span></div>
         <div><strong class="text-gray-600 w-48 inline-block">Tahun Tindak Lanjut:</strong> <span class="text-gray-800">{{ $pengaduanPelanggaranNorma->tahun_tindak_lanjut ?? '-' }}</span></div>
         <div><strong class="text-gray-600 w-48 inline-block">Bulan Tindak Lanjut:</strong> <span class="text-gray-800">{{ $pengaduanPelanggaranNorma->bulan_tindak_lanjut ? \Carbon\Carbon::create()->month($pengaduanPelanggaranNorma->bulan_tindak_lanjut)->isoFormat('MMMM') : '-' }}</span></div>
-        <div><strong class="text-gray-600 w-48 inline-block">Provinsi:</strong> <span class="text-gray-800">{{ $pengaduanPelanggaranNorma->provinsi }}</span></div>
-        <div><strong class="text-gray-600 w-48 inline-block">KBLI:</strong> <span class="text-gray-800">{{ $pengaduanPelanggaranNorma->kbli }}</span></div>
-        <div class="border-t pt-3 mt-3"><strong class="text-gray-600 w-full block mb-1">Jenis Pelanggaran:</strong> <p class="text-gray-800">{{ $pengaduanPelanggaranNorma->jenis_pelanggaran }}</p></div>
         <div><strong class="text-gray-600 w-48 inline-block">Jenis Tindak Lanjut:</strong> <span class="text-gray-800">{{ $pengaduanPelanggaranNorma->jenis_tindak_lanjut }}</span></div>
-        <div><strong class="text-gray-600 w-48 inline-block">Hasil Tindak Lanjut:</strong> <span class="text-gray-800">{{ $pengaduanPelanggaranNorma->hasil_tindak_lanjut }}</span></div>
-        <div><strong class="text-gray-600 w-48 inline-block">Jumlah Kasus:</strong> <span class="text-gray-800">{{ number_format($pengaduanPelanggaranNorma->jumlah_kasus) }}</span></div>
-        
+        <div><strong class="text-gray-600 w-48 inline-block">Jumlah Pengaduan Yang Ditindak Lanjut:</strong> <span class="text-gray-800">{{ number_format($pengaduanPelanggaranNorma->jumlah_pengaduan_tindak_lanjut) }}</span></div>
+
         <div class="border-t pt-3 mt-3"></div>
         <div><strong class="text-gray-600 w-48 inline-block">Dibuat pada:</strong> <span class="text-gray-800">{{ $pengaduanPelanggaranNorma->created_at->isoFormat('D MMMM finalList, HH:mm') }}</span></div>
         <div><strong class="text-gray-600 w-48 inline-block">Diperbarui pada:</strong> <span class="text-gray-800">{{ $pengaduanPelanggaranNorma->updated_at->isoFormat('D MMMM finalList, HH:mm') }}</span></div>

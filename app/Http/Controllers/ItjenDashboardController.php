@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 // Pastikan namespace dan nama model sudah benar
-use App\Models\ProgressTemuanBpk; 
-use App\Models\ProgressTemuanInternal; 
+use App\Models\ProgressTemuanBpk;
+use App\Models\ProgressTemuanInternal;
 use Illuminate\Support\Facades\DB;
 // Carbon tidak digunakan secara langsung, bisa dihapus jika tidak ada penggunaan lain
 
@@ -60,7 +60,7 @@ class ItjenDashboardController extends Controller
                 ->orderBy($monthColumn, 'asc')
                 ->get()
                 ->keyBy($monthColumn);
-            
+
             $result = [];
             foreach($valueColumns as $alias => $valueColumnName) {
                 $monthlyValues = [];
@@ -76,7 +76,7 @@ class ItjenDashboardController extends Controller
     public function index(Request $request)
     {
         $currentYear = date('Y');
-        $selectedYear = $request->input('tahun', $currentYear); 
+        $selectedYear = $request->input('tahun', $currentYear);
         $selectedMonth = $request->input('bulan');
 
         // --- Data untuk Kartu Ringkasan ---
@@ -93,7 +93,7 @@ class ItjenDashboardController extends Controller
         $queryInternal = ProgressTemuanInternal::query()
             ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
             ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth));
-        
+
         $summaryInternal = (clone $queryInternal)->select(
                 DB::raw('COALESCE(SUM(temuan_administratif_kasus),0) as total_temuan_admin_kasus'),
                 DB::raw('COALESCE(SUM(tindak_lanjut_administratif_kasus),0) as total_tl_admin_kasus')
@@ -110,7 +110,7 @@ class ItjenDashboardController extends Controller
             'tl_admin_kasus' => 'tindak_lanjut_administratif_kasus',
         ];
         $bpkChartMonthlyData = $this->getMonthlyData(new ProgressTemuanBpk, 'tahun', 'bulan', $bpkValueColumns, $selectedYear, $selectedMonth);
-        
+
         $bpkData = [
             'labels' => $chartLabels,
             'temuan_admin_kasus' => $bpkChartMonthlyData['temuan_admin_kasus'],
@@ -136,13 +136,13 @@ class ItjenDashboardController extends Controller
         $kumulatifTemuanInternal = $this->calculateCumulativeSum($internalData['temuan_admin_kasus']);
         $kumulatifTlInternal = $this->calculateCumulativeSum($internalData['tl_admin_kasus']);
         $internalData['persentase_kumulatif'] = $this->calculateCumulativePercentage($kumulatifTlInternal, $kumulatifTemuanInternal);
-        
+
 
         // Ambil tahun yang tersedia untuk filter
         $availableYears = ProgressTemuanBpk::select('tahun')->distinct()
                             ->union(ProgressTemuanInternal::select('tahun')->distinct())
                             ->orderBy('tahun', 'desc')->pluck('tahun');
-        
+
         if ($availableYears->isEmpty() && !$availableYears->contains($currentYear)) {
             $availableYears->push($currentYear);
             $availableYears = $availableYears->sortDesc()->values();
@@ -153,7 +153,7 @@ class ItjenDashboardController extends Controller
             'summaryInternal', 'persentaseSelesaiInternalAdmin',
             'availableYears', 'selectedYear', 'selectedMonth'
         );
-        
+
         // Menggabungkan semua data chart untuk dikirim ke view
         $allChartData = [
             'bpk' => $bpkData,

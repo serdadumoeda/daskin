@@ -15,17 +15,6 @@ class PenerapanSmk3Controller extends Controller
 {
     private $routeNamePrefix = 'binwasnaker.penerapan-smk3.';
 
-    // Opsi untuk dropdown, bisa juga diletakkan di Model atau helper
-    private $kategoriPenilaianOptions = ['Awal', 'Transisi', 'Lanjutan'];
-    private $tingkatPencapaianOptions = ['Baik', 'Memuaskan'];
-    private $jenisPenghargaanOptions = [
-        'Sertifikat Emas', 
-        'Sertifikat Emas dan Bendera Emas', 
-        'Sertifikat Perak', 
-        'Sertifikat Perak dan Bendera Perak'
-        // Tambahkan opsi lain jika ada
-    ];
-
     public function index(Request $request)
     {
         $query = PenerapanSmk3::query();
@@ -39,23 +28,11 @@ class PenerapanSmk3Controller extends Controller
         if ($request->filled('provinsi_filter')) {
             $query->where('provinsi', 'like', '%' . $request->provinsi_filter . '%');
         }
-        if ($request->filled('kbli_filter')) {
-            $query->where('kbli', 'like', '%' . $request->kbli_filter . '%');
-        }
-        if ($request->filled('kategori_penilaian_filter')) {
-            $query->where('kategori_penilaian', $request->kategori_penilaian_filter);
-        }
-        if ($request->filled('tingkat_pencapaian_filter')) {
-            $query->where('tingkat_pencapaian', $request->tingkat_pencapaian_filter);
-        }
-        if ($request->filled('jenis_penghargaan_filter')) {
-            $query->where('jenis_penghargaan', $request->jenis_penghargaan_filter);
-        }
 
 
         $sortBy = $request->input('sort_by', 'tahun');
         $sortDirection = $request->input('sort_direction', 'desc');
-        $sortableColumns = ['tahun', 'bulan', 'provinsi', 'kbli', 'kategori_penilaian', 'tingkat_pencapaian', 'jenis_penghargaan', 'jumlah_perusahaan'];
+        $sortableColumns = ['tahun', 'bulan', 'provinsi', 'jumlah_perusahaan'];
 
         if (in_array($sortBy, $sortableColumns) && in_array(strtolower($sortDirection), ['asc', 'desc'])) {
             $query->orderBy($sortBy, $sortDirection);
@@ -65,13 +42,10 @@ class PenerapanSmk3Controller extends Controller
 
         $penerapanSmk3s = $query->paginate(10)->appends($request->except('page'));
         $availableYears = PenerapanSmk3::select('tahun')->distinct()->orderBy('tahun', 'desc')->pluck('tahun');
-        
+
         return view('penerapan_smk3.index', [
             'penerapanSmk3s' => $penerapanSmk3s,
             'availableYears' => $availableYears,
-            'kategoriPenilaianOptions' => $this->kategoriPenilaianOptions,
-            'tingkatPencapaianOptions' => $this->tingkatPencapaianOptions,
-            'jenisPenghargaanOptions' => $this->jenisPenghargaanOptions,
             'sortBy' => $sortBy,
             'sortDirection' => $sortDirection
         ]);
@@ -82,9 +56,6 @@ class PenerapanSmk3Controller extends Controller
         $penerapanSmk3 = new PenerapanSmk3();
         return view('penerapan_smk3.create', [
             'penerapanSmk3' => $penerapanSmk3,
-            'kategoriPenilaianOptions' => $this->kategoriPenilaianOptions,
-            'tingkatPencapaianOptions' => $this->tingkatPencapaianOptions,
-            'jenisPenghargaanOptions' => $this->jenisPenghargaanOptions,
         ]);
     }
 
@@ -94,10 +65,6 @@ class PenerapanSmk3Controller extends Controller
             'tahun' => 'required|integer|digits:4|min:2000|max:' . (date('Y') + 5),
             'bulan' => 'required|integer|min:1|max:12',
             'provinsi' => 'required|string|max:255',
-            'kbli' => 'required|string|max:50',
-            'kategori_penilaian' => ['required', 'string', Rule::in($this->kategoriPenilaianOptions)],
-            'tingkat_pencapaian' => ['required', 'string', Rule::in($this->tingkatPencapaianOptions)],
-            'jenis_penghargaan' => ['required', 'string', Rule::in($this->jenisPenghargaanOptions)],
             'jumlah_perusahaan' => 'required|integer|min:0',
         ]);
 
@@ -122,9 +89,6 @@ class PenerapanSmk3Controller extends Controller
     {
         return view('penerapan_smk3.edit', [
             'penerapanSmk3' => $penerapanSmk3,
-            'kategoriPenilaianOptions' => $this->kategoriPenilaianOptions,
-            'tingkatPencapaianOptions' => $this->tingkatPencapaianOptions,
-            'jenisPenghargaanOptions' => $this->jenisPenghargaanOptions,
         ]);
     }
 
@@ -134,10 +98,6 @@ class PenerapanSmk3Controller extends Controller
             'tahun' => 'required|integer|digits:4|min:2000|max:' . (date('Y') + 5),
             'bulan' => 'required|integer|min:1|max:12',
             'provinsi' => 'required|string|max:255',
-            'kbli' => 'required|string|max:50',
-            'kategori_penilaian' => ['required', 'string', Rule::in($this->kategoriPenilaianOptions)],
-            'tingkat_pencapaian' => ['required', 'string', Rule::in($this->tingkatPencapaianOptions)],
-            'jenis_penghargaan' => ['required', 'string', Rule::in($this->jenisPenghargaanOptions)],
             'jumlah_perusahaan' => 'required|integer|min:0',
         ]);
 
@@ -173,7 +133,7 @@ class PenerapanSmk3Controller extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->route($this->routeNamePrefix . 'index') 
+            return redirect()->route($this->routeNamePrefix . 'index')
                         ->withErrors($validator)
                         ->with('error', 'Gagal mengimpor data. Pastikan file valid.');
         }

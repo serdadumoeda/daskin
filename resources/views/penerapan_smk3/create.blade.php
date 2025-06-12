@@ -14,9 +14,6 @@
     <form action="{{ route('binwasnaker.penerapan-smk3.store') }}" method="POST">
         @include('penerapan_smk3._form', [
             'penerapanSmk3' => $penerapanSmk3,
-            'kategoriPenilaianOptions' => $kategoriPenilaianOptions,
-            'tingkatPencapaianOptions' => $tingkatPencapaianOptions,
-            'jenisPenghargaanOptions' => $jenisPenghargaanOptions
         ])
     </form>
 </div>

@@ -20,7 +20,7 @@ if (!function_exists('sortableLinkWlkp')) {
         return '<a href="' . route('binwasnaker.pelaporan-wlkp-online.index', $queryParams) . '" class="flex items-center hover:text-primary">' . e($label) . $iconHtml . '</a>';
     }
 }
-$requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_filter', 'kbli_filter', 'skala_perusahaan_filter']);
+$requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_filter']);
 @endphp
 
 @section('header_filters')
@@ -48,21 +48,6 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_fil
                 <label for="provinsi_filter_wlkp" class="text-sm text-gray-600 whitespace-nowrap">Provinsi:</label>
                 <input type="text" name="provinsi_filter" id="provinsi_filter_wlkp" value="{{ request('provinsi_filter') }}" placeholder="Cari provinsi..." class="form-input mt-1 w-full bg-white">
             </div>
-            <div class="flex-grow">
-                <label for="kbli_filter_wlkp" class="text-sm text-gray-600 whitespace-nowrap">KBLI:</label>
-                <input type="text" name="kbli_filter" id="kbli_filter_wlkp" value="{{ request('kbli_filter') }}" placeholder="Cari KBLI..." class="form-input mt-1 w-full bg-white">
-            </div>
-            <div class="flex-grow">
-                <label for="skala_perusahaan_filter_wlkp" class="text-sm text-gray-600 whitespace-nowrap">Skala Perusahaan:</label>
-                 <select name="skala_perusahaan_filter" id="skala_perusahaan_filter_wlkp" class="form-input mt-1 w-full bg-white">
-                    <option value="">Semua Skala</option>
-                    @foreach($skalaPerusahaanOptions as $skala)
-                        <option value="{{ $skala }}" {{ request('skala_perusahaan_filter') == $skala ? 'selected' : '' }}>
-                            {{ $skala }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
             <div class="flex items-center space-x-2 pt-5">
                 @if(request()->filled('sort_by')) <input type="hidden" name="sort_by" value="{{ request('sort_by') }}"> @endif
                 @if(request()->filled('sort_direction')) <input type="hidden" name="sort_direction" value="{{ request('sort_direction') }}"> @endif
@@ -84,7 +69,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_fil
             <form action="{{ route('binwasnaker.pelaporan-wlkp-online.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                 @csrf
                 <div class="flex-grow">
-                    <input type="file" name="excel_file" id="excel_file_wlkp" required 
+                    <input type="file" name="excel_file" id="excel_file_wlkp" required
                            class="block w-full text-sm text-gray-500
                                   file:mr-2 file:py-1.5 file:px-3 file:rounded-button
                                   file:border-0 file:text-sm file:font-semibold
@@ -95,7 +80,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_fil
                     <i class="ri-upload-2-line mr-1"></i> Impor Data
                 </button>
             </form>
-             <a href="MASUKKAN_LINK_ONEDRIVE_FORMAT_WLKP_DISINI" 
+             <a href="MASUKKAN_LINK_ONEDRIVE_FORMAT_WLKP_DISINI"
                target="_blank"
                class="px-3 py-2 bg-blue-500 text-white rounded-button hover:bg-blue-600 text-sm font-medium flex items-center justify-center whitespace-nowrap w-full sm:w-auto mt-2 sm:mt-0">
                 <i class="ri-download-2-line mr-1"></i> Unduh Format
@@ -121,7 +106,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_fil
             {{ session('error') }}
         </div>
     @endif
-    
+
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 border border-gray-200">
             <thead class="bg-gray-50">
@@ -136,12 +121,6 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_fil
                     <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         {!! sortableLinkWlkp('provinsi', 'Provinsi', $sortBy, $sortDirection, $requestFilters) !!}
                     </th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkWlkp('kbli', 'KBLI', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkWlkp('skala_perusahaan', 'Skala Perusahaan', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
                     <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                         {!! sortableLinkWlkp('jumlah_perusahaan_melapor', 'Jumlah Perusahaan', $sortBy, $sortDirection, $requestFilters) !!}
                     </th>
@@ -155,8 +134,6 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_fil
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->tahun }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ \Carbon\Carbon::create()->month($item->bulan)->isoFormat('MMMM') }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->provinsi }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->kbli }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->skala_perusahaan }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 text-right">{{ number_format($item->jumlah_perusahaan_melapor) }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-center">
                             <div class="flex items-center justify-center space-x-2">

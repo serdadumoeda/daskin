@@ -16,12 +16,8 @@
         <div><strong class="text-gray-600 w-48 inline-block">Tahun:</strong> <span class="text-gray-800">{{ $penerapanSmk3->tahun }}</span></div>
         <div><strong class="text-gray-600 w-48 inline-block">Bulan:</strong> <span class="text-gray-800">{{ \Carbon\Carbon::create()->month($penerapanSmk3->bulan)->isoFormat('MMMM') }}</span></div>
         <div><strong class="text-gray-600 w-48 inline-block">Provinsi:</strong> <span class="text-gray-800">{{ $penerapanSmk3->provinsi }}</span></div>
-        <div><strong class="text-gray-600 w-48 inline-block">KBLI:</strong> <span class="text-gray-800">{{ $penerapanSmk3->kbli }}</span></div>
-        <div><strong class="text-gray-600 w-48 inline-block">Kategori Penilaian:</strong> <span class="text-gray-800">{{ $penerapanSmk3->kategori_penilaian }}</span></div>
-        <div><strong class="text-gray-600 w-48 inline-block">Tingkat Pencapaian:</strong> <span class="text-gray-800">{{ $penerapanSmk3->tingkat_pencapaian }}</span></div>
-        <div><strong class="text-gray-600 w-48 inline-block">Jenis Penghargaan:</strong> <span class="text-gray-800">{{ $penerapanSmk3->jenis_penghargaan }}</span></div>
         <div><strong class="text-gray-600 w-48 inline-block">Jumlah Perusahaan:</strong> <span class="text-gray-800">{{ number_format($penerapanSmk3->jumlah_perusahaan) }}</span></div>
-        
+
         <div class="border-t pt-3 mt-3"></div>
         <div><strong class="text-gray-600 w-48 inline-block">Dibuat pada:</strong> <span class="text-gray-800">{{ $penerapanSmk3->created_at->isoFormat('D MMMM finalList, HH:mm') }}</span></div>
         <div><strong class="text-gray-600 w-48 inline-block">Diperbarui pada:</strong> <span class="text-gray-800">{{ $penerapanSmk3->updated_at->isoFormat('D MMMM finalList, HH:mm') }}</span></div>

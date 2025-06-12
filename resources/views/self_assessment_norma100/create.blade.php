@@ -14,8 +14,6 @@
     <form action="{{ route('binwasnaker.self-assessment-norma100.store') }}" method="POST">
         @include('self_assessment_norma100._form', [
             'selfAssessmentNorma100' => $selfAssessmentNorma100,
-            'skalaPerusahaanOptions' => $skalaPerusahaanOptions,
-            'hasilAssessmentOptions' => $hasilAssessmentOptions
         ])
     </form>
 </div>

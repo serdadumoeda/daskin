@@ -12,17 +12,10 @@ return new class extends Migration
             $table->id();
             $table->tinyInteger('bulan')->comment('1-12');
             $table->year('tahun');
-            $table->string('provinsi');
-            $table->string('kbli');
-            $table->string('skala_perusahaan')->comment('Mikro, Kecil, Menengah, Besar');
-            $table->string('hasil_assessment')->comment('Rendah (<70), Sedang (71-90), Tinggi (91-100)');
             $table->integer('jumlah_perusahaan')->default(0);
             $table->timestamps();
 
             $table->index(['tahun', 'bulan']);
-            $table->index('provinsi');
-            $table->index('kbli');
-            $table->index('skala_perusahaan');
         });
     }
 
