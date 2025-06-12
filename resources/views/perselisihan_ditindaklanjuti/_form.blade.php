@@ -2,7 +2,7 @@
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
     <div>
         <label for="tahun_perselisihan" class="block text-sm font-medium text-gray-700 mb-1">Tahun Pengaduan <span class="text-red-500">*</span></label>
-        <input type="number" name="tahun" id="tahun_perselisihan" value="{{ old('tahun', $perselisihanDitindaklanjuti->tahun ?? date('Y')) }}" required 
+        <input type="number" name="tahun" id="tahun_perselisihan" value="{{ old('tahun', $perselisihanDitindaklanjuti->tahun ?? date('Y')) }}" required
                class="form-input w-full" min="2000" max="{{ date('Y') + 5 }}">
         @error('tahun') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
     </div>
@@ -24,15 +24,9 @@
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
     <div>
         <label for="provinsi_perselisihan" class="block text-sm font-medium text-gray-700 mb-1">Provinsi <span class="text-red-500">*</span></label>
-        <input type="text" name="provinsi" id="provinsi_perselisihan" value="{{ old('provinsi', $perselisihanDitindaklanjuti->provinsi ?? '') }}" required 
+        <input type="text" name="provinsi" id="provinsi_perselisihan" value="{{ old('provinsi', $perselisihanDitindaklanjuti->provinsi ?? '') }}" required
                class="form-input w-full" maxlength="255" placeholder="Nama Provinsi">
         @error('provinsi') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
-    </div>
-    <div>
-        <label for="kbli_perselisihan" class="block text-sm font-medium text-gray-700 mb-1">KBLI <span class="text-red-500">*</span></label>
-        <input type="text" name="kbli" id="kbli_perselisihan" value="{{ old('kbli', $perselisihanDitindaklanjuti->kbli ?? '') }}" required 
-               class="form-input w-full" maxlength="50" placeholder="Kode atau Kategori KBLI">
-        @error('kbli') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
     </div>
 </div>
 
@@ -66,24 +60,24 @@
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
     <div>
         <label for="jumlah_perselisihan_input" class="block text-sm font-medium text-gray-700 mb-1">Jumlah Perselisihan <span class="text-red-500">*</span></label>
-        <input type="number" name="jumlah_perselisihan" id="jumlah_perselisihan_input" value="{{ old('jumlah_perselisihan', $perselisihanDitindaklanjuti->jumlah_perselisihan ?? 0) }}" required 
+        <input type="number" name="jumlah_perselisihan" id="jumlah_perselisihan_input" value="{{ old('jumlah_perselisihan', $perselisihanDitindaklanjuti->jumlah_perselisihan ?? 0) }}" required
                class="form-input w-full" min="0">
         @error('jumlah_perselisihan') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
     </div>
     <div>
-        <label for="jumlah_ditindaklanjuti_input" class="block text-sm font-medium text-gray-700 mb-1">Jumlah Ditindaklanjuti <span class="text-red-500">*</span></label>
-        <input type="number" name="jumlah_ditindaklanjuti" id="jumlah_ditindaklanjuti_input" value="{{ old('jumlah_ditindaklanjuti', $perselisihanDitindaklanjuti->jumlah_ditindaklanjuti ?? 0) }}" required 
+        <label for="jumlah_ditindaklanjuti_input" class="block text-sm font-medium text-gray-700 mb-1">Jumlah Penyelesaian Perselisihan <span class="text-red-500">*</span></label>
+        <input type="number" name="jumlah_ditindaklanjuti" id="jumlah_ditindaklanjuti_input" value="{{ old('jumlah_ditindaklanjuti', $perselisihanDitindaklanjuti->jumlah_ditindaklanjuti ?? 0) }}" required
                class="form-input w-full" min="0">
         @error('jumlah_ditindaklanjuti') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
     </div>
 </div>
 
 <div class="flex justify-end space-x-3 mt-8">
-    <a href="{{ route('phi.perselisihan-ditindaklanjuti.index') }}" 
+    <a href="{{ route('phi.perselisihan-ditindaklanjuti.index') }}"
        class="px-4 py-2 bg-gray-200 text-gray-700 rounded-button hover:bg-gray-300 text-sm font-medium">
         Batal
     </a>
-    <button type="submit" 
+    <button type="submit"
             class="px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium">
         <i class="ri-save-line mr-1"></i> Simpan
     </button>

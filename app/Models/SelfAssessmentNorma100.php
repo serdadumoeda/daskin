@@ -14,10 +14,6 @@ class SelfAssessmentNorma100 extends Model
     protected $fillable = [
         'bulan', // Bulan pencatatan
         'tahun', // Tahun pencatatan
-        'provinsi',
-        'kbli',
-        'skala_perusahaan', // Mikro, Kecil, Menengah, Besar
-        'hasil_assessment',  // Rendah (<70), Sedang (71-90), Tinggi (91-100)
         'jumlah_perusahaan',
     ];
 

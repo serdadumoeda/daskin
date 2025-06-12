@@ -11,121 +11,26 @@ class SelfAssessmentNorma100Seeder extends Seeder
     public function run(): void
     {
         $now = Carbon::now();
-        $data = [
-            [
-                'bulan' => 11,
-                'tahun' => 2023,
-                'provinsi' => 'Jawa Tengah',
-                'kbli' => 'C22', // Industri Karet Dan Plastik
-                'skala_perusahaan' => 'Menengah',
-                'hasil_assessment' => 'Tinggi (91-100)',
-                'jumlah_perusahaan' => 30,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            [
-                'bulan' => 11,
-                'tahun' => 2023,
-                'provinsi' => 'Jawa Tengah',
-                'kbli' => 'C22',
-                'skala_perusahaan' => 'Kecil',
-                'hasil_assessment' => 'Sedang (71-90)',
-                'jumlah_perusahaan' => 50,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            [
-                'bulan' => 03,
-                'tahun' => 2024,
-                'provinsi' => 'Jawa Tengah',
-                'kbli' => 'C22', // Industri Karet Dan Plastik
-                'skala_perusahaan' => 'Menengah',
-                'hasil_assessment' => 'Tinggi (91-100)',
-                'jumlah_perusahaan' => 30,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            [
-                'bulan' => 05,
-                'tahun' => 2024,
-                'provinsi' => 'Jawa Tengah',
-                'kbli' => 'C22',
-                'skala_perusahaan' => 'Kecil',
-                'hasil_assessment' => 'Sedang (71-90)',
-                'jumlah_perusahaan' => 50,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            [
-                'bulan' => 01,
-                'tahun' => 2025,
-                'provinsi' => 'Jawa Tengah',
-                'kbli' => 'C22', // Industri Karet Dan Plastik
-                'skala_perusahaan' => 'Menengah',
-                'hasil_assessment' => 'Tinggi (91-100)',
-                'jumlah_perusahaan' => 30,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            [
-                'bulan' => 02,
-                'tahun' => 2025,
-                'provinsi' => 'Jawa Tengah',
-                'kbli' => 'C22',
-                'skala_perusahaan' => 'Kecil',
-                'hasil_assessment' => 'Sedang (71-90)',
-                'jumlah_perusahaan' => 50,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            [
-                'bulan' => 03,
-                'tahun' => 2025,
-                'provinsi' => 'Jawa Tengah',
-                'kbli' => 'C22', // Industri Karet Dan Plastik
-                'skala_perusahaan' => 'Menengah',
-                'hasil_assessment' => 'Tinggi (91-100)',
-                'jumlah_perusahaan' => 30,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            [
-                'bulan' => 05,
-                'tahun' => 2025,
-                'provinsi' => 'Jawa Tengah',
-                'kbli' => 'C22',
-                'skala_perusahaan' => 'Kecil',
-                'hasil_assessment' => 'Sedang (71-90)',
-                'jumlah_perusahaan' => 50,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            [
-                'bulan' => 06,
-                'tahun' => 2025,
-                'provinsi' => 'Jawa Tengah',
-                'kbli' => 'C22', // Industri Karet Dan Plastik
-                'skala_perusahaan' => 'Menengah',
-                'hasil_assessment' => 'Tinggi (91-100)',
-                'jumlah_perusahaan' => 30,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            [
-                'bulan' => 07,
-                'tahun' => 2025,
-                'provinsi' => 'Jawa Tengah',
-                'kbli' => 'C22',
-                'skala_perusahaan' => 'Kecil',
-                'hasil_assessment' => 'Sedang (71-90)',
-                'jumlah_perusahaan' => 50,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-        ];
+        $newData = [];
+        $tahunSekarang = (int) $now->year;
 
-        if (!empty($data)) {
-            SelfAssessmentNorma100::insert($data);
+        for ($i=0; $i < 20; $i++) {
+            $tahun = rand($tahunSekarang - 2, $tahunSekarang);
+            $bulan = rand(1, 12);
+
+            $newData[] = [
+                'bulan' => $bulan,
+                'tahun' => $tahun,
+                'jumlah_perusahaan' => rand(1, 100),
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+
+        if (!empty($newData)) {
+            foreach ($newData as $item) {
+                SelfAssessmentNorma100::insert($item);
+            }
         }
     }
 }

@@ -170,7 +170,7 @@
                                 return false;
                             }
                         }
-                        
+
                         $readOnlySpecificRoles = [
                             App\Models\User::ROLE_MENTERI,
                             App\Models\User::ROLE_WAKIL_MENTERI,
@@ -199,7 +199,7 @@
                                 ]
                             ],
                             'Sekretariat Jenderal' => [
-                                'icon' => 'ri-building-4-line', 
+                                'icon' => 'ri-building-4-line',
                                 'route' => 'sekretariat-jenderal.dashboard',
                                 'roles' => array_merge([App\Models\User::ROLE_SEKJEN, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
                                 'submenus' => [
@@ -216,7 +216,7 @@
                                 ]
                             ],
                             'Binapenta' => [
-                                'icon' => 'ri-user-search-line', 
+                                'icon' => 'ri-user-search-line',
                                 'route' => 'binapenta.dashboard',
                                 'roles' => array_merge([App\Models\User::ROLE_BINAPENTA, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
                                 'submenus' => [
@@ -227,7 +227,7 @@
                                 ]
                             ],
                             'Binalavotas' => [
-                                'icon' => 'ri-graduation-cap-line', 
+                                'icon' => 'ri-graduation-cap-line',
                                 'route' => 'binalavotas.dashboard',
                                 'roles' => array_merge([App\Models\User::ROLE_BINALAVOTAS, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
                                 'submenus' => [
@@ -236,7 +236,7 @@
                                     ['name' => 'Jml Sertifikasi Kompetensi', 'route' => 'binalavotas.jumlah-sertifikasi-kompetensi.index', 'icon' => 'ri-shield-star-line', 'roles' => [App\Models\User::ROLE_BINALAVOTAS, App\Models\User::ROLE_SUPERADMIN]],
                                 ]
                             ],
-                            'Binwasnaker & K3' => [ 
+                            'Binwasnaker & K3' => [
                                 'icon' => 'ri-shield-check-line',
                                 'route' => 'binwasnaker.dashboard',
                                 'roles' => array_merge([App\Models\User::ROLE_BINWASNAKER, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
@@ -248,7 +248,7 @@
                                     ['name' => 'Self-Assessment Norma 100', 'route' => 'binwasnaker.self-assessment-norma100.index', 'icon' => 'ri-check-double-line', 'roles' => [App\Models\User::ROLE_BINWASNAKER, App\Models\User::ROLE_SUPERADMIN]],
                                 ]
                             ],
-                            'PHI & JAMSOS' => [ 
+                            'PHI & JAMSOS' => [
                                 'icon' => 'ri-scales-3-line',
                                 'route' => 'phi.dashboard',
                                 'roles' => array_merge([App\Models\User::ROLE_PHI, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
@@ -260,7 +260,7 @@
                                     ['name' => 'Perusahaan Penerap SUSU', 'route' => 'phi.perusahaan-menerapkan-susu.index', 'icon' => 'ri-currency-line', 'roles' => [App\Models\User::ROLE_PHI, App\Models\User::ROLE_SUPERADMIN]],
                                 ]
                             ],
-                            'Barenbang' => [ 
+                            'Barenbang' => [
                                 'icon' => 'ri-bar-chart-box-line',
                                 'route' => 'barenbang.dashboard',
                                 'roles' => array_merge([App\Models\User::ROLE_BARENBANG, App\Models\User::ROLE_SUPERADMIN], $readOnlySpecificRoles),
@@ -307,7 +307,7 @@
                                                     }
                                                 }
                                             } else {
-                                                $canAccessSubmenu = true; 
+                                                $canAccessSubmenu = true;
                                             }
 
                                             if ($canAccessSubmenu && isSubmenuActive($submenu, $currentRouteName)) {
@@ -338,7 +338,7 @@
                                                                 break 2;
                                                             }
                                                         }
-                                                    } else { 
+                                                    } else {
                                                     $hasVisibleSubmenus = true; break;
                                                     }
                                                 }
@@ -363,7 +363,7 @@
                                                                 }
                                                             }
                                                         } else {
-                                                            $canAccessThisSubmenu = true; 
+                                                            $canAccessThisSubmenu = true;
                                                         }
                                                     @endphp
 
@@ -373,7 +373,7 @@
                                                         @else
                                                             <a href="{{ $submenu['route'] === '#' ? '#' : (Route::has($submenu['route']) ? route($submenu['route']) : '#!') }}"
                                                             class="sidebar-submenu-item text-sidebar-text flex items-center w-full py-2.5 pr-4
-                                                                    {{ (isset($submenu['is_sub_item']) && $submenu['is_sub_item']) ? 'pl-10' : 'pl-6' }} 
+                                                                    {{ (isset($submenu['is_sub_item']) && $submenu['is_sub_item']) ? 'pl-10' : 'pl-6' }}
                                                                     text-xs hover:text-white
                                                                     {{ isSubmenuActive($submenu, $currentRouteName) ? 'active' : '' }}">
                                                                 @if(isset($submenu['icon']))
@@ -395,7 +395,7 @@
                     @endif
                 </nav>
             </div>
-            
+
             {{-- Sidebar Footer / User Info --}}
             <div class="p-4 border-t border-sidebar-border-color mt-auto">
                 @if (Auth::check())

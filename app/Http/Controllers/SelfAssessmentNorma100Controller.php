@@ -9,16 +9,10 @@ use App\Imports\SelfAssessmentNorma100Import;
 use Maatwebsite\Excel\Facades\Excel;
 use Exception;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rule;
 
 class SelfAssessmentNorma100Controller extends Controller
 {
     private $routeNamePrefix = 'binwasnaker.self-assessment-norma100.';
-
-    // Opsi untuk dropdown, bisa juga diletakkan di Model atau helper
-    private $skalaPerusahaanOptions = ['Mikro', 'Kecil', 'Menengah', 'Besar'];
-    private $hasilAssessmentOptions = ['Rendah (<70)', 'Sedang (71-90)', 'Tinggi (91-100)'];
-
 
     public function index(Request $request)
     {
@@ -30,22 +24,10 @@ class SelfAssessmentNorma100Controller extends Controller
         if ($request->filled('bulan_filter')) {
             $query->where('bulan', $request->bulan_filter);
         }
-        if ($request->filled('provinsi_filter')) {
-            $query->where('provinsi', 'like', '%' . $request->provinsi_filter . '%');
-        }
-        if ($request->filled('kbli_filter')) {
-            $query->where('kbli', 'like', '%' . $request->kbli_filter . '%');
-        }
-        if ($request->filled('skala_perusahaan_filter')) {
-            $query->where('skala_perusahaan', $request->skala_perusahaan_filter);
-        }
-        if ($request->filled('hasil_assessment_filter')) {
-            $query->where('hasil_assessment', $request->hasil_assessment_filter);
-        }
 
         $sortBy = $request->input('sort_by', 'tahun');
         $sortDirection = $request->input('sort_direction', 'desc');
-        $sortableColumns = ['bulan', 'tahun', 'provinsi', 'kbli', 'skala_perusahaan', 'hasil_assessment', 'jumlah_perusahaan'];
+        $sortableColumns = ['bulan', 'tahun', 'jumlah_perusahaan'];
 
         if (in_array($sortBy, $sortableColumns) && in_array(strtolower($sortDirection), ['asc', 'desc'])) {
             $query->orderBy($sortBy, $sortDirection);
@@ -55,12 +37,10 @@ class SelfAssessmentNorma100Controller extends Controller
 
         $selfAssessmentNorma100s = $query->paginate(10)->appends($request->except('page'));
         $availableYears = SelfAssessmentNorma100::select('tahun')->distinct()->orderBy('tahun', 'desc')->pluck('tahun');
-        
+
         return view('self_assessment_norma100.index', [
             'selfAssessmentNorma100s' => $selfAssessmentNorma100s,
             'availableYears' => $availableYears,
-            'skalaPerusahaanOptions' => $this->skalaPerusahaanOptions,
-            'hasilAssessmentOptions' => $this->hasilAssessmentOptions,
             'sortBy' => $sortBy,
             'sortDirection' => $sortDirection
         ]);
@@ -71,8 +51,6 @@ class SelfAssessmentNorma100Controller extends Controller
         $selfAssessmentNorma100 = new SelfAssessmentNorma100();
         return view('self_assessment_norma100.create', [
             'selfAssessmentNorma100' => $selfAssessmentNorma100,
-            'skalaPerusahaanOptions' => $this->skalaPerusahaanOptions,
-            'hasilAssessmentOptions' => $this->hasilAssessmentOptions,
         ]);
     }
 
@@ -81,10 +59,6 @@ class SelfAssessmentNorma100Controller extends Controller
         $validator = Validator::make($request->all(), [
             'bulan' => 'required|integer|min:1|max:12',
             'tahun' => 'required|integer|digits:4|min:2000|max:' . (date('Y') + 5),
-            'provinsi' => 'required|string|max:255',
-            'kbli' => 'required|string|max:50',
-            'skala_perusahaan' => ['required', 'string', Rule::in($this->skalaPerusahaanOptions)],
-            'hasil_assessment' => ['required', 'string', Rule::in($this->hasilAssessmentOptions)],
             'jumlah_perusahaan' => 'required|integer|min:0',
         ]);
 
@@ -109,8 +83,6 @@ class SelfAssessmentNorma100Controller extends Controller
     {
         return view('self_assessment_norma100.edit', [
             'selfAssessmentNorma100' => $selfAssessmentNorma100,
-            'skalaPerusahaanOptions' => $this->skalaPerusahaanOptions,
-            'hasilAssessmentOptions' => $this->hasilAssessmentOptions,
         ]);
     }
 
@@ -119,10 +91,6 @@ class SelfAssessmentNorma100Controller extends Controller
         $validator = Validator::make($request->all(), [
             'bulan' => 'required|integer|min:1|max:12',
             'tahun' => 'required|integer|digits:4|min:2000|max:' . (date('Y') + 5),
-            'provinsi' => 'required|string|max:255',
-            'kbli' => 'required|string|max:50',
-            'skala_perusahaan' => ['required', 'string', Rule::in($this->skalaPerusahaanOptions)],
-            'hasil_assessment' => ['required', 'string', Rule::in($this->hasilAssessmentOptions)],
             'jumlah_perusahaan' => 'required|integer|min:0',
         ]);
 
@@ -158,7 +126,7 @@ class SelfAssessmentNorma100Controller extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->route($this->routeNamePrefix . 'index') 
+            return redirect()->route($this->routeNamePrefix . 'index')
                         ->withErrors($validator)
                         ->with('error', 'Gagal mengimpor data. Pastikan file valid.');
         }

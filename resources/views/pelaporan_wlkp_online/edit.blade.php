@@ -15,7 +15,6 @@
         @method('PUT')
         @include('pelaporan_wlkp_online._form', [
             'pelaporanWlkpOnline' => $pelaporanWlkpOnline,
-            'skalaPerusahaanOptions' => $skalaPerusahaanOptions
         ])
     </form>
 </div>

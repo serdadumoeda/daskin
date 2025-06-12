@@ -16,10 +16,9 @@
         <div><strong class="text-gray-600 w-48 inline-block">Tahun:</strong> <span class="text-gray-800">{{ $jumlahPhk->tahun }}</span></div>
         <div><strong class="text-gray-600 w-48 inline-block">Bulan:</strong> <span class="text-gray-800">{{ \Carbon\Carbon::create()->month($jumlahPhk->bulan)->isoFormat('MMMM') }}</span></div>
         <div><strong class="text-gray-600 w-48 inline-block">Provinsi:</strong> <span class="text-gray-800">{{ $jumlahPhk->provinsi }}</span></div>
-        <div><strong class="text-gray-600 w-48 inline-block">KBLI:</strong> <span class="text-gray-800">{{ $jumlahPhk->kbli }}</span></div>
         <div><strong class="text-gray-600 w-48 inline-block">Jumlah Perusahaan PHK:</strong> <span class="text-gray-800">{{ number_format($jumlahPhk->jumlah_perusahaan_phk) }}</span></div>
         <div><strong class="text-gray-600 w-48 inline-block">Jumlah Tenaga Kerja di PHK:</strong> <span class="text-gray-800">{{ number_format($jumlahPhk->jumlah_tk_phk) }}</span></div>
-        
+
         <div class="border-t pt-3 mt-3"></div>
         <div><strong class="text-gray-600 w-48 inline-block">Dibuat pada:</strong> <span class="text-gray-800">{{ $jumlahPhk->created_at->isoFormat('D MMMM finalList, HH:mm') }}</span></div>
         <div><strong class="text-gray-600 w-48 inline-block">Diperbarui pada:</strong> <span class="text-gray-800">{{ $jumlahPhk->updated_at->isoFormat('D MMMM finalList, HH:mm') }}</span></div>

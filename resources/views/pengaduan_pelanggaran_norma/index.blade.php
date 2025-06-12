@@ -27,34 +27,22 @@ $requestFilters = request()->only(['tahun_pengaduan_filter', 'bulan_pengaduan_fi
     <form method="GET" action="{{ route('binwasnaker.pengaduan-pelanggaran-norma.index') }}" class="w-full">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 items-end">
             <div class="flex-grow">
-                <label for="tahun_pengaduan_filter_norma" class="text-sm text-gray-600 whitespace-nowrap">Thn Pengaduan:</label>
-                <select name="tahun_pengaduan_filter" id="tahun_pengaduan_filter_norma" class="form-input mt-1 w-full bg-white">
+                <label for="tahun_tindak_lanjut_filter_norma" class="text-sm text-gray-600 whitespace-nowrap">Thn Tindak Lanjut:</label>
+                <select name="tahun_tindak_lanjut_filter" id="tahun_tindak_lanjut_filter_norma" class="form-input mt-1 w-full bg-white">
                     <option value="">Semua</option>
                     @foreach($availableYears as $year)
-                        <option value="{{ $year }}" {{ request('tahun_pengaduan_filter') == $year ? 'selected' : '' }}>{{ $year }}</option>
+                        <option value="{{ $year }}" {{ request('tahun_tindak_lanjut_filter') == $year ? 'selected' : '' }}>{{ $year }}</option>
                     @endforeach
                 </select>
             </div>
             <div class="flex-grow">
-                <label for="bulan_pengaduan_filter_norma" class="text-sm text-gray-600 whitespace-nowrap">Bln Pengaduan:</label>
-                <select name="bulan_pengaduan_filter" id="bulan_pengaduan_filter_norma" class="form-input mt-1 w-full bg-white">
+                <label for="bulan_tindak_lanjut_filter_norma" class="text-sm text-gray-600 whitespace-nowrap">Bln Tindak Lanjut:</label>
+                <select name="bulan_tindak_lanjut_filter" id="bulan_tindak_lanjut_filter_norma" class="form-input mt-1 w-full bg-white">
                     <option value="">Semua</option>
                     @for ($i = 1; $i <= 12; $i++)
-                        <option value="{{ $i }}" {{ request('bulan_pengaduan_filter') == $i ? 'selected' : '' }}>{{ \Carbon\Carbon::create()->month($i)->isoFormat('MMMM') }}</option>
+                        <option value="{{ $i }}" {{ request('bulan_tindak_lanjut_filter') == $i ? 'selected' : '' }}>{{ \Carbon\Carbon::create()->month($i)->isoFormat('MMMM') }}</option>
                     @endfor
                 </select>
-            </div>
-            <div class="flex-grow">
-                <label for="provinsi_filter_norma" class="text-sm text-gray-600 whitespace-nowrap">Provinsi:</label>
-                <input type="text" name="provinsi_filter" id="provinsi_filter_norma" value="{{ request('provinsi_filter') }}" placeholder="Cari provinsi..." class="form-input mt-1 w-full bg-white">
-            </div>
-            <div class="flex-grow">
-                <label for="kbli_filter_norma" class="text-sm text-gray-600 whitespace-nowrap">KBLI:</label>
-                <input type="text" name="kbli_filter" id="kbli_filter_norma" value="{{ request('kbli_filter') }}" placeholder="Cari KBLI..." class="form-input mt-1 w-full bg-white">
-            </div>
-            <div class="flex-grow">
-                <label for="jenis_pelanggaran_filter_norma" class="text-sm text-gray-600 whitespace-nowrap">Jenis Pelanggaran:</label>
-                <input type="text" name="jenis_pelanggaran_filter" id="jenis_pelanggaran_filter_norma" value="{{ request('jenis_pelanggaran_filter') }}" placeholder="Cari jenis pelanggaran..." class="form-input mt-1 w-full bg-white">
             </div>
             <div class="flex items-center space-x-2 pt-5">
                 @if(request()->filled('sort_by')) <input type="hidden" name="sort_by" value="{{ request('sort_by') }}"> @endif
@@ -77,7 +65,7 @@ $requestFilters = request()->only(['tahun_pengaduan_filter', 'bulan_pengaduan_fi
             <form action="{{ route('binwasnaker.pengaduan-pelanggaran-norma.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                 @csrf
                 <div class="flex-grow">
-                    <input type="file" name="excel_file" id="excel_file_pengaduan_norma" required 
+                    <input type="file" name="excel_file" id="excel_file_pengaduan_norma" required
                            class="block w-full text-sm text-gray-500
                                   file:mr-2 file:py-1.5 file:px-3 file:rounded-button
                                   file:border-0 file:text-sm file:font-semibold
@@ -88,7 +76,7 @@ $requestFilters = request()->only(['tahun_pengaduan_filter', 'bulan_pengaduan_fi
                     <i class="ri-upload-2-line mr-1"></i> Impor Data
                 </button>
             </form>
-             <a href="MASUKKAN_LINK_ONEDRIVE_FORMAT_PENGADUAN_NORMA_DISINI" 
+             <a href="MASUKKAN_LINK_ONEDRIVE_FORMAT_PENGADUAN_NORMA_DISINI"
                target="_blank"
                class="px-3 py-2 bg-blue-500 text-white rounded-button hover:bg-blue-600 text-sm font-medium flex items-center justify-center whitespace-nowrap w-full sm:w-auto mt-2 sm:mt-0">
                 <i class="ri-download-2-line mr-1"></i> Unduh Format
@@ -114,22 +102,16 @@ $requestFilters = request()->only(['tahun_pengaduan_filter', 'bulan_pengaduan_fi
             {{ session('error') }}
         </div>
     @endif
-    
+
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 border border-gray-200">
             <thead class="bg-gray-50">
                 <tr>
                     <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{!! sortableLinkPengaduanNorma('tahun_pengaduan', 'Thn Aduan', $sortBy, $sortDirection, $requestFilters) !!}</th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{!! sortableLinkPengaduanNorma('bulan_pengaduan', 'Bln Aduan', $sortBy, $sortDirection, $requestFilters) !!}</th>
                     <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{!! sortableLinkPengaduanNorma('tahun_tindak_lanjut', 'Thn TL', $sortBy, $sortDirection, $requestFilters) !!}</th>
                     <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{!! sortableLinkPengaduanNorma('bulan_tindak_lanjut', 'Bln TL', $sortBy, $sortDirection, $requestFilters) !!}</th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{!! sortableLinkPengaduanNorma('provinsi', 'Provinsi', $sortBy, $sortDirection, $requestFilters) !!}</th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{!! sortableLinkPengaduanNorma('kbli', 'KBLI', $sortBy, $sortDirection, $requestFilters) !!}</th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{!! sortableLinkPengaduanNorma('jenis_pelanggaran', 'Jenis Pelanggaran', $sortBy, $sortDirection, $requestFilters) !!}</th>
                     <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{!! sortableLinkPengaduanNorma('jenis_tindak_lanjut', 'Jenis TL', $sortBy, $sortDirection, $requestFilters) !!}</th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{!! sortableLinkPengaduanNorma('hasil_tindak_lanjut', 'Hasil TL', $sortBy, $sortDirection, $requestFilters) !!}</th>
-                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{!! sortableLinkPengaduanNorma('jumlah_kasus', 'Jumlah Kasus', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{!! sortableLinkPengaduanNorma('jumlah_pengaduan_tindak_lanjut', 'Jumlah Pengaduan yang Ditindak Lanjut', $sortBy, $sortDirection, $requestFilters) !!}</th>
                     <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
             </thead>
@@ -137,16 +119,10 @@ $requestFilters = request()->only(['tahun_pengaduan_filter', 'bulan_pengaduan_fi
                 @forelse ($pengaduanPelanggaranNormas as $index => $item)
                     <tr>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $pengaduanPelanggaranNormas->firstItem() + $index }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->tahun_pengaduan }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->bulan_pengaduan ? \Carbon\Carbon::create()->month($item->bulan_pengaduan)->isoFormat('MMM') : '-' }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->tahun_tindak_lanjut ?? '-' }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->bulan_tindak_lanjut ? \Carbon\Carbon::create()->month($item->bulan_tindak_lanjut)->isoFormat('MMM') : '-' }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->provinsi }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->kbli }}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700 max-w-xs truncate" title="{{ $item->jenis_pelanggaran }}">{{ Str::limit($item->jenis_pelanggaran, 30) }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->jenis_tindak_lanjut }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->hasil_tindak_lanjut }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 text-right">{{ number_format($item->jumlah_kasus) }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 text-right">{{ number_format($item->jumlah_pengaduan_tindak_lanjut) }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-center">
                             <div class="flex items-center justify-center space-x-2">
                                 <a href="{{ route('binwasnaker.pengaduan-pelanggaran-norma.edit', $item->id) }}" class="text-blue-600 hover:text-blue-800" title="Edit">

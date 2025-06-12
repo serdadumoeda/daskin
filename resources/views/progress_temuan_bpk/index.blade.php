@@ -5,7 +5,7 @@
 
 @php
 // Helper function untuk link sorting (spesifik untuk modul ini)
-if (!function_exists('sortableLinkBpk')) { 
+if (!function_exists('sortableLinkBpk')) {
     function sortableLinkBpk(string $column, string $label, string $currentSortBy, string $currentSortDirection, array $requestFilters) {
         $newDirection = ($currentSortBy == $column && $currentSortDirection == 'asc') ? 'desc' : 'asc';
         $iconHtml = '';
@@ -72,34 +72,36 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
 
 @section('content')
 <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-        {{-- Judul sudah di header utama, jadi ini bisa dihilangkan atau disesuaikan --}}
-        {{-- <h2 class="text-xl font-semibold text-gray-800 whitespace-nowrap">Daftar Progres Temuan BPK</h2> --}}
-        <div class="w-full sm:w-auto sm:ml-auto flex flex-col sm:flex-row items-start sm:items-center gap-2">
-            <form action="{{ route('inspektorat.progress-temuan-bpk.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
-                @csrf
-                <div class="flex-grow">
-                    <input type="file" name="excel_file" id="excel_file_bpk" required 
-                           class="block w-full text-sm text-gray-500
-                                  file:mr-2 file:py-1.5 file:px-3 file:rounded-button
-                                  file:border-0 file:text-sm file:font-semibold
-                                  file:bg-green-50 file:text-green-700
-                                  hover:file:bg-green-100 form-input p-0.5 h-full border border-gray-300">
-                </div>
-                <button type="submit" class="px-3 py-2 bg-green-600 text-white rounded-button hover:bg-green-700 text-sm font-medium flex items-center justify-center whitespace-nowrap">
-                    <i class="ri-upload-2-line mr-1"></i> Impor Data
-                </button>
-            </form>
-             <a href="MASUKKAN_LINK_ONEDRIVE_DOWNLOAD_ANDA_DI_SINI" 
-               target="_blank"
-               class="px-3 py-2 bg-blue-500 text-white rounded-button hover:bg-blue-600 text-sm font-medium flex items-center justify-center whitespace-nowrap w-full sm:w-auto mt-2 sm:mt-0">
-                <i class="ri-download-2-line mr-1"></i> Unduh Format
-            </a>
-            <a href="{{ route('inspektorat.progress-temuan-bpk.create') }}" class="w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium whitespace-nowrap mt-2 sm:mt-0">
-                <i class="ri-add-line mr-1"></i> Tambah Manual
-            </a>
+    @if (Auth::user()->role === 'superadmin' || Auth::user()->role === 'itjen')
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+            {{-- Judul sudah di header utama, jadi ini bisa dihilangkan atau disesuaikan --}}
+            {{-- <h2 class="text-xl font-semibold text-gray-800 whitespace-nowrap">Daftar Progres Temuan BPK</h2> --}}
+            <div class="w-full sm:w-auto sm:ml-auto flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                <form action="{{ route('inspektorat.progress-temuan-bpk.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                    @csrf
+                    <div class="flex-grow">
+                        <input type="file" name="excel_file" id="excel_file_bpk" required
+                               class="block w-full text-sm text-gray-500
+                                      file:mr-2 file:py-1.5 file:px-3 file:rounded-button
+                                      file:border-0 file:text-sm file:font-semibold
+                                      file:bg-green-50 file:text-green-700
+                                      hover:file:bg-green-100 form-input p-0.5 h-full border border-gray-300">
+                    </div>
+                    <button type="submit" class="px-3 py-2 bg-green-600 text-white rounded-button hover:bg-green-700 text-sm font-medium flex items-center justify-center whitespace-nowrap">
+                        <i class="ri-upload-2-line mr-1"></i> Impor Data
+                    </button>
+                </form>
+                 <a href="MASUKKAN_LINK_ONEDRIVE_DOWNLOAD_ANDA_DI_SINI"
+                   target="_blank"
+                   class="px-3 py-2 bg-blue-500 text-white rounded-button hover:bg-blue-600 text-sm font-medium flex items-center justify-center whitespace-nowrap w-full sm:w-auto mt-2 sm:mt-0">
+                    <i class="ri-download-2-line mr-1"></i> Unduh Format
+                </a>
+                <a href="{{ route('inspektorat.progress-temuan-bpk.create') }}" class="w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium whitespace-nowrap mt-2 sm:mt-0">
+                    <i class="ri-add-line mr-1"></i> Tambah Manual
+                </a>
+            </div>
         </div>
-    </div>
+    @endif
 
     @if (session('import_errors'))
         <div class="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-md text-sm">
@@ -116,7 +118,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
             {{ session('error') }}
         </div>
     @endif
-    
+
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 border border-gray-200">
             <thead class="bg-gray-50">

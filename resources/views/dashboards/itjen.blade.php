@@ -29,7 +29,7 @@
                 @endforeach
             </select>
         </div>
-        
+
         <div class="flex items-center gap-2 w-full sm:w-auto">
             <button type="submit" class="w-full sm:w-auto text-sm font-medium text-filter-btn-apply-text bg-filter-btn-apply-bg border border-filter-btn-apply-border hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-md px-4 py-2 transition-colors duration-200">
                 Terapkan
@@ -63,7 +63,7 @@
                 <span class="{{ ($persentaseSelesaiBpkAdmin ?? 0) >= 75 ? 'text-green-500' : (($persentaseSelesaiBpkAdmin ?? 0) >= 50 ? 'text-yellow-500' : 'text-red-500') }}">
                 {{ number_format($summaryBpk->total_tl_admin_kasus ?? 0) }}/{{ number_format($summaryBpk->total_temuan_admin_kasus ?? 0) }} Kasus
                 </span>
-                
+
             </div>
         </a>
 
@@ -84,11 +84,11 @@
                 <span class="{{ ($persentaseSelesaiInternalAdmin ?? 0) >= 75 ? 'text-green-500' : (($persentaseSelesaiInternalAdmin ?? 0) >= 50 ? 'text-yellow-500' : 'text-red-500') }}">
                 {{ number_format($summaryInternal->total_tl_admin_kasus ?? 0) }}/{{ number_format($summaryInternal->total_temuan_admin_kasus ?? 0) }} Kasus
                 </span>
-                 
+
             </div>
         </a>
 
-   
+
     </section>
 
     {{-- Baris untuk Chart --}}
@@ -100,31 +100,30 @@
 
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-       
+
         <div class="bg-white p-6 rounded-xl shadow-md lg:col-span-2">
             <h3 class="font-semibold text-lg text-gray-800 mb-4">Progress Tindak Lanjut Temuan Internal</h3>
             <div id="echart-itjen-internal-trend" style="height: 400px;"></div>
         </div>
     </div>
-</div>
 @endsection
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        
+
         // Fungsi untuk membuat chart dengan banyak seri (batang/garis)
         function createMultiSeriesChart(elementId, labels, seriesConfig, yAxisNames = ['Jumlah Kasus', 'Persentase (%)']) {
             const chartDom = document.getElementById(elementId);
-            if (!chartDom) { 
+            if (!chartDom) {
                 console.error('Elemen chart tidak ditemukan:', elementId);
-                return; 
+                return;
             }
             let existingChart = echarts.getInstanceByDom(chartDom);
             if (existingChart) { existingChart.dispose(); }
             const myChart = echarts.init(chartDom);
-            
+
             const series = seriesConfig.map(s => ({
                 name: s.name, type: s.type, yAxisIndex: s.yAxisIndex || 0, stack: s.stack || null,
                 smooth: s.type === 'line', data: s.data, itemStyle: { color: s.color }, lineStyle: { color: s.color, width: s.lineWidth || 2 },
@@ -138,20 +137,20 @@
             const legendData = series.map(s => s.name);
 
             const option = {
-                tooltip: { 
-                    trigger: 'axis', 
+                tooltip: {
+                    trigger: 'axis',
                     axisPointer: { type: 'cross' },
                 },
                 legend: { data: legendData, bottom: 0, type: 'scroll' },
                 grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
                 xAxis: [{ type: 'category', data: labels, axisPointer: { type: 'shadow' } }],
                 yAxis: [
-                    { type: 'value', name: yAxisNames[0], min: 0, position: 'left', 
-                      axisLabel: { formatter: function(value) { return parseFloat(value).toLocaleString('id-ID');} } 
+                    { type: 'value', name: yAxisNames[0], min: 0, position: 'left',
+                      axisLabel: { formatter: function(value) { return parseFloat(value).toLocaleString('id-ID');} }
                     },
                     { type: 'value', name: yAxisNames[1], min: 0, max: 100, // Sumbu Y untuk persentase (0-100)
-                      position: 'right', splitLine: { show: false }, 
-                      axisLabel: { formatter: '{value} %'} 
+                      position: 'right', splitLine: { show: false },
+                      axisLabel: { formatter: '{value} %'}
                     }
                 ],
                 series: series
@@ -176,10 +175,10 @@
         function renderItjenKasusChart(chartId, dataKey, chartTitlePrefix) {
             const chartEl = document.getElementById(chartId);
             if (chartEl) {
-                if (allChartData[dataKey] && allChartData[dataKey].labels && 
+                if (allChartData[dataKey] && allChartData[dataKey].labels &&
                     allChartData[dataKey].temuan_admin_kasus && allChartData[dataKey].tl_admin_kasus &&
                     allChartData[dataKey].persentase_kumulatif) {
-                    
+
                     const isDataEmpty = allChartData[dataKey].temuan_admin_kasus.every(val => val === 0) &&
                                         allChartData[dataKey].tl_admin_kasus.every(val => val === 0);
 
@@ -201,7 +200,7 @@
 
         // 1. Render Chart Temuan BPK (Fokus Kasus & Persentase Penyelesaian)
         renderItjenKasusChart('echart-itjen-bpk-trend', 'bpk', 'BPK');
-        
+
         // 2. Render Chart Temuan Internal (Fokus Kasus & Persentase Penyelesaian)
         renderItjenKasusChart('echart-itjen-internal-trend', 'internal', 'Internal');
 
