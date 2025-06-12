@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\PersentaseKehadiran;
 use App\Models\UnitKerjaEselonI;
-use App\Models\SatuanKerja;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Imports\PersentaseKehadiranImport;
@@ -18,7 +17,7 @@ class PersentaseKehadiranController extends Controller
 
     public function index(Request $request)
     {
-        $query = PersentaseKehadiran::with(['unitKerjaEselonI', 'satuanKerja']);
+        $query = PersentaseKehadiran::with(['unitKerjaEselonI']);
 
         if ($request->filled('tahun_filter')) {
             $query->where('tahun', $request->tahun_filter);
@@ -29,9 +28,6 @@ class PersentaseKehadiranController extends Controller
         if ($request->filled('unit_kerja_filter')) {
             $query->where('kode_unit_kerja_eselon_i', $request->unit_kerja_filter);
         }
-        if ($request->filled('satuan_kerja_filter')) {
-            $query->where('kode_satuan_kerja', $request->satuan_kerja_filter);
-        }
         if ($request->filled('status_asn_filter')) {
             $query->where('status_asn', $request->status_asn_filter);
         }
@@ -41,7 +37,7 @@ class PersentaseKehadiranController extends Controller
 
         $sortBy = $request->input('sort_by', 'tahun');
         $sortDirection = $request->input('sort_direction', 'desc');
-        $sortableColumns = ['tahun', 'bulan', 'kode_unit_kerja_eselon_i', 'kode_satuan_kerja', 'status_asn', 'status_kehadiran', 'jumlah_orang'];
+        $sortableColumns = ['tahun', 'bulan', 'kode_unit_kerja_eselon_i', 'status_asn', 'status_kehadiran', 'jumlah_orang'];
 
         if (in_array($sortBy, $sortableColumns) && in_array(strtolower($sortDirection), ['asc', 'desc'])) {
             $query->orderBy($sortBy, $sortDirection);
@@ -52,11 +48,10 @@ class PersentaseKehadiranController extends Controller
         $persentaseKehadirans = $query->paginate(10)->appends($request->except('page'));
         $availableYears = PersentaseKehadiran::select('tahun')->distinct()->orderBy('tahun', 'desc')->pluck('tahun');
         $unitKerjaEselonIs = UnitKerjaEselonI::orderBy('nama_unit_kerja_eselon_i')->get();
-        $satuanKerjas = SatuanKerja::orderBy('nama_satuan_kerja')->get(); // Untuk filter
-        
+
         $statusAsnOptions = [1 => 'ASN', 2 => 'Non ASN'];
         $statusKehadiranOptions = [
-            1 => 'WFO', 2 => 'Cuti', 3 => 'Dinas Luar', 
+            1 => 'WFO', 2 => 'Cuti', 3 => 'Dinas Luar',
             4 => 'Sakit', 5 => 'Tugas Belajar', 6 => 'Tanpa Keterangan'
         ];
 
@@ -64,7 +59,6 @@ class PersentaseKehadiranController extends Controller
             'persentaseKehadirans',
             'availableYears',
             'unitKerjaEselonIs',
-            'satuanKerjas',
             'statusAsnOptions',
             'statusKehadiranOptions',
             'sortBy',
@@ -75,14 +69,13 @@ class PersentaseKehadiranController extends Controller
     public function create()
     {
         $unitKerjaEselonIs = UnitKerjaEselonI::orderBy('nama_unit_kerja_eselon_i')->get();
-        $satuanKerjas = SatuanKerja::orderBy('nama_satuan_kerja')->get();
         $statusAsnOptions = [1 => 'ASN', 2 => 'Non ASN'];
         $statusKehadiranOptions = [
-            1 => 'WFO', 2 => 'Cuti', 3 => 'Dinas Luar', 
+            1 => 'WFO', 2 => 'Cuti', 3 => 'Dinas Luar',
             4 => 'Sakit', 5 => 'Tugas Belajar', 6 => 'Tanpa Keterangan'
         ];
         $persentaseKehadiran = new PersentaseKehadiran();
-        return view('persentase_kehadiran.create', compact('persentaseKehadiran', 'unitKerjaEselonIs', 'satuanKerjas', 'statusAsnOptions', 'statusKehadiranOptions'));
+        return view('persentase_kehadiran.create', compact('persentaseKehadiran', 'unitKerjaEselonIs', 'statusAsnOptions', 'statusKehadiranOptions'));
     }
 
     public function store(Request $request)
@@ -91,7 +84,6 @@ class PersentaseKehadiranController extends Controller
             'tahun' => 'required|integer|digits:4|min:2000|max:' . (date('Y') + 5),
             'bulan' => 'required|integer|min:1|max:12',
             'kode_unit_kerja_eselon_i' => 'required|string|exists:unit_kerja_eselon_i,kode_uke1',
-            'kode_satuan_kerja' => 'required|string|exists:satuan_kerja,kode_sk',
             'status_asn' => 'required|integer|in:1,2',
             'status_kehadiran' => 'required|integer|in:1,2,3,4,5,6',
             'jumlah_orang' => 'required|integer|min:0',
@@ -118,13 +110,12 @@ class PersentaseKehadiranController extends Controller
     public function edit(PersentaseKehadiran $persentaseKehadiran)
     {
         $unitKerjaEselonIs = UnitKerjaEselonI::orderBy('nama_unit_kerja_eselon_i')->get();
-        $satuanKerjas = SatuanKerja::orderBy('nama_satuan_kerja')->get();
         $statusAsnOptions = [1 => 'ASN', 2 => 'Non ASN'];
         $statusKehadiranOptions = [
-            1 => 'WFO', 2 => 'Cuti', 3 => 'Dinas Luar', 
+            1 => 'WFO', 2 => 'Cuti', 3 => 'Dinas Luar',
             4 => 'Sakit', 5 => 'Tugas Belajar', 6 => 'Tanpa Keterangan'
         ];
-        return view('persentase_kehadiran.edit', compact('persentaseKehadiran', 'unitKerjaEselonIs', 'satuanKerjas', 'statusAsnOptions', 'statusKehadiranOptions'));
+        return view('persentase_kehadiran.edit', compact('persentaseKehadiran', 'unitKerjaEselonIs', 'statusAsnOptions', 'statusKehadiranOptions'));
     }
 
     public function update(Request $request, PersentaseKehadiran $persentaseKehadiran)
@@ -133,7 +124,6 @@ class PersentaseKehadiranController extends Controller
             'tahun' => 'required|integer|digits:4|min:2000|max:' . (date('Y') + 5),
             'bulan' => 'required|integer|min:1|max:12',
             'kode_unit_kerja_eselon_i' => 'required|string|exists:unit_kerja_eselon_i,kode_uke1',
-            'kode_satuan_kerja' => 'required|string|exists:satuan_kerja,kode_sk',
             'status_asn' => 'required|integer|in:1,2',
             'status_kehadiran' => 'required|integer|in:1,2,3,4,5,6',
             'jumlah_orang' => 'required|integer|min:0',
@@ -171,7 +161,7 @@ class PersentaseKehadiranController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->route($this->routeNamePrefix . 'index') 
+            return redirect()->route($this->routeNamePrefix . 'index')
                         ->withErrors($validator)
                         ->with('error', 'Gagal mengimpor data. Pastikan file valid.');
         }

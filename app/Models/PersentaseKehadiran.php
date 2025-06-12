@@ -16,7 +16,6 @@ class PersentaseKehadiran extends Model
         'tahun',
         'bulan',
         'kode_unit_kerja_eselon_i', // Kolom (4) di PDF, diasumsikan Unit Kerja Eselon I
-        'kode_satuan_kerja',      // Kolom (5) di PDF, diasumsikan Satuan Kerja
         'status_asn',             // 1: ASN, 2: Non ASN
         'status_kehadiran',       // 1: WFO, 2: Cuti, 3: Dinas Luar, 4: Sakit, 5: Tugas Belajar, 6: Tanpa Keterangan
         'jumlah_orang',
@@ -43,14 +42,6 @@ class PersentaseKehadiran extends Model
     public function unitKerjaEselonI(): BelongsTo
     {
         return $this->belongsTo(UnitKerjaEselonI::class, 'kode_unit_kerja_eselon_i', 'kode_uke1');
-    }
-
-    /**
-     * Relasi ke Satuan Kerja.
-     */
-    public function satuanKerja(): BelongsTo
-    {
-        return $this->belongsTo(SatuanKerja::class, 'kode_satuan_kerja', 'kode_sk');
     }
 
     /**
