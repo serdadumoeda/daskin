@@ -127,6 +127,10 @@
                 <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Aplikasi Terintegrasi</h3>
                 <div id="echart-barenbang-aplikasi-trend" style="height: 350px;"></div>
             </div>
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Sistem Terintegrasi</h3>
+                <div id="echart-barenbang-aplikasi-trend" style="height: 350px;"></div>
+            </div>
         </div>
     
 
