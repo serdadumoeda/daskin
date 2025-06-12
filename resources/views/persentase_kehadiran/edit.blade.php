@@ -14,9 +14,8 @@
     <form action="{{ route('sekretariat-jenderal.persentase-kehadiran.update', $persentaseKehadiran->id) }}" method="POST">
         @method('PUT')
         @include('persentase_kehadiran._form', [
-            'persentaseKehadiran' => $persentaseKehadiran, 
+            'persentaseKehadiran' => $persentaseKehadiran,
             'unitKerjaEselonIs' => $unitKerjaEselonIs, 
-            'satuanKerjas' => $satuanKerjas,
             'statusAsnOptions' => $statusAsnOptions,
             'statusKehadiranOptions' => $statusKehadiranOptions
         ])

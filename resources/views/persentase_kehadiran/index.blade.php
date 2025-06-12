@@ -20,7 +20,7 @@ if (!function_exists('sortableLinkKehadiran')) {
         return '<a href="' . route('sekretariat-jenderal.persentase-kehadiran.index', $queryParams) . '" class="flex items-center hover:text-primary">' . e($label) . $iconHtml . '</a>';
     }
 }
-$requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_filter', 'satuan_kerja_filter', 'status_asn_filter', 'status_kehadiran_filter']);
+$requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_filter', 'status_asn_filter', 'status_kehadiran_filter']);
 @endphp
 
 @section('header_filters')
@@ -51,17 +51,6 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
                     @foreach($unitKerjaEselonIs as $unit)
                         <option value="{{ $unit->kode_uke1 }}" {{ request('unit_kerja_filter') == $unit->kode_uke1 ? 'selected' : '' }}>
                             {{ Str::limit($unit->nama_unit_kerja_eselon_i, 30) }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="flex-grow">
-                <label for="satuan_kerja_filter_kehadiran" class="text-sm text-gray-600 whitespace-nowrap">Satuan Kerja:</label>
-                 <select name="satuan_kerja_filter" id="satuan_kerja_filter_kehadiran" class="form-input mt-1 w-full bg-white">
-                    <option value="">Semua Satuan Kerja</option>
-                    @foreach($satuanKerjas as $satker)
-                        <option value="{{ $satker->kode_sk }}" {{ request('satuan_kerja_filter') == $satker->kode_sk ? 'selected' : '' }}>
-                            {{ Str::limit($satker->nama_satuan_kerja, 30) }}
                         </option>
                     @endforeach
                 </select>
@@ -109,7 +98,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
             <form action="{{ route('sekretariat-jenderal.persentase-kehadiran.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                 @csrf
                 <div class="flex-grow">
-                    <input type="file" name="excel_file" id="excel_file_kehadiran" required 
+                    <input type="file" name="excel_file" id="excel_file_kehadiran" required
                            class="block w-full text-sm text-gray-500
                                   file:mr-2 file:py-1.5 file:px-3 file:rounded-button
                                   file:border-0 file:text-sm file:font-semibold
@@ -120,7 +109,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
                     <i class="ri-upload-2-line mr-1"></i> Impor Data
                 </button>
             </form>
-             <a href="MASUKKAN_LINK_ONEDRIVE_FORMAT_KEHADIRAN_DISINI" 
+             <a href="MASUKKAN_LINK_ONEDRIVE_FORMAT_KEHADIRAN_DISINI"
                target="_blank"
                class="px-3 py-2 bg-blue-500 text-white rounded-button hover:bg-blue-600 text-sm font-medium flex items-center justify-center whitespace-nowrap w-full sm:w-auto mt-2 sm:mt-0">
                 <i class="ri-download-2-line mr-1"></i> Unduh Format
@@ -146,7 +135,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
             {{ session('error') }}
         </div>
     @endif
-    
+
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 border border-gray-200">
             <thead class="bg-gray-50">
@@ -160,9 +149,6 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
                     </th>
                     <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         {!! sortableLinkKehadiran('kode_unit_kerja_eselon_i', 'Unit Kerja', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkKehadiran('kode_satuan_kerja', 'Satuan Kerja', $sortBy, $sortDirection, $requestFilters) !!}
                     </th>
                     <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         {!! sortableLinkKehadiran('status_asn', 'Status ASN', $sortBy, $sortDirection, $requestFilters) !!}
@@ -183,7 +169,6 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->tahun }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ \Carbon\Carbon::create()->month($item->bulan)->isoFormat('MMMM') }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->unitKerjaEselonI->nama_unit_kerja_eselon_i ?? $item->kode_unit_kerja_eselon_i }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->satuanKerja->nama_satuan_kerja ?? $item->kode_satuan_kerja }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->status_asn_text }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->status_kehadiran_text }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 text-right">{{ number_format($item->jumlah_orang) }}</td>
