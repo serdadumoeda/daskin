@@ -10,7 +10,7 @@
 @section('content')
 
 <div class="space-y-6">
-        <h2 class="text-xl font-semibold text-green-500 mb-4 mt-6">Kinerja Umum Barenbang</h2>
+        <h2 class="text-xl font-semibold text-grey-500 mb-4 mt-6">Kinerja Umum Barenbang</h2>
     {{-- Filter dan Seksi Data Barenbang Utama (Kajian & Aplikasi) --}}
     <section>
     {{-- Filter untuk Data Kajian, Rekomendasi, Aplikasi --}}
@@ -75,7 +75,15 @@
         
         
         <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <a href="{{ route('barenbang.jumlah-kajian-rekomendasi.index') }}" class="stat-card-link-wrapper">
+            
+            
+           
+           
+        </section>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <a href="{{ route('barenbang.jumlah-kajian-rekomendasi.index') }}" class="stat-card-link-wrapper">
                 <div class="stat-card">
                     <div class="stat-card-info">
                         <p class="stat-card-title">Total Kajian</p>
@@ -87,8 +95,11 @@
                 </div>
                 <div class="stat-card-footer"></div>
             </a>
-            
-            <a href="{{ route('barenbang.jumlah-kajian-rekomendasi.index') }}" class="stat-card-link-wrapper">
+                <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Jumlah Kajian</h3>
+                <div id="echart-barenbang-kajian-trend" style="height: 350px;"></div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                 <a href="{{ route('barenbang.jumlah-kajian-rekomendasi.index') }}" class="stat-card-link-wrapper">
                 <div class="stat-card">
                     <div class="stat-card-info">
                         <p class="stat-card-title">Total Rekomendasi Kebijakan</p>
@@ -100,7 +111,11 @@
                 </div>
                 <div class="stat-card-footer"></div>
             </a>
-            <a href="{{ route('barenbang.aplikasi-integrasi-siapkerja.index') }}" class="stat-card-link-wrapper">
+                <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Jumlah Rekomendasi</h3>
+                <div id="echart-barenbang-rekomendasi-trend" style="height: 350px;"></div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                 <a href="{{ route('barenbang.aplikasi-integrasi-siapkerja.index') }}" class="stat-card-link-wrapper">
                 <div class="stat-card">
                     <div class="stat-card-info">
                         <p class="stat-card-title">Total Aplikasi Terintegrasi SiapKerja</p>
@@ -112,18 +127,6 @@
                 </div>
                 <div class="stat-card-footer"></div>
             </a>
-        </section>
-        
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Jumlah Kajian</h3>
-                <div id="echart-barenbang-kajian-trend" style="height: 350px;"></div>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Jumlah Rekomendasi</h3>
-                <div id="echart-barenbang-rekomendasi-trend" style="height: 350px;"></div>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-md">
                 <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Aplikasi Terintegrasi</h3>
                 <div id="echart-barenbang-aplikasi-trend" style="height: 350px;"></div>
             </div>
