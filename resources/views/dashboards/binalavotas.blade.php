@@ -68,11 +68,47 @@
     {{-- Kartu Statistik Binalavotas --}}
     {{-- Pastikan variabel total dan rute sesuai dengan yang ada di BinalavotasDashboardController --}}
     <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-       
+        {{-- Kartu Lulus Pelatihan Internal --}}
+        <a href="{{ route('binalavotas.dashboard') }}#internal" class="stat-card-link-wrapper"> {{-- Ganti rute jika ada halaman detail --}}
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Total Peserta Pelatihan</p>
+                    <p class="stat-card-value">{{ number_format($totalPesertaPelatihan ?? 0) }}</p> {{-- Sesuaikan nama variabel --}}
+                </div>
+                <div class="stat-card-icon-wrapper bg-blue-100">
+                    <i class="ri-home-heart-line text-blue-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
 
+        {{-- Kartu Lulus Pelatihan Eksternal --}}
+        <a href="{{ route('binalavotas.dashboard') }}#eksternal" class="stat-card-link-wrapper"> {{-- Ganti rute jika ada halaman detail --}}
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Total Lulus Pelatihan</p>
+                    <p class="stat-card-value">{{ number_format($totalLulusPelatihan ?? 0) }}</p> {{-- Sesuaikan nama variabel --}}
+                </div>
+                <div class="stat-card-icon-wrapper bg-purple-100">
+                    <i class="ri-flight-takeoff-line text-purple-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
         
-        
-        
+        {{-- Kartu Jumlah Sertifikasi Kompetensi --}}
+        <a href="{{ route('binalavotas.jumlah-sertifikasi-kompetensi.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Jml Sertifikasi Kompetensi</p>
+                    <p class="stat-card-value">{{ number_format($totalSertifikasi ?? 0) }}</p> {{-- Sesuaikan nama variabel --}}
+                </div>
+                <div class="stat-card-icon-wrapper bg-green-100">
+                    <i class="ri-shield-star-line text-green-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
     </section>
 
     {{-- Bagian Grafik --}}
@@ -80,53 +116,14 @@
     
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <div class="bg-white p-6 rounded-xl shadow-md">
-                 {{-- Kartu Lulus Pelatihan Internal --}}
-                <a href="{{ route('binalavotas.dashboard') }}#internal" class="stat-card-link-wrapper"> {{-- Ganti rute jika ada halaman detail --}}
-                    <div class="stat-card">
-                        <div class="stat-card-info">
-                            <p class="stat-card-title">Total Peserta Pelatihan</p>
-                            <p class="stat-card-value">{{ number_format($totalPesertaPelatihan ?? 0) }}</p> {{-- Sesuaikan nama variabel --}}
-                        </div>
-                        <div class="stat-card-icon-wrapper bg-blue-100">
-                            <i class="ri-home-heart-line text-blue-500 text-2xl"></i>
-                        </div>
-                    </div>
-                    <div class="stat-card-footer">{{ $periodText }}</div>
-                </a>
                 <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Jumlah Peserta Pelatihan</h3>
                 <div id="echart-binalavotas-peserta-pelatihan-trend" style="height: 400px;"></div>
             </div>
             <div class="bg-white p-6 rounded-xl shadow-md">
-                {{-- Kartu Lulus Pelatihan Eksternal --}}
-                <a href="{{ route('binalavotas.dashboard') }}#eksternal" class="stat-card-link-wrapper"> {{-- Ganti rute jika ada halaman detail --}}
-                    <div class="stat-card">
-                        <div class="stat-card-info">
-                            <p class="stat-card-title">Total Lulus Pelatihan</p>
-                            <p class="stat-card-value">{{ number_format($totalLulusPelatihan ?? 0) }}</p> {{-- Sesuaikan nama variabel --}}
-                        </div>
-                        <div class="stat-card-icon-wrapper bg-purple-100">
-                            <i class="ri-flight-takeoff-line text-purple-500 text-2xl"></i>
-                        </div>
-                    </div>
-                    <div class="stat-card-footer">{{ $periodText }}</div>
-                </a>
                 <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Jumlah Lulus Pelatihan</h3>
                 <div id="echart-binalavotas-lulus-pelatihan-trend" style="height: 400px;"></div>
             </div>
             <div class="bg-white p-6 rounded-xl shadow-md lg:col-span-2">
-                {{-- Kartu Jumlah Sertifikasi Kompetensi --}}
-                <a href="{{ route('binalavotas.jumlah-sertifikasi-kompetensi.index') }}" class="stat-card-link-wrapper">
-                    <div class="stat-card">
-                        <div class="stat-card-info">
-                            <p class="stat-card-title">Jml Sertifikasi Kompetensi</p>
-                            <p class="stat-card-value">{{ number_format($totalSertifikasi ?? 0) }}</p> {{-- Sesuaikan nama variabel --}}
-                        </div>
-                        <div class="stat-card-icon-wrapper bg-green-100">
-                            <i class="ri-shield-star-line text-green-500 text-2xl"></i>
-                        </div>
-                    </div>
-                    <div class="stat-card-footer">{{ $periodText }}</div>
-                </a>
                 <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Jumlah Sertifikasi Kompetensi</h3>
                 <div id="echart-binalavotas-sertifikasi-trend" style="height: 400px;"></div>
             </div>
