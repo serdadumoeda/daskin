@@ -150,6 +150,7 @@ Route::prefix('sekretariat-jenderal')->name('sekretariat-jenderal.')->middleware
             Route::get('/{progressMou}/edit', [ProgressMouController::class, 'edit'])->name('edit');
             Route::put('/{progressMou}', [ProgressMouController::class, 'update'])->name('update');
             Route::delete('/{progressMou}', [ProgressMouController::class, 'destroy'])->name('destroy');
+            Route::get("/downloadTemplate", [ProgressMouController::class, 'downloadTemplate'])->name('downloadTemplate');
         });
         Route::get('/{progressMou}', [ProgressMouController::class, 'show'])->name('show')->middleware('role:' . $crudRolesSekjen . ',' . $readOnlyRoles);
     });

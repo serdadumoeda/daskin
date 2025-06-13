@@ -10,7 +10,7 @@
 @section('content')
 
 <div class="space-y-6">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4 mt-6">Kinerja Umum Barenbang</h2>
+        <h2 class="text-xl font-semibold text-green-500 mb-4 mt-6">Kinerja Umum Barenbang</h2>
     {{-- Filter dan Seksi Data Barenbang Utama (Kajian & Aplikasi) --}}
     <section>
     {{-- Filter untuk Data Kajian, Rekomendasi, Aplikasi --}}
@@ -125,6 +125,10 @@
             </div>
             <div class="bg-white p-6 rounded-xl shadow-md">
                 <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Aplikasi Terintegrasi</h3>
+                <div id="echart-barenbang-aplikasi-trend" style="height: 350px;"></div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Sistem Terintegrasi</h3>
                 <div id="echart-barenbang-aplikasi-trend" style="height: 350px;"></div>
             </div>
         </div>
