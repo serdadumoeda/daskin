@@ -46,12 +46,16 @@
    Stat Card Styles 
    ========================================================================== */
 
-   .stat-card-link-wrapper {
+.stat-card-link-wrapper {
     @apply block bg-white p-5 rounded-lg shadow transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
 }
 
+.stat-card-link-wrapper-include {
+    @apply block bg-white rounded-lg transition-all duration-300 p-0;
+}
+
 .stat-card {
-    @apply flex items-center justify-between;
+    @apply flex items-center;
 }
 
 .stat-card-info {

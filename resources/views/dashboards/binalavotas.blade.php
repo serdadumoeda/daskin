@@ -68,7 +68,18 @@
     {{-- Kartu Statistik Binalavotas --}}
     {{-- Pastikan variabel total dan rute sesuai dengan yang ada di BinalavotasDashboardController --}}
     <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {{-- Kartu Lulus Pelatihan Internal --}}
+       
+       
+        
+        
+    </section>
+
+    {{-- Bagian Grafik --}}
+    {{-- Pastikan ID chart dan variabel data chart sesuai dengan yang ada di BinalavotasDashboardController --}}
+    
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                 {{-- Kartu Lulus Pelatihan Internal --}}
         <a href="{{ route('binalavotas.dashboard') }}#internal" class="stat-card-link-wrapper"> {{-- Ganti rute jika ada halaman detail --}}
             <div class="stat-card">
                 <div class="stat-card-info">
@@ -82,7 +93,11 @@
             <div class="stat-card-footer">{{ $periodText }}</div>
         </a>
 
-        {{-- Kartu Lulus Pelatihan Eksternal --}}
+                <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Jumlah Peserta Pelatihan</h3>
+                <div id="echart-binalavotas-peserta-pelatihan-trend" style="height: 400px;"></div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                 {{-- Kartu Lulus Pelatihan Eksternal --}}
         <a href="{{ route('binalavotas.dashboard') }}#eksternal" class="stat-card-link-wrapper"> {{-- Ganti rute jika ada halaman detail --}}
             <div class="stat-card">
                 <div class="stat-card-info">
@@ -95,8 +110,11 @@
             </div>
             <div class="stat-card-footer">{{ $periodText }}</div>
         </a>
-        
-        {{-- Kartu Jumlah Sertifikasi Kompetensi --}}
+                <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Jumlah Lulus Pelatihan</h3>
+                <div id="echart-binalavotas-lulus-pelatihan-trend" style="height: 400px;"></div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-md lg:col-span-2">
+                {{-- Kartu Jumlah Sertifikasi Kompetensi --}}
         <a href="{{ route('binalavotas.jumlah-sertifikasi-kompetensi.index') }}" class="stat-card-link-wrapper">
             <div class="stat-card">
                 <div class="stat-card-info">
@@ -109,21 +127,6 @@
             </div>
             <div class="stat-card-footer">{{ $periodText }}</div>
         </a>
-    </section>
-
-    {{-- Bagian Grafik --}}
-    {{-- Pastikan ID chart dan variabel data chart sesuai dengan yang ada di BinalavotasDashboardController --}}
-    
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Jumlah Peserta Pelatihan</h3>
-                <div id="echart-binalavotas-peserta-pelatihan-trend" style="height: 400px;"></div>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Jumlah Lulus Pelatihan</h3>
-                <div id="echart-binalavotas-lulus-pelatihan-trend" style="height: 400px;"></div>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-md lg:col-span-2">
                 <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Jumlah Sertifikasi Kompetensi</h3>
                 <div id="echart-binalavotas-sertifikasi-trend" style="height: 400px;"></div>
             </div>
