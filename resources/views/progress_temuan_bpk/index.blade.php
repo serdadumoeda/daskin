@@ -91,7 +91,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
                         <i class="ri-upload-2-line mr-1"></i> Impor Data
                     </button>
                 </form>
-                 <a href="MASUKKAN_LINK_ONEDRIVE_DOWNLOAD_ANDA_DI_SINI"
+                 <a href="{{route('inspektorat.progress-temuan-bpk.downloadTemplate')}}"
                    target="_blank"
                    class="px-3 py-2 bg-blue-500 text-white rounded-button hover:bg-blue-600 text-sm font-medium flex items-center justify-center whitespace-nowrap w-full sm:w-auto mt-2 sm:mt-0">
                     <i class="ri-download-2-line mr-1"></i> Unduh Format
