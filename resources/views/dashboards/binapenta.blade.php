@@ -67,8 +67,28 @@
 
     {{-- Kartu Statistik Binapenta --}}
     {{-- Pastikan variabel total dan rute sesuai dengan yang ada di BinapentaDashboardController --}}
-    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {{-- Kartu Jml Penempatan oleh Kemnaker --}}
+    {{-- <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+       
+        
+       
+    </section> --}}
+
+    {{-- Bagian Grafik --}}
+    {{-- Pastikan ID chart dan variabel data chart sesuai dengan yang ada di BinapentaDashboardController --}}
+    <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-6">
+        <div class="bg-white p-6 rounded-xl shadow-md">
+        
+
+       
+        
+        
+    </section>
+
+    {{-- Bagian Grafik --}}
+    {{-- Pastikan ID chart dan variabel data chart sesuai dengan yang ada di BinapentaDashboardController --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            {{-- Kartu Jml Penempatan oleh Kemnaker --}}
         <a href="{{ route('binapenta.jumlah-penempatan-kemnaker.index') }}" class="stat-card-link-wrapper">
             <div class="stat-card">
                 <div class="stat-card-info">
@@ -81,8 +101,11 @@
             </div>
             <div class="stat-card-footer">{{ $periodText }}</div>
         </a>
-
-        {{-- Kartu Jml Lowongan Kerja Baru (Pasker) --}}
+            <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Penempatan oleh Kemnaker</h3>
+            <div id="echart-binapenta-penempatan-trend" style="height: 400px;"></div>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-md">
+             {{-- Kartu Jml Lowongan Kerja Baru (Pasker) --}}
         <a href="{{ route('binapenta.jumlah-lowongan-pasker.index') }}" class="stat-card-link-wrapper">
             <div class="stat-card">
                 <div class="stat-card-info">
@@ -95,8 +118,14 @@
             </div>
             <div class="stat-card-footer">{{ $periodText }}</div>
         </a>
-        
-        {{-- Kartu Persetujuan RPTKA --}}
+            <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Lowongan Kerja Pasker</h3>
+            <div id="echart-binapenta-lowongan-pasker-trend" style="height: 400px;"></div>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-md"> <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Persetujuan RPTKA (TKA Disetujui)</h3>
+            <div id="echart-binapenta-tka-disetujui-trend" style="height: 400px;"></div>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            {{-- Kartu Persetujuan RPTKA --}}
         <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper">
             <div class="stat-card">
                 <div class="stat-card-info">
@@ -109,23 +138,6 @@
             </div>
             <div class="stat-card-footer">{{ $periodText }}</div>
         </a>
-    </section>
-
-    {{-- Bagian Grafik --}}
-    {{-- Pastikan ID chart dan variabel data chart sesuai dengan yang ada di BinapentaDashboardController --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <div class="bg-white p-6 rounded-xl shadow-md">
-            <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Penempatan oleh Kemnaker</h3>
-            <div id="echart-binapenta-penempatan-trend" style="height: 400px;"></div>
-        </div>
-        <div class="bg-white p-6 rounded-xl shadow-md">
-            <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Lowongan Kerja Pasker</h3>
-            <div id="echart-binapenta-lowongan-pasker-trend" style="height: 400px;"></div>
-        </div>
-        <div class="bg-white p-6 rounded-xl shadow-md"> <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Persetujuan RPTKA (TKA Disetujui)</h3>
-            <div id="echart-binapenta-tka-disetujui-trend" style="height: 400px;"></div>
-        </div>
-        <div class="bg-white p-6 rounded-xl shadow-md">
             <h3 class="font-semibold text-lg text-gray-800 mb-4">Komposisi Penempatan berdasarkan Jenis Kelamin</h3>
             <div id="echart-binapenta-penempatan-jk-pie" style="height: 400px;"></div>
         </div>
