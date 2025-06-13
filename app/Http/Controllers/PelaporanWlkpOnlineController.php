@@ -9,6 +9,7 @@ use App\Imports\PelaporanWlkpOnlineImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class PelaporanWlkpOnlineController extends Controller
@@ -148,5 +149,14 @@ class PelaporanWlkpOnlineController extends Controller
             return redirect()->route($this->routeNamePrefix . 'index')
                              ->with('error', 'Terjadi kesalahan saat mengimpor data: ' . $e->getMessage());
         }
+    }
+
+    public function downloadTemplate(Request $request) {
+        $filePath = 'template_input_wlkp.xlsx';
+
+        if (Storage::disk('public')->exists($filePath)) {
+            return Storage::disk('public')->download($filePath);
+        }
+        abort(404, 'File not found.');
     }
 }
