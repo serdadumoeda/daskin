@@ -35,122 +35,120 @@
 
 @section('content')
 <div class="space-y-6">
-<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        
-        <a href="{{ route('binapenta.jumlah-penempatan-kemnaker.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
-                <div class="stat-card-icon-wrapper bg-blue-100">
-                    <i class="ri-auction-fill text-blue-500 text-2xl"></i>
-                </div>
-                <div class="stat-card-info">
-                    <p class="stat-card-title">Penyelesaian Temuan BPK</p>
-                    <p class="stat-card-value">{{ number_format($persenSelesaiBpk ?? 0, 2) }} <span class="text-sm font-normal">%</span></p> 
-                </div>
-
-            </div>
-            
-        </a>
-
-        
-        <a href="{{ route('binapenta.jumlah-lowongan-pasker.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
-                <div class="stat-card-icon-wrapper bg-green-100">
-                    <i class="ri-checkbox-multiple-fill text-green-500 text-2xl"></i>
-                </div>
-                <div class="stat-card-info">
-                    <p class="stat-card-title">Penyelesaian Temuan Internal</p>
-                    <p class="stat-card-value">{{ number_format($persenSelesaiInternal ?? 0, 2) }} <span class="text-sm font-normal">%</span></p> 
-                </div>
-            </div>
-            
-        </a>
-        
-        
-        <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
-                <div class="stat-card-icon-wrapper bg-purple-100">
-                    <i class=" ri-account-box-line text-purple-500 text-2xl"></i>
-                </div>
-                <div class="stat-card-info">
-                    <p class="stat-card-title">Penempatan Tenaga Kerja</p>
-                    <p class="stat-card-value">{{ number_format($totalPenempatanKemenaker ?? 0) }} <span class="text-sm font-normal">Orang</span></p> 
-                </div>
-            </div>
-           
-        </a>
-
-        <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
-                <div class="stat-card-icon-wrapper bg-yellow-100">
-                    <i class=" ri-team-line text-yellow-500 text-2xl"></i>
-                </div>
-                <div class="stat-card-info">
-                    <p class="stat-card-title">Peserta Pelatihan</p>
-                    <p class="stat-card-value">{{ number_format($totalPesertaPelatihan ?? 0) }} <span class="text-sm font-normal">Orang</span></p> 
-                </div>
-            </div>
-           
-        </a>
-
-        <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
-                <div class="stat-card-icon-wrapper bg-red-100">
-                    <i class=" ri-user-2-fill text-red-500 text-2xl"></i>
-                </div>
-                <div class="stat-card-info">
-                    <p class="stat-card-title">Lulusan Polteknaker Bekerja</p>
-                    <p class="stat-card-value">{{ number_format($totalLulusanBekerja ?? 0) }} <span class="text-sm font-normal">Orang</span></p> 
-                </div>
-            </div>
-        </a>
-
-        <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
-                <div class="stat-card-icon-wrapper bg-blue-100">
-                    <i class="ri-apps-2-line text-blue-500 text-2xl"></i>
-                </div>
-                <div class="stat-card-info">
-                    <p class="stat-card-title">Rekomendasi Kebijakan</p>
-                    <p class="stat-card-value">{{ number_format($totalRekomendasiKebijakan ?? 0) }} </p> 
-                </div>
-            </div>
-           
-        </a>
-
-        <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
-                <div class="stat-card-icon-wrapper bg-green-100">
-                    <i class="ri-bank-card-fill text-green-500 text-2xl"></i>
-                </div>
-                <div class="stat-card-info">
-                    <p class="stat-card-title">Rata-rata IKPA</p>
-                    <p class="stat-card-value">{{ number_format($avgIkpaKementerian ?? 0, 2) }} </p> 
-                </div>
-
-            </div>
-           
-        </a>
-    </section>
-
-
     <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-      
+        
         <div class="bg-white p-5 rounded-xl shadow-md">
-            <h3 class="font-semibold text-lg text-gray-800 mb-3">Tren Peserta Pelatihan</h3>
+            <a href="{{ route('binapenta.jumlah-penempatan-kemnaker.index') }}" class="stat-card-link-wrapper-include">
+                <div class="stat-card flex items-center">
+                    <div class="stat-card-icon-wrapper bg-blue-100 mr-4">
+                        <i class="ri-auction-fill text-blue-500 text-2xl"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">Penyelesaian Temuan BPK</p>
+                        <p class="stat-card-value">{{ number_format($persenSelesaiBpk ?? 0, 2) }} <span class="text-sm font-normal">%</span></p> 
+                    </div>
+                </div>
+            </a>
+            <!-- <h3 class="font-semibold text-lg text-gray-800">Tren Peserta Pelatihan</h3> -->
+            <div id="main-chart-penyelesaian-bpk" style="height: 350px;"></div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl shadow-md">
+            <a href="{{ route('binapenta.jumlah-lowongan-pasker.index') }}" class="stat-card-link-wrapper-include">
+                <div class="stat-card flex items-center">
+                    <div class="stat-card-icon-wrapper bg-green-100 mr-4">
+                        <i class="ri-checkbox-multiple-fill text-green-500 text-2xl"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">Penyelesaian Temuan Internal</p>
+                        <p class="stat-card-value">{{ number_format($persenSelesaiInternal ?? 0, 2) }} <span class="text-sm font-normal">%</span></p> 
+                    </div>
+                </div>
+            </a>
+            <!-- <h3 class="font-semibold text-lg text-gray-800">Tren Peserta Pelatihan</h3> -->
+            <div id="main-chart-penyelesaian-internal" style="height: 350px;"></div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl shadow-md">
+            <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper-include">
+                <div class="stat-card flex items-center">
+                    <div class="stat-card-icon-wrapper bg-purple-100 mr-4">
+                        <i class="ri-account-box-line text-purple-500 text-2xl"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">Penempatan Tenaga Kerja</p>
+                        <p class="stat-card-value">{{ number_format($totalPenempatanKemenaker ?? 0) }} <span class="text-sm font-normal">Orang</span></p> 
+                    </div>
+                </div>
+            </a>
+            <!-- <h3 class="font-semibold text-lg text-gray-800">Tren Peserta Pelatihan</h3> -->
+            <div id="main-chart-penempatan-kemnaker" style="height: 350px;"></div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl shadow-md">
+            <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper-include">
+                <div class="stat-card flex items-center">
+                    <div class="stat-card-icon-wrapper bg-yellow-100 mr-4">
+                        <i class="ri-team-line text-yellow-500 text-2xl"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">Peserta Pelatihan</p>
+                        <p class="stat-card-value">{{ number_format($totalPesertaPelatihan ?? 0) }} <span class="text-sm font-normal">Orang</span></p> 
+                    </div>
+                </div>
+            </a>
+            <!-- <h3 class="font-semibold text-lg text-gray-800">Tren Peserta Pelatihan</h3> -->
             <div id="main-chart-peserta-pelatihan" style="height: 350px;"></div>
         </div>
+
         <div class="bg-white p-5 rounded-xl shadow-md">
-            <h3 class="font-semibold text-lg text-gray-800 mb-3">Tren Lulusan Polteknaker Bekerja</h3>
+            <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper-include">
+                <div class="stat-card flex items-center">
+                    <div class="stat-card-icon-wrapper bg-red-100 mr-4">
+                        <i class=" ri-user-2-fill text-red-500 text-2xl"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">Lulusan Polteknaker Bekerja</p>
+                        <p class="stat-card-value">{{ number_format($totalLulusanBekerja ?? 0) }} <span class="text-sm font-normal">Orang</span></p> 
+                    </div>
+                </div>
+            </a>
+            <!-- <h3 class="font-semibold text-lg text-gray-800">Tren Lulusan Polteknaker Bekerja</h3> -->
             <div id="main-chart-lulusan-bekerja" style="height: 350px;"></div>
         </div>
+
         <div class="bg-white p-5 rounded-xl shadow-md">
-            <h3 class="font-semibold text-lg text-gray-800 mb-3">Tren Rekomendasi Kebijakan</h3>
+            <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper-include">
+                <div class="stat-card flex items-center">
+                    <div class="stat-card-icon-wrapper bg-blue-100 mr-4">
+                        <i class="ri-apps-2-line text-blue-500 text-2xl"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">Rekomendasi Kebijakan</p>
+                        <p class="stat-card-value">{{ number_format($totalRekomendasiKebijakan ?? 0) }} </p> 
+                    </div>
+                </div>
+            </a>
+            <!-- <h3 class="font-semibold text-lg text-gray-800">Tren Rekomendasi Kebijakan</h3> -->
             <div id="main-chart-rekomendasi-kebijakan" style="height: 350px;"></div>
         </div>
+
          <div class="bg-white p-5 rounded-xl shadow-md">
-            <h3 class="font-semibold text-lg text-gray-800 mb-3">Tren Rata-rata IKPA</h3>
+            <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper-include">
+                <div class="stat-card flex items-center">
+                    <div class="stat-card-icon-wrapper bg-green-100 mr-4">
+                        <i class="ri-bank-card-fill text-green-500 text-2xl"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">Rata-rata IKPA</p>
+                        <p class="stat-card-value">{{ number_format($avgIkpaKementerian ?? 0, 2) }} </p> 
+                    </div>
+                </div>
+            </a>
+            <!-- <h3 class="font-semibold text-lg text-gray-800">Tren Rata-rata IKPA</h3> -->
             <div id="main-chart-ikpa" style="height: 350px;"></div>
         </div>
+        
     </div>
 </div>
 @endsection

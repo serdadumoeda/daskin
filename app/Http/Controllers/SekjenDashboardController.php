@@ -59,7 +59,7 @@ class SekjenDashboardController extends Controller
                     ->get()
                     ->pluck('total_value', $monthColumn);
             }
-            
+
             $result = [];
             for ($m = 1; $m <= 12; $m++) {
                 $result[] = (int)($monthlyData->get($m) ?? 0);
@@ -73,7 +73,7 @@ class SekjenDashboardController extends Controller
     {
         $currentYear = date('Y');
         $selectedYear = $request->input('tahun', $currentYear);
-        $selectedMonth = $request->input('bulan'); 
+        $selectedMonth = $request->input('bulan');
 
         $months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
         $chartLabels = $selectedMonth ? [$months[(int)$selectedMonth - 1]] : $months;
@@ -156,10 +156,10 @@ class SekjenDashboardController extends Controller
             $availableYears->push($currentYear);
             $availableYears = $availableYears->sortDesc()->values();
         }
-        
+
         $viewData = compact(
-            'totalIkpa', 'totalMouBaru', 'totalRegulasiBaru', 'totalPenangananKasus', 
-            'totalKuantitasBmn', 'totalOrangHadirWFO', 'totalBeritaMonev', 
+            'totalIkpa', 'totalMouBaru', 'totalRegulasiBaru', 'totalPenangananKasus',
+            'totalKuantitasBmn', 'totalOrangHadirWFO', 'totalBeritaMonev',
             'totalLulusanBekerja', 'totalSdmPelatihan',
             'availableYears', 'selectedYear', 'selectedMonth'
         );
@@ -175,7 +175,7 @@ class SekjenDashboardController extends Controller
             'lulusan_bekerja' => ['labels' => $chartLabels, 'bulanan' => $lulusanBekerjaBulanan, 'kumulatif' => $lulusanBekerjaKumulatif],
             'sdm_pelatihan' => ['labels' => $chartLabels, 'bulanan' => $sdmPelatihanBulanan, 'kumulatif' => $sdmPelatihanKumulatif],
         ];
-        
+
         return view('dashboards.sekjen', array_merge($viewData, ['chartData' => $chartData]));
     }
 }
