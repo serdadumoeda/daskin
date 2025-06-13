@@ -50,8 +50,12 @@
     @apply block bg-white p-5 rounded-lg transition-all duration-300 hover:-translate-y-1 mb-10;
 }
 
+.stat-card-link-wrapper-include {
+    @apply block bg-white rounded-lg transition-all duration-300 p-0;
+}
+
 .stat-card {
-    @apply flex items-center justify-between;
+    @apply flex items-center;
 }
 
 .stat-card-info {
