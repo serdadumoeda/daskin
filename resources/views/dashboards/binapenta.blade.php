@@ -68,61 +68,64 @@
     {{-- Kartu Statistik Binapenta --}}
     {{-- Pastikan variabel total dan rute sesuai dengan yang ada di BinapentaDashboardController --}}
     <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {{-- Kartu Jml Penempatan oleh Kemnaker --}}
-        <a href="{{ route('binapenta.jumlah-penempatan-kemnaker.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
-                <div class="stat-card-info">
-                    <p class="stat-card-title">Jml Penempatan oleh Kemnaker</p>
-                    <p class="stat-card-value">{{ number_format($totalPenempatanKemnaker ?? 0) }} <span class="text-sm font-normal">Orang</span></p> {{-- Sesuaikan nama variabel --}}
-                </div>
-                <div class="stat-card-icon-wrapper bg-blue-100">
-                    <i class="ri-user-add-line text-blue-500 text-2xl"></i>
-                </div>
-            </div>
-            <div class="stat-card-footer">{{ $periodText }}</div>
-        </a>
-
-        {{-- Kartu Jml Lowongan Kerja Baru (Pasker) --}}
-        <a href="{{ route('binapenta.jumlah-lowongan-pasker.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
-                <div class="stat-card-info">
-                    <p class="stat-card-title">Jml Lowongan Kerja Baru (Pasker)</p>
-                    <p class="stat-card-value">{{ number_format($totalLowonganPasker ?? 0) }} <span class="text-sm font-normal">Lowongan</span></p> {{-- Sesuaikan nama variabel --}}
-                </div>
-                <div class="stat-card-icon-wrapper bg-green-100">
-                    <i class="ri-briefcase-4-line text-green-500 text-2xl"></i>
-                </div>
-            </div>
-            <div class="stat-card-footer">{{ $periodText }}</div>
-        </a>
+       
         
-        {{-- Kartu Persetujuan RPTKA --}}
-        <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
-                <div class="stat-card-info">
-                    <p class="stat-card-title">Persetujuan RPTKA</p>
-                    <p class="stat-card-value">{{ number_format($totalTkaDisetujui ?? 0) }} <span class="text-sm font-normal">TKA</span></p> {{-- Sesuaikan nama variabel --}}
-                </div>
-                <div class="stat-card-icon-wrapper bg-purple-100">
-                    <i class="ri-user-shared-line text-purple-500 text-2xl"></i>
-                </div>
-            </div>
-            <div class="stat-card-footer">{{ $periodText }}</div>
-        </a>
+       
     </section>
 
     {{-- Bagian Grafik --}}
     {{-- Pastikan ID chart dan variabel data chart sesuai dengan yang ada di BinapentaDashboardController --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <div class="bg-white p-6 rounded-xl shadow-md">
+        {{-- Kartu Jml Penempatan oleh Kemnaker --}}
+
+             <a href="{{ route('binapenta.jumlah-penempatan-kemnaker.index') }}" class="stat-card-link-wrapper">
+                <div class="stat-card">
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">Jml Penempatan oleh Kemnaker</p>
+                        <p class="stat-card-value">{{ number_format($totalPenempatanKemnaker ?? 0) }} <span class="text-sm font-normal">Orang</span></p> {{-- Sesuaikan nama variabel --}}
+                    </div>
+                    <div class="stat-card-icon-wrapper bg-blue-100">
+                        <i class="ri-user-add-line text-blue-500 text-2xl"></i>
+                    </div>
+                </div>
+                <div class="stat-card-footer">{{ $periodText }}</div>
+            </a>
             <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Penempatan oleh Kemnaker</h3>
             <div id="echart-binapenta-penempatan-trend" style="height: 400px;"></div>
         </div>
         <div class="bg-white p-6 rounded-xl shadow-md">
+            {{-- Kartu Jml Lowongan Kerja Baru (Pasker) --}}
+            <a href="{{ route('binapenta.jumlah-lowongan-pasker.index') }}" class="stat-card-link-wrapper">
+                <div class="stat-card">
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">Jml Lowongan Kerja Baru (Pasker)</p>
+                        <p class="stat-card-value">{{ number_format($totalLowonganPasker ?? 0) }} <span class="text-sm font-normal">Lowongan</span></p> {{-- Sesuaikan nama variabel --}}
+                    </div>
+                    <div class="stat-card-icon-wrapper bg-green-100">
+                        <i class="ri-briefcase-4-line text-green-500 text-2xl"></i>
+                    </div>
+                </div>
+                <div class="stat-card-footer">{{ $periodText }}</div>
+            </a>
             <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Lowongan Kerja Pasker</h3>
             <div id="echart-binapenta-lowongan-pasker-trend" style="height: 400px;"></div>
         </div>
-        <div class="bg-white p-6 rounded-xl shadow-md"> <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Persetujuan RPTKA (TKA Disetujui)</h3>
+        <div class="bg-white p-6 rounded-xl shadow-md"> 
+             {{-- Kartu Persetujuan RPTKA --}}
+            <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper">
+                <div class="stat-card">
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">Persetujuan RPTKA</p>
+                        <p class="stat-card-value">{{ number_format($totalTkaDisetujui ?? 0) }} <span class="text-sm font-normal">TKA</span></p> {{-- Sesuaikan nama variabel --}}
+                    </div>
+                    <div class="stat-card-icon-wrapper bg-purple-100">
+                        <i class="ri-user-shared-line text-purple-500 text-2xl"></i>
+                    </div>
+                </div>
+                <div class="stat-card-footer">{{ $periodText }}</div>
+            </a>
+            <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Persetujuan RPTKA (TKA Disetujui)</h3>
             <div id="echart-binapenta-tka-disetujui-trend" style="height: 400px;"></div>
         </div>
         <div class="bg-white p-6 rounded-xl shadow-md">
