@@ -150,6 +150,7 @@ Route::prefix('sekretariat-jenderal')->name('sekretariat-jenderal.')->middleware
             Route::get('/{progressMou}/edit', [ProgressMouController::class, 'edit'])->name('edit');
             Route::put('/{progressMou}', [ProgressMouController::class, 'update'])->name('update');
             Route::delete('/{progressMou}', [ProgressMouController::class, 'destroy'])->name('destroy');
+            Route::get("/downloadTemplate", [ProgressMouController::class, 'downloadTemplate'])->name('downloadTemplate');
         });
         Route::get('/{progressMou}', [ProgressMouController::class, 'show'])->name('show')->middleware('role:' . $crudRolesSekjen . ',' . $readOnlyRoles);
     });
@@ -358,6 +359,7 @@ Route::prefix('binwasnaker')->name('binwasnaker.')->middleware(['auth'])->group(
         Route::get('pelaporan-wlkp-online/{pelaporan_wlkp_online}/edit', [PelaporanWlkpOnlineController::class, 'edit'])->name('pelaporan-wlkp-online.edit');
         Route::put('pelaporan-wlkp-online/{pelaporan_wlkp_online}', [PelaporanWlkpOnlineController::class, 'update'])->name('pelaporan-wlkp-online.update');
         Route::delete('pelaporan-wlkp-online/{pelaporan_wlkp_online}', [PelaporanWlkpOnlineController::class, 'destroy'])->name('pelaporan-wlkp-online.destroy');
+        Route::get('/download_template', [PelaporanWlkpOnlineController::class, 'downloadTemplate'])->name('pelaporan-wlkp-online.download-template');
     });
 
     // PengaduanPelanggaranNormaController

@@ -78,7 +78,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'search_judul
             <form action="{{ route('sekretariat-jenderal.progress-mou.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                 @csrf
                 <div class="flex-grow">
-                    <input type="file" name="excel_file" id="excel_file_mou" required 
+                    <input type="file" name="excel_file" id="excel_file_mou" required
                            class="block w-full text-sm text-gray-500
                                   file:mr-2 file:py-1.5 file:px-3 file:rounded-button
                                   file:border-0 file:text-sm file:font-semibold
@@ -89,7 +89,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'search_judul
                     <i class="ri-upload-2-line mr-1"></i> Impor Data
                 </button>
             </form>
-             <a href="MASUKKAN_LINK_ONEDRIVE_FORMAT_MOU_DISINI" 
+             <a href="https://kemnaker-my.sharepoint.com/:x:/r/personal/arif365_kemnaker_go_id/_layouts/15/Doc.aspx?sourcedoc=%7BC44728E4-DFAE-4523-B9A3-359FD97C1F2A%7D&file=import%20data%20jumlah%20mou.xlsx&action=default&mobileredirect=true"
                target="_blank"
                class="px-3 py-2 bg-blue-500 text-white rounded-button hover:bg-blue-600 text-sm font-medium flex items-center justify-center whitespace-nowrap w-full sm:w-auto mt-2 sm:mt-0">
                 <i class="ri-download-2-line mr-1"></i> Unduh Format
@@ -115,7 +115,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'search_judul
             {{ session('error') }}
         </div>
     @endif
-    
+
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 border border-gray-200">
             <thead class="bg-gray-50">

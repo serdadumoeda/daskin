@@ -80,7 +80,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_fil
                     <i class="ri-upload-2-line mr-1"></i> Impor Data
                 </button>
             </form>
-             <a href="MASUKKAN_LINK_ONEDRIVE_FORMAT_WLKP_DISINI"
+             <a href="https://kemnaker-my.sharepoint.com/:x:/r/personal/arif365_kemnaker_go_id/_layouts/15/Doc.aspx?sourcedoc=%7B52720605-4A3C-42C7-A5C1-7F44867CDA94%7D&file=template_input_wlkp.xlsx&action=default&mobileredirect=true"
                target="_blank"
                class="px-3 py-2 bg-blue-500 text-white rounded-button hover:bg-blue-600 text-sm font-medium flex items-center justify-center whitespace-nowrap w-full sm:w-auto mt-2 sm:mt-0">
                 <i class="ri-download-2-line mr-1"></i> Unduh Format
