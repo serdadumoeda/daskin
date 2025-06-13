@@ -29,7 +29,7 @@
                 @endforeach
             </select>
         </div>
-        
+
         <div class="flex items-center gap-2 w-full sm:w-auto">
             <button type="submit" class="w-full sm:w-auto text-sm font-medium text-filter-btn-apply-text bg-filter-btn-apply-bg border border-filter-btn-apply-border hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-md px-4 py-2 transition-colors duration-200">
                 Terapkan
@@ -92,7 +92,7 @@
             </div>
             <div class="stat-card-footer">{{ $periodText }}</div>
         </a>
-        
+
         <a href="{{ route('sekretariat-jenderal.jumlah-penanganan-kasus.index') }}" class="stat-card-link-wrapper">
             <div class="stat-card">
                 <div class="stat-card-info">
@@ -121,12 +121,84 @@
             </div>
             <div class="stat-card-footer">{{ $periodText }}</div>
         </a>
-        
+
         <a href="{{ route('sekretariat-jenderal.persentase-kehadiran.index') }}" class="stat-card-link-wrapper">
             <div class="stat-card">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Total Kehadiran WFO</p>
                     <p class="stat-card-value">{{ number_format($totalOrangHadirWFO ?? 0) }} <span class="text-sm">Orang</span></p>
+                </div>
+                <div class="stat-card-icon-wrapper bg-yellow-100">
+                    <i class="ri-user-follow-line text-yellow-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
+
+        <a href="{{ route('sekretariat-jenderal.persentase-kehadiran.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Total Kehadiran Cuti</p>
+                    <p class="stat-card-value">{{ number_format($totalOrangCuti ?? 0) }} <span class="text-sm">Orang</span></p>
+                </div>
+                <div class="stat-card-icon-wrapper bg-yellow-100">
+                    <i class="ri-user-follow-line text-yellow-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
+
+    </section>
+
+    {{-- Baris Ketiga: 3 Kartu --}}
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <a href="{{ route('sekretariat-jenderal.persentase-kehadiran.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Total Kehadiran Dinas Luar</p>
+                    <p class="stat-card-value">{{ number_format($totalOrangDinasLuar ?? 0) }} <span class="text-sm">Orang</span></p>
+                </div>
+                <div class="stat-card-icon-wrapper bg-yellow-100">
+                    <i class="ri-user-follow-line text-yellow-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
+
+        <a href="{{ route('sekretariat-jenderal.persentase-kehadiran.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Total Kehadiran Sakit</p>
+                    <p class="stat-card-value">{{ number_format($totalOrangSakit ?? 0) }} <span class="text-sm">Orang</span></p>
+                </div>
+                <div class="stat-card-icon-wrapper bg-yellow-100">
+                    <i class="ri-user-follow-line text-yellow-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
+
+        <a href="{{ route('sekretariat-jenderal.persentase-kehadiran.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Total Kehadiran Tugas Belajar</p>
+                    <p class="stat-card-value">{{ number_format($totalOrangTugasBelajar ?? 0) }} <span class="text-sm">Orang</span></p>
+                </div>
+                <div class="stat-card-icon-wrapper bg-yellow-100">
+                    <i class="ri-user-follow-line text-yellow-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="stat-card-footer">{{ $periodText }}</div>
+        </a>
+    </section>
+
+    {{-- Baris Keempat: 3 Kartu --}}
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <a href="{{ route('sekretariat-jenderal.persentase-kehadiran.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card">
+                <div class="stat-card-info">
+                    <p class="stat-card-title">Total Kehadiran Tanpa Keterangan</p>
+                    <p class="stat-card-value">{{ number_format($totalOrangTanpaKeterangan ?? 0) }} <span class="text-sm">Orang</span></p>
                 </div>
                 <div class="stat-card-icon-wrapper bg-yellow-100">
                     <i class="ri-user-follow-line text-yellow-500 text-2xl"></i>
@@ -147,7 +219,6 @@
             </div>
             <div class="stat-card-footer">{{ $periodText }}</div>
         </a>
-
     </section>
 
     {{-- Baris Ketiga: 2 Kartu --}}
@@ -192,6 +263,7 @@
             <div class="stat-card-footer">{{ $periodText }}</div>
         </a>
     </section>
+
 
 
     {{-- Bagian Grafik --}}
@@ -240,14 +312,14 @@
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        
+
         function createMultiSeriesChart(elementId, labels, seriesConfig, yAxisName = 'Jumlah') {
             const chartDom = document.getElementById(elementId);
             if (!chartDom) { return; }
             let existingChart = echarts.getInstanceByDom(chartDom);
             if (existingChart) { existingChart.dispose(); }
             const myChart = echarts.init(chartDom);
-            
+
             const series = seriesConfig.map(s => ({
                 name: s.name, type: s.type, yAxisIndex: s.yAxisIndex || 0, stack: s.stack || null,
                 smooth: s.type === 'line', data: s.data, itemStyle: { color: s.color }, lineStyle: { color: s.color }
