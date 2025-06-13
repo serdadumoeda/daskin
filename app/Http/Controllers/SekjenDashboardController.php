@@ -86,6 +86,11 @@ class SekjenDashboardController extends Controller
         $totalKuantitasBmn = PenyelesaianBmn::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('kuantitas');
         // Untuk persentase kehadiran, kartu mungkin lebih kompleks (rata-rata persentase WFO)
         $totalOrangHadirWFO = PersentaseKehadiran::query()->where('status_kehadiran', 1)->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_orang');
+        $totalOrangCuti = PersentaseKehadiran::query()->where('status_kehadiran', 2)->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_orang');;
+        $totalOrangDinasLuar = PersentaseKehadiran::query()->where('status_kehadiran', 3)->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_orang');;
+        $totalOrangSakit = PersentaseKehadiran::query()->where('status_kehadiran', 4)->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_orang');;
+        $totalOrangTugasBelajar = PersentaseKehadiran::query()->where('status_kehadiran', 5)->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_orang');;
+        $totalOrangTanpaKeterangan = PersentaseKehadiran::query()->where('status_kehadiran', 6)->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_orang');;
         $totalBeritaMonev = MonevMonitoringMedia::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_berita');
         $totalLulusanBekerja = LulusanPolteknakerBekerja::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_lulusan_bekerja');
         $totalSdmPelatihan = SdmMengikutiPelatihan::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_peserta');
@@ -127,11 +132,9 @@ class SekjenDashboardController extends Controller
         // Jika ingin membandingkan dengan total lulusan:
         // $totalLulusanBulanan = $this->getMonthlyData(new LulusanPolteknakerBekerja, 'tahun', 'bulan', 'jumlah_lulusan', $selectedYear, $selectedMonth);
 
-
         // 9. SDM Mengikuti Pelatihan
         $sdmPelatihanBulanan = $this->getMonthlyData(new SdmMengikutiPelatihan, 'tahun', 'bulan', 'jumlah_peserta', $selectedYear, $selectedMonth);
         $sdmPelatihanKumulatif = $this->calculateCumulative($sdmPelatihanBulanan);
-
 
         // Ambil tahun yang tersedia untuk filter
         // Ini perlu disesuaikan untuk mengambil tahun dari semua tabel yang relevan
@@ -161,7 +164,9 @@ class SekjenDashboardController extends Controller
             'totalIkpa', 'totalMouBaru', 'totalRegulasiBaru', 'totalPenangananKasus',
             'totalKuantitasBmn', 'totalOrangHadirWFO', 'totalBeritaMonev',
             'totalLulusanBekerja', 'totalSdmPelatihan',
-            'availableYears', 'selectedYear', 'selectedMonth'
+            'availableYears', 'selectedYear', 'selectedMonth',
+            'totalOrangCuti', 'totalOrangDinasLuar', 'totalOrangSakit',
+            'totalOrangTugasBelajar', 'totalOrangTanpaKeterangan'
         );
 
         $chartData = [
