@@ -10,6 +10,7 @@ use App\Imports\ProgressMouImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ProgressMouController extends Controller
 {
@@ -137,7 +138,7 @@ class ProgressMouController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->route($this->routeNamePrefix . 'index') 
+            return redirect()->route($this->routeNamePrefix . 'index')
                         ->withErrors($validator)
                         ->with('error', 'Gagal mengimpor data. Pastikan file valid.');
         }
@@ -162,5 +163,14 @@ class ProgressMouController extends Controller
             return redirect()->route($this->routeNamePrefix . 'index')
                              ->with('error', 'Terjadi kesalahan saat mengimpor data: ' . $e->getMessage());
         }
+    }
+
+    public function downloadTemplate(Request $request) {
+        $filePath = 'template_input_mou.xlsx';
+
+        if (Storage::disk('public')->exists($filePath)) {
+            return Storage::disk('public')->download($filePath);
+        }
+        abort(404, 'File not found.');
     }
 }
