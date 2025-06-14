@@ -72,8 +72,8 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'substansi_fi
                 <button type="submit" class="btn-primary">
                     <i class="ri-filter-3-line mr-1"></i> Filter
                 </button>
-                <a href="{{ route('barenbang.jumlah-kajian-rekomendasi.index') }}" class="w-full sm:w-auto px-4 py-1.5 bg-gray-200 text-gray-700 rounded-button hover:bg-gray-300 text-sm font-medium">
-                    Reset
+                <a href="{{ route('barenbang.jumlah-kajian-rekomendasi.index') }}" class="btn-secondary-outline">
+                    Clear Filter
                 </a>
             </div>
         </div>

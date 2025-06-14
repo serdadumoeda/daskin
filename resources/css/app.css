@@ -132,3 +132,14 @@
 .btn-primary:focus {
     @apply outline-none ring-2 ring-offset-2 ring-[#3E8785];
 }
+
+/* Tombol Aksi Sekunder (Untuk Clear/Reset) */
+.btn-secondary-outline {
+    @apply inline-flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium transition-colors duration-200;
+}
+.btn-secondary-outline:hover {
+    @apply bg-gray-50 text-gray-800; /* Latar sedikit abu-abu saat hover */
+}
+.btn-secondary-outline:focus {
+    @apply outline-none ring-2 ring-offset-2 ring-gray-400;
+}
