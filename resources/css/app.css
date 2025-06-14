@@ -1,0 +1,159 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Warna 1: Biru (Untuk Penempatan & Total Penempatan Kerja) */
+.bg-icon-summary-1-bg {
+    background-color: #e7f0ff !important;
+}
+.text-icon-summary-1-text {
+    color: #4a90e2 !important;
+}
+
+/* Warna 2: Hijau (Untuk Pelatihan & Total Lulus Pelatihan) */
+.bg-icon-summary-2-bg {
+    background-color: #e8f5e9 !important;
+}
+.text-icon-summary-2-text {
+    color: #50bda1 !important;
+}
+
+/* Warna 3: Oranye (Untuk Regulasi Baru) */
+.bg-icon-summary-3-bg {
+    background-color: #fff3e0 !important;
+}
+.text-icon-summary-3-text {
+    color: #f5a623 !important;
+}
+
+/* Warna 4: Merah (Untuk Tingkat Pengangguran Terbuka) */
+.bg-icon-summary-4-bg {
+    background-color: #ffebee !important;
+}
+.text-icon-summary-4-text {
+    color: #d0021b !important;
+}
+
+/* Warna 5: Ungu (Untuk Total Aplikasi Terintegrasi) */
+.bg-icon-summary-5-bg {
+    background-color: #f3e8ff !important;
+}
+.text-icon-summary-5-text {
+    color: #9013fe !important;
+}
+
+/* ==========================================================================
+   Stat Card Styles 
+   ========================================================================== */
+
+.stat-card-link-wrapper {
+    @apply block bg-white p-5 rounded-lg shadow transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+}
+
+.stat-card-link-wrapper-include {
+    @apply block bg-white rounded-lg transition-all duration-300 p-0;
+}
+
+.stat-card {
+    @apply flex items-center;
+}
+
+.stat-card-info {
+    /* Tidak memerlukan style khusus, flexbox sudah diatur oleh parent */
+}
+
+.stat-card-title {
+    @apply text-sm font-medium text-gray-600;
+}
+
+.stat-card-value {
+    @apply text-3xl font-semibold text-gray-800 mt-1;
+}
+
+.stat-card-icon-wrapper {
+    @apply flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full;
+}
+
+.stat-card-footer {
+    @apply text-xs text-gray-400 mt-2;
+}
+
+
+/* Tambahkan ini di akhir file resources/css/app.css Anda */
+
+/* Styling dasar untuk link menu (jika belum ada atau ingin disesuaikan) */
+.sidebar-parent-button, .sidebar-submenu-item {
+    display: flex; /* Memastikan padding dan border bekerja seperti yang diharapkan */
+    align-items: center; /* Menyelaraskan ikon dan teks secara vertikal */
+    width: 100%;
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease, border-left-color 0.2s ease;
+    border-left: 4px solid transparent; /* Border transparan untuk indikator aktif/hover */
+    padding-top: 0.75rem;    /* 12px */
+    padding-bottom: 0.75rem; /* 12px */
+    padding-right: 1rem;   /* 16px */
+    /* padding-left disesuaikan oleh class .pl-6 atau .pl-10 dari app.blade.php, 
+       namun kita perlu kompensasi border agar teks tetap align jika border visible */
+}
+
+/* Mengatur padding-left sedikit lebih kecil untuk mengakomodasi border tanpa menggeser teks */
+.sidebar-parent-button {
+    padding-left: calc(1rem - 4px); /* 16px (px-4 original) - 4px (border-width) */
+}
+.sidebar-submenu-item.pl-6 { /* Jika submenu item Anda memiliki class pl-6 */
+    padding-left: calc(1.5rem - 4px); /* 24px (pl-6 original) - 4px (border-width) */
+}
+.sidebar-submenu-item.pl-10 { /* Jika submenu item Anda memiliki class pl-10 */
+    padding-left: calc(2.5rem - 4px); /* 40px (pl-10 original) - 4px (border-width) */
+}
+
+
+/* Efek Hover untuk Parent Menu dan Submenu Item */
+.sidebar-parent-button:hover, 
+.sidebar-submenu-item:hover {
+    background-color: #4A5568; /* Contoh: Warna latar hover (abu-abu tua) - Sesuaikan */
+    color: #FFFFFF; /* Contoh: Warna teks hover (putih) - Sesuaikan */
+    /* border-left-color: #3182CE; */ /* Opsional: Warna border hover jika berbeda dari aktif */
+}
+.sidebar-parent-button:hover .main-menu-icon,
+.sidebar-parent-button:hover .text-sm, /* Teks parent menu */
+.sidebar-parent-button:hover .arrow-icon, /* Panah submenu */
+.sidebar-submenu-item:hover span, /* Teks submenu */
+.sidebar-submenu-item:hover .mr-2 i /* Ikon submenu */ {
+    color: #FFFFFF; /* Warna ikon dan teks menjadi putih saat hover */
+}
+
+
+/* Style untuk Parent Menu yang Aktif (dari class 'active-parent' pada div.sidebar-parent-item) */
+.sidebar-parent-item.active-parent > .sidebar-parent-button {
+    background-color: rgba(59, 130, 246, 0.1); /* Warna latar aktif (biru muda transparan) - Sesuaikan */
+    color: #2b6cb0; /* Warna teks aktif (biru tua) - Sesuaikan */
+    border-left-color: #2b6cb0; /* Warna garis biru vertikal saat aktif - Sesuaikan */
+    font-weight: 600; 
+}
+.sidebar-parent-item.active-parent > .sidebar-parent-button .main-menu-icon,
+.sidebar-parent-item.active-parent > .sidebar-parent-button .text-sm,
+.sidebar-parent-item.active-parent > .sidebar-parent-button .arrow-icon {
+    color: #fafafb; /* Warna ikon dan teks menjadi biru tua saat aktif */
+}
+
+
+/* Style untuk Submenu Item yang Aktif (dari class 'active' pada a.sidebar-submenu-item) */
+.sidebar-submenu-item.active {
+    background-color: rgba(59, 130, 246, 0.05); /* Warna latar submenu aktif (lebih transparan) - Sesuaikan */
+    color: #3182CE; /* Warna teks submenu aktif (biru) - Sesuaikan */
+    border-left-color: #b1ce31; /* Warna garis biru vertikal saat aktif - Sesuaikan */
+    /* font-weight: 500; */
+}
+.sidebar-submenu-item.active span,
+.sidebar-submenu-item.active .mr-2 i {
+    color: #b1ce31; /* Warna ikon dan teks submenu menjadi biru saat aktif */
+}
+
+/* Style untuk arrow submenu jika terbuka (parent-nya memiliki class 'expanded') */
+.sidebar-parent-item.expanded > .sidebar-parent-button .arrow-icon {
+    transform: rotate(90deg);
+}
+.sidebar-parent-button .arrow-icon {
+    transition: transform 0.2s ease;
+}
