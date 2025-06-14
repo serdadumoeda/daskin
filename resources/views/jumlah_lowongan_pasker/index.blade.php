@@ -76,7 +76,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'jenis_kelami
             <div class="flex items-center space-x-2 self-end col-span-full sm:col-span-auto mt-3">
                 @if(request()->filled('sort_by')) <input type="hidden" name="sort_by" value="{{ request('sort_by') }}"> @endif
                 @if(request()->filled('sort_direction')) <input type="hidden" name="sort_direction" value="{{ request('sort_direction') }}"> @endif
-                <button type="submit" class="w-full sm:w-auto px-4 py-1.5 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium">
+                <button type="submit" class="btn-primary">
                     <i class="ri-filter-3-line mr-1"></i> Filter
                 </button>
                 <a href="{{ route($routeNamePrefix . 'index') }}" class="w-full sm:w-auto px-4 py-1.5 bg-gray-200 text-gray-700 rounded-button hover:bg-gray-300 text-sm font-medium">
@@ -98,15 +98,15 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'jenis_kelami
                     <input type="file" name="excel_file" id="excel_file_lowongan" required
                            class="block w-full text-sm text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-button file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 form-input p-0.5 h-full border border-gray-300">
                 </div>
-                <button type="submit" class="px-3 py-2 bg-green-600 text-white rounded-button hover:bg-green-700 text-sm font-medium flex items-center justify-center whitespace-nowrap">
+                <button type="submit" class="btn-primary">
                     <i class="ri-upload-2-line mr-1"></i> Impor Data
                 </button>
             </form>
              <a href="MASUKKAN_LINK_FORMAT_EXCEL_LOWONGAN_DISINI" target="_blank"
-               class="px-3 py-2 bg-blue-500 text-white rounded-button hover:bg-blue-600 text-sm font-medium flex items-center justify-center whitespace-nowrap w-full sm:w-auto mt-2 sm:mt-0">
+               class="btn-primary">
                 <i class="ri-download-2-line mr-1"></i> Unduh Format
             </a>
-            <a href="{{ route($routeNamePrefix . 'create') }}" class="w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium whitespace-nowrap mt-2 sm:mt-0">
+            <a href="{{ route($routeNamePrefix . 'create') }}" class="btn-primary">
                 <i class="ri-add-line mr-1"></i> Tambah Data Lowongan
             </a>
         </div>
