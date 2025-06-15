@@ -178,3 +178,36 @@
 .table-actions button {
     @apply text-gray-500 hover:text-gray-900 transition-colors duration-200;
 }
+
+/* ==========================================================================
+   STYLE KHUSUS HALAMAN LOGIN
+   ========================================================================== */
+
+/* Menargetkan tombol utama di halaman login. 
+   Kita menimpa kelas default dari komponen primary-button. */
+   .btn-primary.w-full.justify-center {
+    @apply bg-theme-primary;
+}
+.btn-primary.w-full.justify-center:hover {
+    @apply bg-theme-primary-dark;
+}
+.btn-primary.w-full.justify-center:focus {
+    @apply bg-theme-primary-dark ring-theme-primary;
+}
+.btn-primary.w-full.justify-center:active {
+    @apply bg-theme-primary-darker;
+}
+
+
+/* Menargetkan input email dan password di halaman login. 
+   Ini akan menimpa style default dari komponen text-input. */
+form input[type="email"].w-full,
+form input[type="password"].w-full {
+    @apply focus:border-theme-primary focus:ring-theme-primary;
+}
+
+
+/* Menargetkan checkbox "Remember me" */
+input[type="checkbox"][name="remember"] {
+    @apply text-theme-primary focus:ring-theme-primary-dark;
+}

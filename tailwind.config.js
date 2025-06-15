@@ -29,6 +29,11 @@ export default {
                 'white': '#ffffff', 
                 'transparent': 'transparent', 
 
+                'theme-primary': '#3E8785',         // Hijau Cerah untuk Aksi Utama
+                'theme-primary-dark': '#2F6968',    // Hijau Tua untuk Hover
+                'theme-primary-darker': '#245352', // Hijau Paling Gelap untuk Active
+                'theme-accent': '#FFBF00',          // Aksen Emas
+
                 // ** PALET WARNA BARU UNTUK TOMBOL FILTER **
                 'filter-btn-clear-bg': '#FEF2F2',       // Merah sangat muda
                 'filter-btn-clear-text': '#DC2626',      // Merah
