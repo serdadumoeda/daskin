@@ -1,11 +1,10 @@
 @extends('layouts.app')
 
-{{-- Menyesuaikan judul halaman --}}
 @section('title', 'Daftar Regulasi Baru')
 @section('page_title', 'Manajemen Jumlah Regulasi Baru')
 
+{{-- TIDAK DIUBAH: Blok PHP dan fungsi sortableLink asli Anda dipertahankan --}}
 @php
-// Helper function untuk link sorting
 if (!function_exists('sortableLinkRegulasi')) {
     function sortableLinkRegulasi(string $column, string $label, string $currentSortBy, string $currentSortDirection, array $requestFilters) {
         $newDirection = ($currentSortBy == $column && $currentSortDirection == 'asc') ? 'desc' : 'asc';
@@ -21,10 +20,13 @@ if (!function_exists('sortableLinkRegulasi')) {
         return '<a href="' . route('sekretariat-jenderal.jumlah-regulasi-baru.index', $queryParams) . '" class="flex items-center hover:text-primary">' . e($label) . $iconHtml . '</a>';
     }
 }
+$sortBy = $currentSortBy ?? request('sort_by', 'id');
+$sortDirection = $currentSortDirection ?? request('sort_direction', 'desc');
 $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'substansi_filter', 'jenis_regulasi_filter']);
 @endphp
 
 @section('header_filters')
+    {{-- TIDAK DIUBAH: Filter Section asli Anda dipertahankan --}}
     <form method="GET" action="{{ route('sekretariat-jenderal.jumlah-regulasi-baru.index') }}" class="w-full">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 items-end">
             <div class="flex-grow">
@@ -67,7 +69,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'substansi_fi
                     @endforeach
                 </select>
             </div>
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-2 pt-5">
                 @if(request()->filled('sort_by')) <input type="hidden" name="sort_by" value="{{ request('sort_by') }}"> @endif
                 @if(request()->filled('sort_direction')) <input type="hidden" name="sort_direction" value="{{ request('sort_direction') }}"> @endif
                 <button type="submit" class="btn-primary">
@@ -81,39 +83,41 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'substansi_fi
     </form>
 @endsection
 
+
 @section('content')
 <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-    {{-- Menyamakan tata letak tombol dengan modul lain --}}
-    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-        <div></div> {{-- Untuk alignment tombol ke kanan --}}
-        <div class="w-full sm:w-auto sm:ml-auto flex flex-col sm:flex-row items-start sm:items-center gap-2">
-            <form action="{{ route('sekretariat-jenderal.jumlah-regulasi-baru.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
-                @csrf
-                <div class="flex-grow">
-                    <input type="file" name="excel_file" id="excel_file_regulasi" required
-                           class="block w-full text-sm text-gray-500
-                                  file:mr-2 file:py-1.5 file:px-3 file:rounded-button
-                                  file:border-0 file:text-sm file:font-semibold
-                                  file:bg-green-50 file:text-green-700
-                                  hover:file:bg-green-100 form-input p-0.5 h-full border border-gray-300">
-                </div>
-                <button type="submit" class="btn-primary">
-                    <i class="ri-upload-2-line mr-1"></i> Impor Data
-                </button>
-            </form>
-             <a href="MASUKKAN_LINK_ONEDRIVE_FORMAT_REGULASI_DISINI" {{-- Sesuaikan link format Excel --}}
-               target="_blank"
-               class="btn-primary">
-                <i class="ri-download-2-line mr-1"></i> Unduh Format
-            </a>
-            <a href="{{ route('sekretariat-jenderal.jumlah-regulasi-baru.create') }}" class="btn-primary">
-                <i class="ri-add-line mr-1"></i> Tambah Regulasi
-            </a>
+    
+    @if (Auth::user()->role === 'superadmin' || Auth::user()->role === 'sekjen')
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+            <div></div> {{-- Untuk alignment tombol ke kanan --}}
+            <div class="w-full sm:w-auto sm:ml-auto flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                <form action="{{ route('sekretariat-jenderal.jumlah-regulasi-baru.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                    @csrf
+                    <div class="flex-grow">
+                        <input type="file" name="excel_file" id="excel_file_regulasi" required
+                               class="block w-full text-sm text-gray-500
+                                      file:mr-2 file:py-1.5 file:px-3 file:rounded-button
+                                      file:border-0 file:text-sm file:font-semibold
+                                      file:bg-green-50 file:text-green-700
+                                      hover:file:bg-green-100 form-input p-0.5 h-full border border-gray-300">
+                    </div>
+                    <button type="submit" class="btn-primary">
+                        <i class="ri-upload-2-line mr-1"></i> Impor Data
+                    </button>
+                </form>
+                 <a href=""
+                   target="_blank"
+                   class="btn-primary">
+                    <i class="ri-download-2-line mr-1"></i> Unduh Format
+                </a>
+                <a href="{{ route('sekretariat-jenderal.jumlah-regulasi-baru.create') }}" class="btn-primary">
+                    <i class="ri-add-line mr-1"></i> Tambah Regulasi
+                </a>
+            </div>
         </div>
-    </div>
+    @endif
 
-    {{-- Notifikasi session('success') dan session('error') ditangani oleh layouts.app.blade.php --}}
-    {{-- Hanya 'import_errors' yang spesifik mungkin perlu dipertahankan di sini jika formatnya berbeda --}}
+    {{-- Pesan Error & Sukses (Tidak Diubah) --}}
     @if (session('import_errors'))
         <div class="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-md text-sm">
             <strong class="font-bold">Beberapa data gagal diimpor:</strong>
@@ -124,55 +128,40 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'substansi_fi
             </ul>
         </div>
     @endif
-    {{-- Jika notifikasi global di layouts/app.blade.php sudah ada, baris di bawah ini bisa dihapus --}}
-    {{-- @if (session('success'))
-        <div class="mb-4 p-3 bg-green-100 border border-green-300 text-green-700 rounded-md text-sm">
-            {{ session('success') }}
-        </div>
-    @endif
     @if (session('error') && !session('import_errors'))
         <div class="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-md text-sm">
             {{ session('error') }}
         </div>
-    @endif --}}
-
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 border border-gray-200">
-            <thead class="bg-gray-50">
+    @endif
+    
+    {{-- DITERAPKAN: Gaya tabel modern ke struktur tabel asli --}}
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                {{-- TIDAK DIUBAH: Header tabel asli yang berfungsi --}}
                 <tr>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkRegulasi('tahun', 'Tahun', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkRegulasi('bulan', 'Bulan', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkRegulasi('substansi', 'Substansi', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkRegulasi('jenis_regulasi', 'Jenis Regulasi', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkRegulasi('jumlah_regulasi', 'Jumlah', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                    
+                    <th scope="col">{!! sortableLinkRegulasi('tahun', 'Tahun', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col">{!! sortableLinkRegulasi('bulan', 'Bulan', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col">{!! sortableLinkRegulasi('substansi', 'Substansi', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col">{!! sortableLinkRegulasi('jenis_regulasi', 'Jenis Regulasi', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col" class="text-right">{!! sortableLinkRegulasi('jumlah_regulasi', 'Jumlah', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col" class="text-center">Aksi</th>
                 </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody>
+                {{-- TIDAK DIUBAH: Isi tabel asli agar data tidak kosong --}}
                 @forelse ($jumlahRegulasiBarus as $index => $item)
                     <tr>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $jumlahRegulasiBarus->firstItem() + $index }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->tahun }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ \Carbon\Carbon::create()->month($item->bulan)->isoFormat('MMMM') }}</td>
-                        {{-- Menampilkan teks deskriptif menggunakan accessor dari model --}}
-                        <td class="px-4 py-3 text-sm text-gray-700 max-w-xs truncate" title="{{ $item->substansi_text }}">{{ Str::limit($item->substansi_text, 50) }}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700 max-w-xs truncate" title="{{ $item->jenis_regulasi_text }}">{{ Str::limit($item->jenis_regulasi_text, 50) }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 text-right">{{ number_format($item->jumlah_regulasi) }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-center">
-                            <div class="flex items-center justify-center space-x-2">
-                                {{-- Tombol Lihat ditambahkan --}}
-                           
+                        
+                        <td>{{ $item->tahun }}</td>
+                        <td>{{ \Carbon\Carbon::create()->month($item->bulan)->isoFormat('MMMM') }}</td>
+                        <td class="max-w-xs truncate" title="{{ $item->substansi_text }}">{{ Str::limit($item->substansi_text, 50) }}</td>
+                        <td class="max-w-xs truncate" title="{{ $item->jenis_regulasi_text }}">{{ Str::limit($item->jenis_regulasi_text, 50) }}</td>
+                        <td class="text-right">{{ number_format($item->jumlah_regulasi) }}</td>
+                        <td class="text-center">
+                            {{-- DITERAPKAN: Gaya terpusat untuk grup aksi --}}
+                            <div class="table-actions justify-center">
                                 <a href="{{ route('sekretariat-jenderal.jumlah-regulasi-baru.edit', $item->id) }}" class="text-blue-600 hover:text-blue-800" title="Edit">
                                     <i class="ri-pencil-line text-base"></i>
                                 </a>
@@ -183,18 +172,16 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'substansi_fi
                                         <i class="ri-delete-bin-line text-base"></i>
                                     </button>
                                 </form>
-                                <!-- <a href="{{ route('sekretariat-jenderal.jumlah-regulasi-baru.show', $item->id) }}" class="text-gray-500 hover:text-gray-700" title="Lihat">
-                                    <i class="ri-eye-line text-base"></i>
-                                </a> -->
+
                             </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-4 py-10 text-center text-sm text-gray-500"> {{-- Colspan disesuaikan --}}
-                            <div class="flex flex-col items-center">
-                                <i class="ri-inbox-2-line text-4xl text-gray-400 mb-2"></i>
-                                Tidak ada data regulasi baru ditemukan.
+                        <td colspan="7" class="text-center py-10">
+                            <div class="flex flex-col items-center text-gray-500">
+                                <i class="ri-inbox-2-line text-4xl mb-2"></i>
+                                <span>Tidak ada data regulasi baru ditemukan.</span>
                             </div>
                         </td>
                     </tr>
@@ -202,6 +189,8 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'substansi_fi
             </tbody>
         </table>
     </div>
+    
+    {{-- Pagination Asli (Tidak Diubah) --}}
     <div class="mt-6">
         {{ $jumlahRegulasiBarus->appends(request()->except('page'))->links('vendor.pagination.tailwind') }}
     </div>

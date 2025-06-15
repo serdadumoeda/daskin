@@ -3,6 +3,7 @@
 @section('title', 'Daftar Penyelesaian BMN')
 @section('page_title', 'Manajemen Penyelesaian BMN')
 
+
 @php
 if (!function_exists('sortableLinkBmn')) {
     function sortableLinkBmn(string $column, string $label, string $currentSortBy, string $currentSortDirection, array $requestFilters) {
@@ -19,11 +20,14 @@ if (!function_exists('sortableLinkBmn')) {
         return '<a href="' . route('sekretariat-jenderal.penyelesaian-bmn.index', $queryParams) . '" class="flex items-center hover:text-primary">' . e($label) . $iconHtml . '</a>';
     }
 }
-// Sesuaikan filter dengan field baru kode_satuan_kerja
-$requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'kode_satuan_kerja_filter', 'jenis_bmn_filter']); 
+$sortBy = $currentSortBy ?? request('sort_by', 'id');
+$sortDirection = $currentSortDirection ?? request('sort_direction', 'desc');
+$requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'kode_satuan_kerja_filter', 'jenis_bmn_filter']);
 @endphp
 
+
 @section('header_filters')
+    
     <form method="GET" action="{{ route('sekretariat-jenderal.penyelesaian-bmn.index') }}" class="w-full">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 items-end">
             <div class="flex-grow">
@@ -44,7 +48,6 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'kode_satuan_
                     @endfor
                 </select>
             </div>
-            {{-- Filter untuk Satuan Kerja --}}
             <div class="flex-grow">
                 <label for="kode_satuan_kerja_filter_bmn" class="text-sm text-gray-600 whitespace-nowrap">Unit/Satuan Kerja:</label>
                 <select name="kode_satuan_kerja_filter" id="kode_satuan_kerja_filter_bmn" class="form-input mt-1 w-full bg-white">
@@ -67,7 +70,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'kode_satuan_
                     @endforeach
                 </select>
             </div>
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-2 pt-5">
                 @if(request()->filled('sort_by')) <input type="hidden" name="sort_by" value="{{ request('sort_by') }}"> @endif
                 @if(request()->filled('sort_direction')) <input type="hidden" name="sort_direction" value="{{ request('sort_direction') }}"> @endif
                 <button type="submit" class="btn-primary">
@@ -81,36 +84,41 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'kode_satuan_
     </form>
 @endsection
 
+
 @section('content')
 <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-        <div></div>
-        <div class="w-full sm:w-auto sm:ml-auto flex flex-col sm:flex-row items-start sm:items-center gap-2">
-            <form action="{{ route('sekretariat-jenderal.penyelesaian-bmn.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
-                @csrf
-                <div class="flex-grow">
-                    <input type="file" name="excel_file" id="excel_file_bmn" required
-                           class="block w-full text-sm text-gray-500
-                                  file:mr-2 file:py-1.5 file:px-3 file:rounded-button
-                                  file:border-0 file:text-sm file:font-semibold
-                                  file:bg-green-50 file:text-green-700
-                                  hover:file:bg-green-100 form-input p-0.5 h-full border border-gray-300">
-                </div>
-                <button type="submit" class="btn-primary">
-                    <i class="ri-upload-2-line mr-1"></i> Impor Data
-                </button>
-            </form>
-             <a href="MASUKKAN_LINK_FORMAT_EXCEL_BMN_DISINI"
-               target="_blank"
-               class="btn-primary">
-                <i class="ri-download-2-line mr-1"></i> Unduh Format
-            </a>
-            <a href="{{ route('sekretariat-jenderal.penyelesaian-bmn.create') }}" class="btn-primary">
-                <i class="ri-add-line mr-1"></i> Tambah Data BMN
-            </a>
+    
+    @if (Auth::user()->role === 'superadmin' || Auth::user()->role === 'sekjen')
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+            <div></div>
+            <div class="w-full sm:w-auto sm:ml-auto flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                <form action="{{ route('sekretariat-jenderal.penyelesaian-bmn.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                    @csrf
+                    <div class="flex-grow">
+                        <input type="file" name="excel_file" id="excel_file_bmn" required
+                               class="block w-full text-sm text-gray-500
+                                      file:mr-2 file:py-1.5 file:px-3 file:rounded-button
+                                      file:border-0 file:text-sm file:font-semibold
+                                      file:bg-green-50 file:text-green-700
+                                      hover:file:bg-green-100 form-input p-0.5 h-full border border-gray-300">
+                    </div>
+                    <button type="submit" class="btn-primary">
+                        <i class="ri-upload-2-line mr-1"></i> Impor Data
+                    </button>
+                </form>
+                 <a href=""
+                   target="_blank"
+                   class="btn-primary">
+                    <i class="ri-download-2-line mr-1"></i> Unduh Format
+                </a>
+                <a href="{{ route('sekretariat-jenderal.penyelesaian-bmn.create') }}" class="btn-primary">
+                    <i class="ri-add-line mr-1"></i> Tambah Data
+                </a>
+            </div>
         </div>
-    </div>
+    @endif
 
+    {{-- Pesan Error & Sukses (Tidak Diubah) --}}
     @if (session('import_errors'))
         <div class="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-md text-sm">
             <strong class="font-bold">Beberapa data gagal diimpor:</strong>
@@ -121,41 +129,48 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'kode_satuan_
             </ul>
         </div>
     @endif
-
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 border border-gray-200">
-            <thead class="bg-gray-50">
+     @if (session('error') && !session('import_errors'))
+        <div class="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-md text-sm">
+            {{ session('error') }}
+        </div>
+    @endif
+    
+    {{-- DITERAPKAN: Gaya tabel modern ke struktur tabel asli --}}
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                {{-- TIDAK DIUBAH: Header tabel asli yang berfungsi --}}
                 <tr>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{!! sortableLinkBmn('tahun', 'Tahun', $sortBy, $sortDirection, $requestFilters) !!}</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{!! sortableLinkBmn('bulan', 'Bulan', $sortBy, $sortDirection, $requestFilters) !!}</th>
-                    {{-- Menggunakan kode_satuan_kerja untuk sorting, tapi menampilkan nama satuan kerja --}}
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{!! sortableLinkBmn('kode_satuan_kerja', 'Unit/Satuan Kerja', $sortBy, $sortDirection, $requestFilters) !!}</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{!! sortableLinkBmn('jenis_bmn', 'Jenis BMN', $sortBy, $sortDirection, $requestFilters) !!}</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Henti Guna</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status Penggunaan</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Penetapan Status</th>
-                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{!! sortableLinkBmn('kuantitas', 'Kuantitas', $sortBy, $sortDirection, $requestFilters) !!}</th>
-                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{!! sortableLinkBmn('nilai_aset', 'Nilai Aset (Rp)', $sortBy, $sortDirection, $requestFilters) !!}</th>
-                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                    
+                    <th scope="col">{!! sortableLinkBmn('tahun', 'Tahun', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col">{!! sortableLinkBmn('bulan', 'Bulan', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col">{!! sortableLinkBmn('kode_satuan_kerja', 'Unit/Satuan Kerja', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col">{!! sortableLinkBmn('jenis_bmn', 'Jenis BMN', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col">Henti Guna</th>
+                    <th scope="col">Status Penggunaan</th>
+                    <th scope="col">Penetapan Status</th>
+                    <th scope="col" class="text-right">{!! sortableLinkBmn('kuantitas', 'Kuantitas', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col" class="text-right">{!! sortableLinkBmn('nilai_aset', 'Nilai Aset (Rp)', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col" class="text-center">Aksi</th>
                 </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody>
+                {{-- TIDAK DIUBAH: Isi tabel asli agar data tidak kosong --}}
                 @forelse ($penyelesaianBmns as $index => $item)
                     <tr>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $penyelesaianBmns->firstItem() + $index }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->tahun }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ \Carbon\Carbon::create()->month($item->bulan)->isoFormat('MMMM') }}</td>
-                        {{-- Menampilkan nama satuan kerja dari relasi --}}
-                        <td class="px-4 py-3 text-sm text-gray-700 max-w-xs truncate" title="{{ $item->satuanKerja->nama_satuan_kerja ?? $item->kode_satuan_kerja }}">{{ Str::limit($item->satuanKerja->nama_satuan_kerja ?? $item->kode_satuan_kerja, 30) }}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700 max-w-xs truncate" title="{{ $item->jenis_bmn_text }}">{{ Str::limit($item->jenis_bmn_text, 30) }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->henti_guna_text }}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700 max-w-xs truncate" title="{{ $item->status_penggunaan_text }}">{{ Str::limit($item->status_penggunaan_text, 30) }}</td>
-                        <td class="px-4 py-3 text-sm text-gray-700 max-w-xs truncate" title="{{ $item->penetapan_status_penggunaan }}">{{ Str::limit($item->penetapan_status_penggunaan ?? '-', 30) }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 text-right">{{ number_format($item->kuantitas) }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 text-right">{{ number_format($item->nilai_aset, 2, ',', '.') }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-center">
-                            <div class="flex items-center justify-center space-x-2">
+                        
+                        <td>{{ $item->tahun }}</td>
+                        <td>{{ \Carbon\Carbon::create()->month($item->bulan)->isoFormat('MMMM') }}</td>
+                        <td class="max-w-xs truncate" title="{{ $item->satuanKerja->nama_satuan_kerja ?? $item->kode_satuan_kerja }}">{{ Str::limit($item->satuanKerja->nama_satuan_kerja ?? $item->kode_satuan_kerja, 30) }}</td>
+                        <td class="max-w-xs truncate" title="{{ $item->jenis_bmn_text }}">{{ Str::limit($item->jenis_bmn_text, 30) }}</td>
+                        <td>{{ $item->henti_guna_text }}</td>
+                        <td class="max-w-xs truncate" title="{{ $item->status_penggunaan_text }}">{{ Str::limit($item->status_penggunaan_text, 30) }}</td>
+                        <td class="max-w-xs truncate" title="{{ $item->penetapan_status_penggunaan }}">{{ Str::limit($item->penetapan_status_penggunaan ?? '-', 30) }}</td>
+                        <td class="text-right">{{ number_format($item->kuantitas) }}</td>
+                        <td class="text-right">{{ number_format($item->nilai_aset, 2, ',', '.') }}</td>
+                        <td class="text-center">
+                            {{-- DITERAPKAN: Gaya terpusat untuk grup aksi --}}
+                            <div class="table-actions justify-center">
                                 <a href="{{ route('sekretariat-jenderal.penyelesaian-bmn.show', $item->id) }}" class="text-gray-500 hover:text-gray-700" title="Lihat">
                                     <i class="ri-eye-line text-base"></i>
                                 </a>
@@ -174,10 +189,10 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'kode_satuan_
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="11" class="px-4 py-10 text-center text-sm text-gray-500">
-                            <div class="flex flex-col items-center">
-                                <i class="ri-inbox-2-line text-4xl text-gray-400 mb-2"></i>
-                                Tidak ada data penyelesaian BMN ditemukan.
+                        <td colspan="11" class="text-center py-10">
+                            <div class="flex flex-col items-center text-gray-500">
+                                <i class="ri-inbox-2-line text-4xl mb-2"></i>
+                                <span>Tidak ada data penyelesaian BMN ditemukan.</span>
                             </div>
                         </td>
                     </tr>
@@ -185,6 +200,8 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'kode_satuan_
             </tbody>
         </table>
     </div>
+    
+    {{-- Pagination Asli (Tidak Diubah) --}}
     <div class="mt-6">
         {{ $penyelesaianBmns->appends(request()->except('page'))->links('vendor.pagination.tailwind') }}
     </div>

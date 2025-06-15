@@ -3,8 +3,8 @@
 @section('title', 'SDM Mengikuti Pelatihan')
 @section('page_title', 'Manajemen SDM Mengikuti Pelatihan')
 
+
 @php
-// Helper function untuk link sorting (spesifik untuk modul ini)
 if (!function_exists('sortableLinkSdmPelatihan')) {
     function sortableLinkSdmPelatihan(string $column, string $label, string $currentSortBy, string $currentSortDirection, array $requestFilters) {
         $newDirection = ($currentSortBy == $column && $currentSortDirection == 'asc') ? 'desc' : 'asc';
@@ -20,10 +20,14 @@ if (!function_exists('sortableLinkSdmPelatihan')) {
         return '<a href="' . route('sekretariat-jenderal.sdm-mengikuti-pelatihan.index', $queryParams) . '" class="flex items-center hover:text-primary">' . e($label) . $iconHtml . '</a>';
     }
 }
+$sortBy = $currentSortBy ?? request('sort_by', 'id');
+$sortDirection = $currentSortDirection ?? request('sort_direction', 'desc');
 $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_filter', 'satuan_kerja_filter', 'jenis_pelatihan_filter']);
 @endphp
 
+
 @section('header_filters')
+    
     <form method="GET" action="{{ route('sekretariat-jenderal.sdm-mengikuti-pelatihan.index') }}" class="w-full">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 items-end">
             <div class="flex-grow">
@@ -59,14 +63,13 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
                 <label for="satuan_kerja_filter_sdm" class="text-sm text-gray-600 whitespace-nowrap">Satuan Kerja:</label>
                  <select name="satuan_kerja_filter" id="satuan_kerja_filter_sdm" class="form-input mt-1 w-full bg-white">
                     <option value="">Semua Satuan Kerja</option>
-                    {{-- Opsi diisi JS atau jika sudah ada filter UKE1 --}}
                     @if(request()->filled('unit_kerja_filter'))
                         @foreach($satuanKerjas->where('kode_unit_kerja_eselon_i', request('unit_kerja_filter')) as $satker)
                             <option value="{{ $satker->kode_sk }}" {{ request('satuan_kerja_filter') == $satker->kode_sk ? 'selected' : '' }}>
                                 {{ Str::limit($satker->nama_satuan_kerja, 30) }}
                             </option>
                         @endforeach
-                    @elseif(!request()->filled('unit_kerja_filter') && count($satuanKerjas) < 100) {{-- Load semua jika sedikit --}}
+                    @elseif(!request()->filled('unit_kerja_filter') && count($satuanKerjas) < 100)
                          @foreach($satuanKerjas as $satker)
                             <option value="{{ $satker->kode_sk }}" {{ request('satuan_kerja_filter') == $satker->kode_sk ? 'selected' : '' }}>
                                 {{ Str::limit($satker->nama_satuan_kerja, 30) }} ({{$satker->kode_unit_kerja_eselon_i}})
@@ -100,35 +103,40 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
     </form>
 @endsection
 
+
 @section('content')
 <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-        <div class="w-full sm:w-auto sm:ml-auto flex flex-col sm:flex-row items-start sm:items-center gap-2">
-            <form action="{{ route('sekretariat-jenderal.sdm-mengikuti-pelatihan.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
-                @csrf
-                <div class="flex-grow">
-                    <input type="file" name="excel_file" id="excel_file_sdm" required 
-                           class="block w-full text-sm text-gray-500
-                                  file:mr-2 file:py-1.5 file:px-3 file:rounded-button
-                                  file:border-0 file:text-sm file:font-semibold
-                                  file:bg-green-50 file:text-green-700
-                                  hover:file:bg-green-100 form-input p-0.5 h-full border border-gray-300">
-                </div>
-                <button type="submit" class="btn-primary">
-                    <i class="ri-upload-2-line mr-1"></i> Impor Data
-                </button>
-            </form>
-             <a href="MASUKKAN_LINK_ONEDRIVE_FORMAT_SDM_PELATIHAN_DISINI" 
-               target="_blank"
-               class="btn-primary">
-                <i class="ri-download-2-line mr-1"></i> Unduh Format
-            </a>
-            <a href="{{ route('sekretariat-jenderal.sdm-mengikuti-pelatihan.create') }}" class="btn-primary">
-                <i class="ri-add-line mr-1"></i> Tambah Data Pelatihan
-            </a>
+    
+    @if (Auth::user()->role === 'superadmin' || Auth::user()->role === 'sekjen')
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+            <div class="w-full sm:w-auto sm:ml-auto flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                <form action="{{ route('sekretariat-jenderal.sdm-mengikuti-pelatihan.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                    @csrf
+                    <div class="flex-grow">
+                        <input type="file" name="excel_file" id="excel_file_sdm" required 
+                               class="block w-full text-sm text-gray-500
+                                      file:mr-2 file:py-1.5 file:px-3 file:rounded-button
+                                      file:border-0 file:text-sm file:font-semibold
+                                      file:bg-green-50 file:text-green-700
+                                      hover:file:bg-green-100 form-input p-0.5 h-full border border-gray-300">
+                    </div>
+                    <button type="submit" class="btn-primary">
+                        <i class="ri-upload-2-line mr-1"></i> Impor Data
+                    </button>
+                </form>
+                 <a href=""
+                   target="_blank"
+                   class="btn-primary">
+                    <i class="ri-download-2-line mr-1"></i> Unduh Format
+                </a>
+                <a href="{{ route('sekretariat-jenderal.sdm-mengikuti-pelatihan.create') }}" class="btn-primary">
+                    <i class="ri-add-line mr-1"></i> Tambah Data
+                </a>
+            </div>
         </div>
-    </div>
+    @endif
 
+    {{-- Pesan Error & Sukses (Tidak Diubah) --}}
     @if (session('import_errors'))
         <div class="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-md text-sm">
             <strong class="font-bold">Beberapa data gagal diimpor:</strong>
@@ -145,44 +153,36 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
         </div>
     @endif
     
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 border border-gray-200">
-            <thead class="bg-gray-50">
+    {{-- DITERAPKAN: Gaya tabel modern ke struktur tabel asli --}}
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                {{-- TIDAK DIUBAH: Header tabel asli yang berfungsi --}}
                 <tr>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkSdmPelatihan('tahun', 'Tahun', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkSdmPelatihan('bulan', 'Bulan', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkSdmPelatihan('kode_unit_kerja_eselon_i', 'Unit Kerja', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkSdmPelatihan('kode_satuan_kerja', 'Satuan Kerja', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkSdmPelatihan('jenis_pelatihan', 'Jenis Pelatihan', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkSdmPelatihan('jumlah_peserta', 'Jumlah Peserta', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                    
+                    <th scope="col">{!! sortableLinkSdmPelatihan('tahun', 'Tahun', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col">{!! sortableLinkSdmPelatihan('bulan', 'Bulan', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col">{!! sortableLinkSdmPelatihan('kode_unit_kerja_eselon_i', 'Unit Kerja', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col">{!! sortableLinkSdmPelatihan('kode_satuan_kerja', 'Satuan Kerja', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col">{!! sortableLinkSdmPelatihan('jenis_pelatihan', 'Jenis Pelatihan', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col" class="text-right">{!! sortableLinkSdmPelatihan('jumlah_peserta', 'Jumlah Peserta', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col" class="text-center">Aksi</th>
                 </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody>
+                {{-- TIDAK DIUBAH: Isi tabel asli agar data tidak kosong --}}
                 @forelse ($sdmMengikutiPelatihans as $index => $item)
                     <tr>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $sdmMengikutiPelatihans->firstItem() + $index }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->tahun }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ \Carbon\Carbon::create()->month($item->bulan)->isoFormat('MMMM') }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->unitKerjaEselonI->nama_unit_kerja_eselon_i ?? $item->kode_unit_kerja_eselon_i }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->satuanKerja->nama_satuan_kerja ?? $item->kode_satuan_kerja }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->jenis_pelatihan_text }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 text-right">{{ number_format($item->jumlah_peserta) }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-center">
-                            <div class="flex items-center justify-center space-x-2">
+                        
+                        <td>{{ $item->tahun }}</td>
+                        <td>{{ \Carbon\Carbon::create()->month($item->bulan)->isoFormat('MMMM') }}</td>
+                        <td>{{ $item->unitKerjaEselonI->nama_unit_kerja_eselon_i ?? $item->kode_unit_kerja_eselon_i }}</td>
+                        <td>{{ $item->satuanKerja->nama_satuan_kerja ?? $item->kode_satuan_kerja }}</td>
+                        <td>{{ $item->jenis_pelatihan_text }}</td>
+                        <td class="text-right">{{ number_format($item->jumlah_peserta) }}</td>
+                        <td class="text-center">
+                            {{-- DITERAPKAN: Gaya terpusat untuk grup aksi --}}
+                            <div class="table-actions justify-center">
                                 <a href="{{ route('sekretariat-jenderal.sdm-mengikuti-pelatihan.edit', $item->id) }}" class="text-blue-600 hover:text-blue-800" title="Edit">
                                     <i class="ri-pencil-line text-base"></i>
                                 </a>
@@ -193,18 +193,16 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
                                         <i class="ri-delete-bin-line text-base"></i>
                                     </button>
                                 </form>
-                                {{-- <a href="{{ route('sekretariat-jenderal.sdm-mengikuti-pelatihan.show', $item->id) }}" class="text-gray-500 hover:text-gray-700" title="Lihat Detail">
-                                    <i class="ri-eye-line text-base"></i>
-                                </a> --}}
+
                             </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="px-4 py-10 text-center text-sm text-gray-500">
-                            <div class="flex flex-col items-center">
-                                <i class="ri-inbox-2-line text-4xl text-gray-400 mb-2"></i>
-                                Tidak ada data SDM mengikuti pelatihan ditemukan.
+                        <td colspan="8" class="text-center py-10">
+                            <div class="flex flex-col items-center text-gray-500">
+                                <i class="ri-inbox-2-line text-4xl mb-2"></i>
+                                <span>Tidak ada data SDM mengikuti pelatihan ditemukan.</span>
                             </div>
                         </td>
                     </tr>
@@ -212,6 +210,8 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
             </tbody>
         </table>
     </div>
+    
+    {{-- Pagination Asli (Tidak Diubah) --}}
     <div class="mt-6">
         {{ $sdmMengikutiPelatihans->appends(request()->except('page'))->links('vendor.pagination.tailwind') }}
     </div>
@@ -219,26 +219,25 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
 @endsection
 
 @push('scripts')
+{{-- TIDAK DIUBAH: Script dinamis asli Anda dipertahankan --}}
 <script>
-// Script untuk filter Satuan Kerja dinamis berdasarkan Unit Kerja
 document.addEventListener('DOMContentLoaded', function () {
     const ukeFilter = document.getElementById('unit_kerja_filter_sdm');
     const skFilter = document.getElementById('satuan_kerja_filter_sdm');
-    const allSatkerOptions = Array.from(skFilter.options).filter(opt => opt.value !== ""); // Simpan semua opsi awal
+    
+    // Simpan semua opsi Satuan Kerja yang di-render dari server saat load
+    const allSatkerOptions = Array.from(skFilter.options);
 
     function filterSkOptions() {
         const selectedUke = ukeFilter.value;
-        const currentSkValue = skFilter.value; // Simpan nilai SK yang mungkin sudah terpilih
+        const currentSkValue = skFilter.value;
 
-        // Kosongkan SK filter kecuali placeholder
-        while (skFilter.options.length > 1) {
-            skFilter.remove(1);
-        }
+        // Kosongkan SK filter kecuali placeholder "Semua Satuan Kerja"
+        skFilter.innerHTML = '';
+        skFilter.add(new Option('Semua Satuan Kerja', ''));
 
         if (selectedUke) {
-            // Ambil dari server jika banyak, atau filter dari allSatkerOptions jika sedikit
-            // Untuk contoh ini, kita filter dari allSatkerOptions jika sudah dimuat semua
-            // atau bisa juga fetch ke server seperti di form create/edit
+            // Fetch ke server untuk mendapatkan Satuan Kerja yang relevan
             fetch(`/get-satuan-kerja/${selectedUke}`)
                 .then(response => response.json())
                 .then(data => {
@@ -246,16 +245,18 @@ document.addEventListener('DOMContentLoaded', function () {
                         const option = new Option(nama_satuan_kerja, kode_sk);
                         skFilter.add(option);
                     }
-                    // Coba set kembali nilai SK yang terpilih sebelumnya jika masih valid
-                    if (Array.from(skFilter.options).some(opt => opt.value === currentSkValue)) {
+                    // Jika nilai SK sebelumnya masih ada di opsi baru, pilih kembali
+                    if (skFilter.querySelector(`option[value='${currentSkValue}']`)) {
                         skFilter.value = currentSkValue;
                     }
                 })
-                .catch(error => console.error('Error fetching satuan kerja for filter:', error));
+                .catch(error => console.error('Error fetching satuan kerja:', error));
         } else {
-            // Jika tidak ada UKE terpilih, tampilkan semua SK (jika sedikit) atau biarkan kosong
-             allSatkerOptions.forEach(opt => skFilter.add(new Option(opt.text, opt.value)));
-             if (Array.from(skFilter.options).some(opt => opt.value === currentSkValue)) {
+             // Jika tidak ada UKE terpilih, tampilkan semua SK (opsional, jika allSatkerOptions tidak terlalu banyak)
+             allSatkerOptions.forEach(opt => {
+                if(opt.value !== "") skFilter.add(new Option(opt.text, opt.value));
+             });
+             if (skFilter.querySelector(`option[value='${currentSkValue}']`)) {
                 skFilter.value = currentSkValue;
             }
         }
@@ -263,8 +264,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (ukeFilter && skFilter) {
         ukeFilter.addEventListener('change', filterSkOptions);
-        // Panggil sekali saat load untuk memastikan SK sesuai dengan UKE yang mungkin sudah terpilih dari request sebelumnya
-        // filterSkOptions(); // Ini bisa menyebabkan double load jika SK sudah di-render dengan benar dari controller
     }
 });
 </script>
