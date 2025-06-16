@@ -105,6 +105,7 @@ Route::prefix('inspektorat-jenderal')->name('inspektorat.')->middleware(['auth']
             Route::get('/{progressTemuanBpk}/edit', [ProgressTemuanBpkController::class, 'edit'])->name('edit');
             Route::put('/{progressTemuanBpk}', [ProgressTemuanBpkController::class, 'update'])->name('update');
             Route::delete('/{progressTemuanBpk}', [ProgressTemuanBpkController::class, 'destroy'])->name('destroy');
+            Route::get("/downloadTemplate", [ProgressTemuanBpkController::class, 'downloadTemplate'])->name('downloadTemplate');
         });
         Route::get('/{progressTemuanBpk}', [ProgressTemuanBpkController::class, 'show'])->name('show')->middleware('role:' . $crudRolesItjen . ',' . $readOnlyRoles); // Rute show setelah CRUD
     });
@@ -119,6 +120,8 @@ Route::prefix('inspektorat-jenderal')->name('inspektorat.')->middleware(['auth']
             Route::get('/{progressTemuanInternal}/edit', [ProgressTemuanInternalController::class, 'edit'])->name('edit');
             Route::put('/{progressTemuanInternal}', [ProgressTemuanInternalController::class, 'update'])->name('update');
             Route::delete('/{progressTemuanInternal}', [ProgressTemuanInternalController::class, 'destroy'])->name('destroy');
+            Route::get("/downloadTemplate", [ProgressTemuanInternalController::class, 'downloadTemplate'])->name('downloadTemplate');
+
         });
         Route::get('/{progressTemuanInternal}', [ProgressTemuanInternalController::class, 'show'])->name('show')->middleware('role:' . $crudRolesItjen . ',' . $readOnlyRoles); // Rute show setelah CRUD
     });
@@ -359,7 +362,7 @@ Route::prefix('binwasnaker')->name('binwasnaker.')->middleware(['auth'])->group(
         Route::get('pelaporan-wlkp-online/{pelaporan_wlkp_online}/edit', [PelaporanWlkpOnlineController::class, 'edit'])->name('pelaporan-wlkp-online.edit');
         Route::put('pelaporan-wlkp-online/{pelaporan_wlkp_online}', [PelaporanWlkpOnlineController::class, 'update'])->name('pelaporan-wlkp-online.update');
         Route::delete('pelaporan-wlkp-online/{pelaporan_wlkp_online}', [PelaporanWlkpOnlineController::class, 'destroy'])->name('pelaporan-wlkp-online.destroy');
-        Route::get('/download_template', [PelaporanWlkpOnlineController::class, 'downloadTemplate'])->name('pelaporan-wlkp-online.download-template');
+        Route::get('/download-template', [PelaporanWlkpOnlineController::class, 'downloadTemplate'])->name('pelaporan-wlkp-online.download-template');
     });
 
     // PengaduanPelanggaranNormaController

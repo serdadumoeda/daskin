@@ -8,11 +8,12 @@ use App\Models\SatuanKerja;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Maatwebsite\Excel\Concerns\Importable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
-class ProgressTemuanInternalImport implements ToModel, WithHeadingRow, WithValidation
+class ProgressTemuanInternalImport implements ToModel, WithHeadingRow, WithValidation, WithMultipleSheets
 {
     use Importable;
 
@@ -31,6 +32,15 @@ class ProgressTemuanInternalImport implements ToModel, WithHeadingRow, WithValid
     *
     * @return \Illuminate\Database\Eloquent\Model|null
     */
+
+    //Make import by first sheet
+    public function sheets(): array
+    {
+        return [
+            0 => new ProgressTemuanInternalImport(), // 0 = first sheet
+        ];
+    }
+
     public function model(array $row)
     {
         // Validasi keberadaan kode_unit_kerja_eselon_i
