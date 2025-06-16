@@ -13,10 +13,8 @@
    STAT CARD & SIDEBAR STYLES - VERSI FINAL
    ========================================================================== */
 
-/* Pastikan Anda MENGGANTI semua style lama dengan yang baru ini */
-
-.stat-card-link-wrapper {
-    @apply block bg-white p-5 rounded-lg shadow transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+   .stat-card-link-wrapper {
+    @apply block bg-white p-0 rounded-lg transition-all duration-300 hover:-translate-y-1 mb-10;
 }
 
 .stat-card-link-wrapper-include {
@@ -24,7 +22,7 @@
 }
 
 .stat-card {
-    @apply flex items-center;
+    @apply flex items-center justify-between;
 }
 
 .stat-card-title {
@@ -183,7 +181,7 @@
    STYLE KHUSUS HALAMAN LOGIN
    ========================================================================== */
 
-/* Menargetkan tombol utama di halaman login. 
+/* Menargetkan tombol utama di halaman login.
    Kita menimpa kelas default dari komponen primary-button. */
    .btn-primary.w-full.justify-center {
     @apply bg-theme-primary;
@@ -199,7 +197,7 @@
 }
 
 
-/* Menargetkan input email dan password di halaman login. 
+/* Menargetkan input email dan password di halaman login.
    Ini akan menimpa style default dari komponen text-input. */
 form input[type="email"].w-full,
 form input[type="password"].w-full {

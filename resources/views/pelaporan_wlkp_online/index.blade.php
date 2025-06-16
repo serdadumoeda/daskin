@@ -26,7 +26,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_fil
 @endphp
 
 @section('header_filters')
-    
+
     <form method="GET" action="{{ route('binwasnaker.pelaporan-wlkp-online.index') }}" class="w-full">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 items-end">
             <div class="flex-grow">
@@ -68,33 +68,30 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_fil
 
 @section('content')
 <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-    
-    @if (Auth::user()->role === 'superadmin' || Auth::user()->role === 'binwasnaker')
-        <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-            <div class="w-full sm:w-auto sm:ml-auto flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                <form action="{{ route('binwasnaker.pelaporan-wlkp-online.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
-                    @csrf
-                    <div class="flex-grow">
-                        <input type="file" name="excel_file" id="excel_file_wlkp" required
-                               class="block w-full text-sm text-gray-500
-                                      file:mr-2 file:py-1.5 file:px-3 file:rounded-button
-                                      file:border-0 file:text-sm file:font-semibold
-                                      file:bg-green-50 file:text-green-700
-                                      hover:file:bg-green-100 form-input p-0.5 h-full border border-gray-300">
-                    </div>
-                    <button type="submit" class="btn-primary">
-                        <i class="ri-upload-2-line mr-1"></i> Impor Data
-                    </button>
-                </form>
-                 <a href="https://kemnaker-my.sharepoint.com/:x:/r/personal/arif365_kemnaker_go_id/_layouts/15/Doc.aspx?sourcedoc=%7B52720605-4A3C-42C7-A5C1-7F44867CDA94%7D&file=template_input_wlkp.xlsx&action=default&mobileredirect=true"
-                   target="_blank"
-                   class="btn-primary">
-                    <i class="ri-download-2-line mr-1"></i> Unduh Format
-                </a>
-                <a href="{{ route('binwasnaker.pelaporan-wlkp-online.create') }}" class="btn-primary">
-                    <i class="ri-add-line mr-1"></i> Tambah Data
-                </a>
-            </div>
+    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+        <div class="w-full sm:w-auto sm:ml-auto flex flex-col sm:flex-row items-start sm:items-center gap-2">
+            <form action="{{ route('binwasnaker.pelaporan-wlkp-online.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                @csrf
+                <div class="flex-grow">
+                    <input type="file" name="excel_file" id="excel_file_wlkp" required
+                           class="block w-full text-sm text-gray-500
+                                  file:mr-2 file:py-1.5 file:px-3 file:rounded-button
+                                  file:border-0 file:text-sm file:font-semibold
+                                  file:bg-green-50 file:text-green-700
+                                  hover:file:bg-green-100 form-input p-0.5 h-full border border-gray-300">
+                </div>
+                <button type="submit" class="px-3 py-2 bg-green-600 text-white rounded-button hover:bg-green-700 text-sm font-medium flex items-center justify-center whitespace-nowrap">
+                    <i class="ri-upload-2-line mr-1"></i> Impor Data
+                </button>
+            </form>
+             <a href="{{ route("binwasnaker.pelaporan-wlkp-online.download-template") }}"
+               target="_blank"
+               class="px-3 py-2 bg-blue-500 text-white rounded-button hover:bg-blue-600 text-sm font-medium flex items-center justify-center whitespace-nowrap w-full sm:w-auto mt-2 sm:mt-0">
+                <i class="ri-download-2-line mr-1"></i> Unduh Format
+            </a>
+            <a href="{{ route('binwasnaker.pelaporan-wlkp-online.create') }}" class="w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium whitespace-nowrap mt-2 sm:mt-0">
+                <i class="ri-add-line mr-1"></i> Tambah Laporan WLKP
+            </a>
         </div>
     @endif
 
@@ -114,14 +111,14 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_fil
             {{ session('error') }}
         </div>
     @endif
-    
+
     {{-- DITERAPKAN: Gaya tabel modern ke struktur tabel asli --}}
     <div class="table-wrapper">
         <table class="data-table">
             <thead>
                 {{-- TIDAK DIUBAH: Header tabel asli yang berfungsi --}}
                 <tr>
-                    
+
                     <th scope="col">{!! sortableLinkWlkp('tahun', 'Tahun', $sortBy, $sortDirection, $requestFilters) !!}</th>
                     <th scope="col">{!! sortableLinkWlkp('bulan', 'Bulan', $sortBy, $sortDirection, $requestFilters) !!}</th>
                     <th scope="col">{!! sortableLinkWlkp('provinsi', 'Provinsi', $sortBy, $sortDirection, $requestFilters) !!}</th>
@@ -133,7 +130,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_fil
                 {{-- TIDAK DIUBAH: Isi tabel asli agar data tidak kosong --}}
                 @forelse ($pelaporanWlkpOnlines as $index => $item)
                     <tr>
-                       
+
                         <td>{{ $item->tahun }}</td>
                         <td>{{ \Carbon\Carbon::create()->month($item->bulan)->isoFormat('MMMM') }}</td>
                         <td>{{ $item->provinsi }}</td>
@@ -168,7 +165,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_fil
             </tbody>
         </table>
     </div>
-    
+
     {{-- Pagination Asli (Tidak Diubah) --}}
     <div class="mt-6">
         {{ $pelaporanWlkpOnlines->appends(request()->except('page'))->links('vendor.pagination.tailwind') }}

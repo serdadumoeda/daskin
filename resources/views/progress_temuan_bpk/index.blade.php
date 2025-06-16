@@ -97,7 +97,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
                         <i class="ri-upload-2-line mr-1"></i> Import Data
                     </button>
                 </form>
-                 <a href="template" {{-- Tautan Unduh diperbaiki --}}
+                 <a href="{{route('inspektorat.progress-temuan-bpk.downloadTemplate')}}"
                    target="_blank"
                    class="btn-primary">
                     <i class="ri-download-2-line mr-1"></i> Unduh Format
@@ -132,7 +132,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
             <thead>
                 {{-- DIKEMBALIKAN: Header tabel asli yang berfungsi --}}
                 <tr>
-                    
+
                     <th scope="col">{!! sortableLinkBpk('tahun', 'Tahun', $sortBy, $sortDirection, $requestFilters) !!}</th>
                     <th scope="col">{!! sortableLinkBpk('bulan', 'Bulan', $sortBy, $sortDirection, $requestFilters) !!}</th>
                     <th scope="col">Unit Kerja</th>
@@ -150,7 +150,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
                 {{-- DIKEMBALIKAN: Isi tabel asli agar data tidak kosong --}}
                 @forelse ($progressTemuanBpks as $index => $item)
                     <tr>
-                        
+
                         <td>{{ $item->tahun }}</td>
                         <td>{{ \Carbon\Carbon::create()->month($item->bulan)->isoFormat('MMMM') }}</td>
                         <td>{{ $item->unitKerjaEselonI->nama_unit_kerja_eselon_i ?? '-' }}</td>
