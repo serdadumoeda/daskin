@@ -81,7 +81,7 @@
             <div class="bg-white p-6 rounded-xl shadow-md">
                  {{-- Kartu Lulus Pelatihan Internal --}}
         <a href="{{ route('binalavotas.dashboard') }}#internal" class="stat-card-link-wrapper"> {{-- Ganti rute jika ada halaman detail --}}
-            <div class="stat-card">
+            <div class="stat-card justify-between">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Total Peserta Pelatihan</p>
                     <p class="stat-card-value">{{ number_format($totalPesertaPelatihan ?? 0) }}</p> {{-- Sesuaikan nama variabel --}}
@@ -99,7 +99,7 @@
             <div class="bg-white p-6 rounded-xl shadow-md">
                  {{-- Kartu Lulus Pelatihan Eksternal --}}
         <a href="{{ route('binalavotas.dashboard') }}#eksternal" class="stat-card-link-wrapper"> {{-- Ganti rute jika ada halaman detail --}}
-            <div class="stat-card">
+            <div class="stat-card justify-between">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Total Lulus Pelatihan</p>
                     <p class="stat-card-value">{{ number_format($totalLulusPelatihan ?? 0) }}</p> {{-- Sesuaikan nama variabel --}}
@@ -116,7 +116,7 @@
             <div class="bg-white p-6 rounded-xl shadow-md lg:col-span-2">
                 {{-- Kartu Jumlah Sertifikasi Kompetensi --}}
         <a href="{{ route('binalavotas.jumlah-sertifikasi-kompetensi.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
+            <div class="stat-card justify-between">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Jml Sertifikasi Kompetensi</p>
                     <p class="stat-card-value">{{ number_format($totalSertifikasi ?? 0) }}</p> {{-- Sesuaikan nama variabel --}}

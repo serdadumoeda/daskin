@@ -74,7 +74,7 @@
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="bg-white p-5 rounded-lg shadow">
               <a href="{{ route('binwasnaker.pelaporan-wlkp-online.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
+            <div class="stat-card justify-between">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Laporan WLKP Online</p>
                     <p class="stat-card-value">{{ number_format($totalWlkpReported ?? 0) }}</p>
@@ -91,7 +91,7 @@
         </div>
         <div class="bg-white p-5 rounded-lg shadow">
              <a href="{{ route('binwasnaker.pengaduan-pelanggaran-norma.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
+            <div class="stat-card justify-between">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Pengaduan Pelanggaran Norma (TL)</p>
                     <p class="stat-card-value">{{ number_format($totalPengaduanNorma ?? 0) }}</p>
@@ -108,7 +108,7 @@
         </div>
         <div class="bg-white p-5 rounded-lg shadow">
             <a href="{{ route('binwasnaker.penerapan-smk3.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
+            <div class="stat-card justify-between">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Penerapan SMK3</p>
                     <p class="stat-card-value">{{ number_format($totalPenerapanSmk3 ?? 0) }}</p>
@@ -124,7 +124,7 @@
         </div>
         <div class="bg-white p-5 rounded-lg shadow">
              <a href="{{ route('binwasnaker.self-assessment-norma100.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
+            <div class="stat-card justify-between">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Self-Assessment Norma 100</p>
                     <p class="stat-card-value">{{ number_format($totalSelfAssessment ?? 0) }}</p>
