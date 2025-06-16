@@ -70,13 +70,14 @@
         <div class="bg-white p-6 rounded-xl shadow-md">
             <a href="{{ route('sekretariat-jenderal.progress-mou.index') }}">
                 <div class="stat-card">
+                    <div class="stat-card-icon-wrapper bg-blue-100 mr-4">
+                        <i class="ri-honour-line text-blue-500 text-2xl"></i>
+                    </div>
                     <div class="stat-card-info">
                         <p class="stat-card-title">MOU</p>
                         <p class="stat-card-value">{{ number_format($totalMouBaru ?? 0) }} <span class="text-sm">Dokumen</span></p>
                     </div>
-                    <div class="stat-card-icon-wrapper bg-blue-100">
-                        <i class="ri-honour-line text-blue-500 text-2xl"></i>
-                    </div>
+                    
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
@@ -86,13 +87,14 @@
         <div class="bg-white p-6 rounded-xl shadow-md">
             <a href="{{ route('sekretariat-jenderal.jumlah-regulasi-baru.index') }}">
                 <div class="stat-card">
+                    <div class="stat-card-icon-wrapper bg-green-100 mr-4">
+                        <i class="ri-file-list-3-line text-green-500 text-2xl"></i>
+                    </div>
                     <div class="stat-card-info">
                         <p class="stat-card-title">Regulasi</p>
                         <p class="stat-card-value">{{ number_format($totalRegulasiBaru ?? 0) }} <span class="text-sm">Dokumen</span></p>
                     </div>
-                    <div class="stat-card-icon-wrapper bg-green-100">
-                        <i class="ri-file-list-3-line text-green-500 text-2xl"></i>
-                    </div>
+                    
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
@@ -102,13 +104,14 @@
         <div class="bg-white p-6 rounded-xl shadow-md">
             <a href="{{ route('sekretariat-jenderal.jumlah-penanganan-kasus.index') }}">
                 <div class="stat-card">
+                     <div class="stat-card-icon-wrapper bg-purple-100">
+                        <i class="ri-scales-2-line text-purple-500 text-2xl"></i>
+                    </div>
                     <div class="stat-card-info">
                         <p class="stat-card-title">Penanganan Kasus</p>
                         <p class="stat-card-value">{{ number_format($totalPenangananKasus ?? 0) }} <span class="text-sm">Kasus</span></p>
                     </div>
-                    <div class="stat-card-icon-wrapper bg-purple-100">
-                        <i class="ri-scales-2-line text-purple-500 text-2xl"></i>
-                    </div>
+                   
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
@@ -121,13 +124,14 @@
         <div class="bg-white p-6 rounded-xl shadow-md">
             <a href="{{ route('sekretariat-jenderal.penyelesaian-bmn.index') }}">
                 <div class="stat-card">
+                     <div class="stat-card-icon-wrapper bg-orange-100 mr-4">
+                        <i class="ri-archive-drawer-line text-orange-500 text-2xl"></i>
+                    </div>
                     <div class="stat-card-info">
                         <p class="stat-card-title">BMN Selesai</p>
                         <p class="stat-card-value">{{ number_format($totalKuantitasBmn ?? 0) }}</p>
                     </div>
-                    <div class="stat-card-icon-wrapper bg-orange-100">
-                        <i class="ri-archive-drawer-line text-orange-500 text-2xl"></i>
-                    </div>
+                   
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
@@ -137,13 +141,14 @@
         <div class="bg-white p-6 rounded-xl shadow-md">
             <a href="{{ route('sekretariat-jenderal.persentase-kehadiran.index') }}">
                 <div class="stat-card">
+                    <div class="stat-card-icon-wrapper bg-yellow-100 mr-4">
+                        <i class="ri-user-follow-line text-yellow-500 text-2xl"></i>
+                    </div>
                     <div class="stat-card-info">
                         <p class="stat-card-title">Kehadiran WFO</p>
                         <p class="stat-card-value">{{ number_format($totalOrangHadirWFO ?? 0) }} <span class="text-sm">Orang</span></p>
                     </div>
-                    <div class="stat-card-icon-wrapper bg-yellow-100">
-                        <i class="ri-user-follow-line text-yellow-500 text-2xl"></i>
-                    </div>
+                    
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
@@ -153,13 +158,14 @@
         <div class="bg-white p-6 rounded-xl shadow-md">
             <a href="{{ route('sekretariat-jenderal.monev-monitoring-media.index') }}">
                 <div class="stat-card">
+                     <div class="stat-card-icon-wrapper bg-teal-100 mr-4">
+                        <i class="ri-rss-line text-teal-500 text-2xl"></i>
+                    </div>
                     <div class="stat-card-info">
                         <p class="stat-card-title">Monev Monitoring Media</p>
                         <p class="stat-card-value">{{ number_format($totalBeritaMonev ?? 0) }}</p>
                     </div>
-                    <div class="stat-card-icon-wrapper bg-teal-100">
-                        <i class="ri-rss-line text-teal-500 text-2xl"></i>
-                    </div>
+                   
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
@@ -172,13 +178,14 @@
         <div class="bg-white p-6 rounded-xl shadow-md">
             <a href="{{ route('sekretariat-jenderal.lulusan-polteknaker-bekerja.index') }}">
                 <div class="stat-card">
+                     <div class="stat-card-icon-wrapper bg-indigo-100 mr-4">
+                        <i class="ri-user-star-line text-indigo-500 text-2xl"></i>
+                    </div>
                     <div class="stat-card-info">
                         <p class="stat-card-title">Polteknaker Bekerja</p>
                         <p class="stat-card-value">{{ number_format($totalLulusanBekerja ?? 0) }} <span class="text-sm">Orang</span></p>
                     </div>
-                    <div class="stat-card-icon-wrapper bg-indigo-100">
-                        <i class="ri-user-star-line text-indigo-500 text-2xl"></i>
-                    </div>
+                   
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
@@ -188,13 +195,14 @@
         <div class="bg-white p-6 rounded-xl shadow-md">
             <a href="{{ route('sekretariat-jenderal.sdm-mengikuti-pelatihan.index') }}">
                 <div class="stat-card">
+                     <div class="stat-card-icon-wrapper bg-pink-100 mr-4">
+                        <i class="ri-team-line text-pink-500 text-2xl"></i>
+                    </div>
                     <div class="stat-card-info">
                         <p class="stat-card-title">SDM Mengikuti Pelatihan</p>
                         <p class="stat-card-value">{{ number_format($totalSdmPelatihan ?? 0) }} <span class="text-sm">Orang</span></p>
                     </div>
-                    <div class="stat-card-icon-wrapper bg-pink-100">
-                        <i class="ri-team-line text-pink-500 text-2xl"></i>
-                    </div>
+                   
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
@@ -204,13 +212,14 @@
         <div class="bg-white p-6 rounded-xl shadow-md">
             <a href="{{ route('sekretariat-jenderal.ikpa.index') }}">
                 <div class="stat-card">
+                    <div class="stat-card-icon-wrapper bg-teal-100 mr-4">
+                        <i class="ri-secure-payment-fill text-teal-500 text-2xl"></i>
+                    </div>
                     <div class="stat-card-info">
                         <p class="stat-card-title">Rata-rata IKPA</p>
                         <p class="stat-card-value">{{ number_format($totalIkpa ?? 0, 2) }}</p>
                     </div>
-                    <div class="stat-card-icon-wrapper bg-teal-100">
-                        <i class="ri-secure-payment-fill text-teal-500 text-2xl"></i>
-                    </div>
+                    
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\WLKPExport;
 use App\Models\PelaporanWlkpOnline;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -148,5 +149,9 @@ class PelaporanWlkpOnlineController extends Controller
             return redirect()->route($this->routeNamePrefix . 'index')
                              ->with('error', 'Terjadi kesalahan saat mengimpor data: ' . $e->getMessage());
         }
+    }
+
+    public function downloadTemplate(Request $request) {
+        return Excel::download(new WLKPExport(), 'template_input_wlkp.xlsx');
     }
 }

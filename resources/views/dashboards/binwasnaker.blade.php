@@ -63,8 +63,18 @@
 
     {{-- Kartu Statistik Binwasnaker & K3 --}}
     <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <a href="{{ route('binwasnaker.pelaporan-wlkp-online.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
+      
+       
+        
+        
+       
+    </section>
+
+    {{-- Bagian Grafik --}}
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white p-5 rounded-lg shadow">
+              <a href="{{ route('binwasnaker.pelaporan-wlkp-online.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card justify-between">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Laporan WLKP Online</p>
                     <p class="stat-card-value">{{ number_format($totalWlkpReported ?? 0) }}</p>
@@ -76,8 +86,12 @@
             <div class="stat-card-footer">{{ $periodText }}</div>
         </a>
 
-        <a href="{{ route('binwasnaker.pengaduan-pelanggaran-norma.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Laporan WLKP Online ({{ $yearToDisplay }})</h3>
+            <div id="echart-binwasnaker-wlkp-trend" style="width: 100%; height: 300px;"></div>
+        </div>
+        <div class="bg-white p-5 rounded-lg shadow">
+             <a href="{{ route('binwasnaker.pengaduan-pelanggaran-norma.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card justify-between">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Pengaduan Pelanggaran Norma (TL)</p>
                     <p class="stat-card-value">{{ number_format($totalPengaduanNorma ?? 0) }}</p>
@@ -89,8 +103,12 @@
             <div class="stat-card-footer">{{ $periodText }}</div>
         </a>
 
-        <a href="{{ route('binwasnaker.penerapan-smk3.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Pengaduan Pelanggaran Norma (TL) ({{ $yearToDisplay }})</h3>
+            <div id="echart-binwasnaker-pengaduan-trend" style="width: 100%; height: 300px;"></div>
+        </div>
+        <div class="bg-white p-5 rounded-lg shadow">
+            <a href="{{ route('binwasnaker.penerapan-smk3.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card justify-between">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Penerapan SMK3</p>
                     <p class="stat-card-value">{{ number_format($totalPenerapanSmk3 ?? 0) }}</p>
@@ -101,9 +119,12 @@
             </div>
             <div class="stat-card-footer">{{ $periodText }}</div>
         </a>
-        
-        <a href="{{ route('binwasnaker.self-assessment-norma100.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Penerapan SMK3 ({{ $yearToDisplay }})</h3>
+            <div id="echart-binwasnaker-smk3-trend" style="width: 100%; height: 300px;"></div>
+        </div>
+        <div class="bg-white p-5 rounded-lg shadow">
+             <a href="{{ route('binwasnaker.self-assessment-norma100.index') }}" class="stat-card-link-wrapper">
+            <div class="stat-card justify-between">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Self-Assessment Norma 100</p>
                     <p class="stat-card-value">{{ number_format($totalSelfAssessment ?? 0) }}</p>
@@ -114,23 +135,6 @@
             </div>
             <div class="stat-card-footer">{{ $periodText }}</div>
         </a>
-    </section>
-
-    {{-- Bagian Grafik --}}
-    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Laporan WLKP Online ({{ $yearToDisplay }})</h3>
-            <div id="echart-binwasnaker-wlkp-trend" style="width: 100%; height: 300px;"></div>
-        </div>
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Pengaduan Pelanggaran Norma (TL) ({{ $yearToDisplay }})</h3>
-            <div id="echart-binwasnaker-pengaduan-trend" style="width: 100%; height: 300px;"></div>
-        </div>
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Penerapan SMK3 ({{ $yearToDisplay }})</h3>
-            <div id="echart-binwasnaker-smk3-trend" style="width: 100%; height: 300px;"></div>
-        </div>
-        <div class="bg-white p-5 rounded-lg shadow">
             <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Self-Assessment Norma 100 ({{ $yearToDisplay }})</h3>
             <div id="echart-binwasnaker-sa-trend" style="width: 100%; height: 300px;"></div>
         </div>

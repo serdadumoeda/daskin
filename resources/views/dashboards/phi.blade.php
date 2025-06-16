@@ -63,9 +63,21 @@
 
     {{-- Kartu Statistik PHI & Jamsos --}}
     <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {{-- Kartu Jumlah PHK --}}
+       
+
+        
+
+       
+        
+        
+    </section>
+
+    {{-- Bagian Grafik --}}
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white p-5 rounded-lg shadow">
+             {{-- Kartu Jumlah PHK --}}
         <a href="{{ route('phi.jumlah-phk.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
+            <div class="stat-card justify-between">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Jumlah PHK</p>
                     {{-- Pastikan variabel $totalPhk digunakan dengan benar --}}
@@ -78,10 +90,13 @@
             </div>
             <div class="stat-card-footer">{{ $periodText }}</div>
         </a>
-
-        {{-- Kartu Perselisihan (TL) --}}
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Jumlah PHK ({{ $yearToDisplay }})</h3>
+            <div id="echart-phi-phk-trend" style="width: 100%; height: 300px;"></div>
+        </div>
+        <div class="bg-white p-5 rounded-lg shadow">
+            {{-- Kartu Perselisihan (TL) --}}
         <a href="{{ route('phi.perselisihan-ditindaklanjuti.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
+            <div class="stat-card justify-between">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Perselisihan (TL)</p>
                     {{-- Pastikan variabel $totalPerselisihan digunakan dengan benar --}}
@@ -93,10 +108,13 @@
             </div>
             <div class="stat-card-footer">{{ $periodText }}</div>
         </a>
-
-        {{-- Kartu Mediasi Berhasil --}}
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Perselisihan Ditindaklanjuti ({{ $yearToDisplay }})</h3>
+            <div id="echart-phi-perselisihan-trend" style="width: 100%; height: 300px;"></div>
+        </div>
+        <div class="bg-white p-5 rounded-lg shadow">
+             {{-- Kartu Mediasi Berhasil --}}
         <a href="{{ route('phi.mediasi-berhasil.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
+            <div class="stat-card justify-between">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Mediasi Berhasil</p>
                     <p class="stat-card-value">{{ number_format($totalMediasiBerhasil ?? 0) }}</p>
@@ -107,10 +125,13 @@
             </div>
             <div class="stat-card-footer">{{ $periodText }}</div>
         </a>
-        
-        {{-- Kartu Perusahaan Penerap SUSU --}}
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Mediasi Berhasil ({{ $yearToDisplay }})</h3>
+            <div id="echart-phi-mediasi-trend" style="width: 100%; height: 300px;"></div>
+        </div>
+        <div class="bg-white p-5 rounded-lg shadow">
+            {{-- Kartu Perusahaan Penerap SUSU --}}
         <a href="{{ route('phi.perusahaan-menerapkan-susu.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
+            <div class="stat-card justify-between">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Perusahaan Penerap SUSU</p>
                     <p class="stat-card-value">{{ number_format($totalPerusahaanSusu ?? 0) }}</p>
@@ -121,23 +142,6 @@
             </div>
             <div class="stat-card-footer">{{ $periodText }}</div>
         </a>
-    </section>
-
-    {{-- Bagian Grafik --}}
-    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Jumlah PHK ({{ $yearToDisplay }})</h3>
-            <div id="echart-phi-phk-trend" style="width: 100%; height: 300px;"></div>
-        </div>
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Perselisihan Ditindaklanjuti ({{ $yearToDisplay }})</h3>
-            <div id="echart-phi-perselisihan-trend" style="width: 100%; height: 300px;"></div>
-        </div>
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Mediasi Berhasil ({{ $yearToDisplay }})</h3>
-            <div id="echart-phi-mediasi-trend" style="width: 100%; height: 300px;"></div>
-        </div>
-        <div class="bg-white p-5 rounded-lg shadow">
             <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Perusahaan Menerapkan SUSU ({{ $yearToDisplay }})</h3>
             <div id="echart-phi-susu-trend" style="width: 100%; height: 300px;"></div>
         </div>

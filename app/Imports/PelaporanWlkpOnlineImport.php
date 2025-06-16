@@ -36,24 +36,9 @@ class PelaporanWlkpOnlineImport implements ToModel, WithHeadingRow, WithValidati
             ];
             $bulan = $bulanMap[strtolower(trim($bulanInput))] ?? null;
         }
-        
+
         if ($bulan === null && !empty($bulanInput)) {
             Log::warning("Import PelaporanWlkpOnline: Format bulan '{$row['bulan']}' tidak valid. Baris dilewati: " . json_encode($row));
-            return null;
-        }
-        
-        $skalaPerusahaanInput = strtolower(trim($row['skala_perusahaan'] ?? ''));
-        $skalaPerusahaanValid = null;
-        $skalaOptions = ['mikro', 'kecil', 'menengah', 'besar'];
-        foreach($skalaOptions as $skala){
-            if($skalaPerusahaanInput == $skala){
-                $skalaPerusahaanValid = ucfirst($skala); 
-                break;
-            }
-        }
-
-        if ($skalaPerusahaanValid === null && !empty($row['skala_perusahaan'])) {
-            Log::warning("Import PelaporanWlkpOnline: Skala Perusahaan '{$row['skala_perusahaan']}' tidak valid. Baris dilewati: " . json_encode($row));
             return null;
         }
 
@@ -65,8 +50,6 @@ class PelaporanWlkpOnlineImport implements ToModel, WithHeadingRow, WithValidati
             'tahun'                       => $row['tahun'],
             'bulan'                       => $bulan,
             'provinsi'                    => $row['provinsi'] ?? null,
-            'kbli'                        => $row['kbli'] ?? null,
-            'skala_perusahaan'            => $skalaPerusahaanValid,
             'jumlah_perusahaan_melapor'   => $jumlahPerusahaan, // Ini nama kolom di database
         ]);
     }
@@ -77,10 +60,6 @@ class PelaporanWlkpOnlineImport implements ToModel, WithHeadingRow, WithValidati
             '*.tahun' => 'required|integer|digits:4|min:1900|max:' . (date('Y') + 5),
             '*.bulan' => 'required',
             '*.provinsi' => 'required|string|max:255',
-            '*.kbli' => 'required|string|max:50',
-            '*.skala_perusahaan' => ['required', 'string', Rule::in(['Mikro', 'Kecil', 'Menengah', 'Besar', 'mikro', 'kecil', 'menengah', 'besar'])],
-            // Validasi untuk kolom jumlah, bisa salah satu dari dua nama header Excel
-            // 'jumlah' adalah nama kolom di PDF, 'jumlah_perusahaan_melapor' adalah nama kolom DB
             '*.jumlah_perusahaan_melapor' => 'exclude_if:*.jumlah,present|required_without:*.jumlah|integer|min:0',
             '*.jumlah' => 'exclude_if:*.jumlah_perusahaan_melapor,present|required_without:*.jumlah_perusahaan_melapor|integer|min:0',
         ];
@@ -89,7 +68,6 @@ class PelaporanWlkpOnlineImport implements ToModel, WithHeadingRow, WithValidati
     public function customValidationMessages()
     {
         return [
-            '*.skala_perusahaan.in' => 'Skala Perusahaan tidak valid (pilih Mikro, Kecil, Menengah, atau Besar).',
             '*.jumlah_perusahaan_melapor.required_without' => 'Kolom jumlah_perusahaan_melapor atau jumlah wajib diisi.',
             '*.jumlah.required_without' => 'Kolom jumlah atau jumlah_perusahaan_melapor wajib diisi.',
         ];
@@ -97,6 +75,6 @@ class PelaporanWlkpOnlineImport implements ToModel, WithHeadingRow, WithValidati
 
     public function headingRow(): int
     {
-        return 1; 
+        return 1;
     }
 }
