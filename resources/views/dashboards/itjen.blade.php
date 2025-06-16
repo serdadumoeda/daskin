@@ -47,65 +47,53 @@
     {{-- Baris untuk Kartu Ringkasan Statistik --}}
     {{-- Variabel $summaryBpk dan $summaryInternal diasumsikan dikirim dari ItjenDashboardController --}}
     {{-- Variabel persentase juga diasumsikan dikirim dari controller --}}
-    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-        {{-- Kartu 1: Progres Tindak Lanjut Temuan BPK (Administratif) --}}
-        <a href="{{ route('inspektorat.progress-temuan-bpk.index', ['jenis_temuan_filter' => 'administratif']) }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
-                <div class="stat-card-info">
-                    <p class="stat-card-title">TL BPK (Administratif)</p>
-                    <p class="stat-card-value">{{ number_format($persentaseSelesaiBpkAdmin ?? 0, 2) }}% Selesai</p>
-                </div>
-                <div class="stat-card-icon-wrapper bg-blue-100">
-                    <i class="ri-file-shield-2-line text-blue-500 text-2xl"></i>
-                </div>
-            </div>
-            <div class="stat-card-footer">
-                <span class="{{ ($persentaseSelesaiBpkAdmin ?? 0) >= 75 ? 'text-green-500' : (($persentaseSelesaiBpkAdmin ?? 0) >= 50 ? 'text-yellow-500' : 'text-red-500') }}">
-                {{ number_format($summaryBpk->total_tl_admin_kasus ?? 0) }}/{{ number_format($summaryBpk->total_temuan_admin_kasus ?? 0) }} Kasus
-                </span>
-
-            </div>
-        </a>
-
-
-
-        {{-- Kartu 3: Progres Tindak Lanjut Temuan Internal (Administratif) --}}
-        <a href="{{ route('inspektorat.progress-temuan-internal.index', ['jenis_temuan_filter' => 'administratif']) }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
-                <div class="stat-card-info">
-                    <p class="stat-card-title">TL Internal (Administratif)</p>
-                     <p class="stat-card-value">{{ number_format($persentaseSelesaiInternalAdmin ?? 0, 2) }}% Selesai </p>
-                </div>
-                <div class="stat-card-icon-wrapper bg-purple-100">
-                    <i class="ri-file-search-line text-purple-500 text-2xl"></i>
-                </div>
-            </div>
-             <div class="stat-card-footer">
-                <span class="{{ ($persentaseSelesaiInternalAdmin ?? 0) >= 75 ? 'text-green-500' : (($persentaseSelesaiInternalAdmin ?? 0) >= 50 ? 'text-yellow-500' : 'text-red-500') }}">
-                {{ number_format($summaryInternal->total_tl_admin_kasus ?? 0) }}/{{ number_format($summaryInternal->total_temuan_admin_kasus ?? 0) }} Kasus
-                </span>
-
-            </div>
-        </a>
-
-
-    </section>
 
     {{-- Baris untuk Chart --}}
-    <div class="bg-white p-6 rounded-xl shadow-md lg:col-span-2">
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+
+    {{-- Kartu 1: Progres Tindak Lanjut Temuan BPK (Administratif) --}}
+    <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-6 cursor-pointer" onclick="window.location='{{ route('inspektorat.progress-temuan-bpk.index', ['jenis_temuan_filter' => 'administratif']) }}'">
         <div class="bg-white p-6 rounded-xl shadow-md">
-            <h3 class="font-semibold text-lg text-gray-800 mb-4">Progress Tindak Lanjut Temuan BPK</h3>
-            <div id="echart-itjen-bpk-trend" style="height: 400px;"></div>
+          <div class="flex items-center justify-between mb-4">
+            <!-- Title on the left -->
+            <h3 class="font-semibold text-lg text-gray-800">
+              TL Temuan BPK: 
+              <p class="stat-card-value">{{ number_format($persentaseSelesaiBpkAdmin ?? 0, 2) }}% Selesai</p>
+              <span class="{{ ($persentaseSelesaiBpkAdmin ?? 0) >= 75 ? 'text-green-500' : (($persentaseSelesaiBpkAdmin ?? 0) >= 50 ? 'text-yellow-500' : 'text-red-500') }}">
+                {{ number_format($summaryBpk->total_tl_admin_kasus ?? 0) }}/{{ number_format($summaryBpk->total_temuan_admin_kasus ?? 0) }} Kasus
+                </span>
+            </h3>
+            <!-- Logo on the right -->
+            <div class="stat-card-icon-wrapper bg-blue-100">
+            <i class="ri-file-shield-2-line  text-blue-500 text-4xl"></i>
+            </div>
+          </div>
+          <div id="echart-itjen-bpk-trend" style="height: 400px;"></div>
         </div>
+      </div>
 
-    </div>
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-
-        <div class="bg-white p-6 rounded-xl shadow-md lg:col-span-2">
-            <h3 class="font-semibold text-lg text-gray-800 mb-4">Progress Tindak Lanjut Temuan Internal</h3>
-            <div id="echart-itjen-internal-trend" style="height: 400px;"></div>
+    {{-- Kartu 2: Progres Tindak Lanjut Temuan Internal (Administratif) --}}
+      <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-6" onclick="window.location='{{ route('inspektorat.progress-temuan-internal.index', ['jenis_temuan_filter' => 'administratif']) }}'">
+        <div class="bg-white p-6 rounded-xl shadow-md">
+          <div class="flex items-center justify-between mb-4">
+            <!-- Title on the left -->
+            <h3 class="font-semibold text-lg text-gray-800">
+                TL Internal (Administratif): 
+            <p class="stat-card-value">{{ number_format($persentaseSelesaiInternalAdmin ?? 0, 2) }}% Selesai </p>
+            <span class="{{ ($persentaseSelesaiInternalAdmin ?? 0) >= 75 ? 'text-green-500' : (($persentaseSelesaiInternalAdmin ?? 0) >= 50 ? 'text-yellow-500' : 'text-red-500') }}">
+                {{ number_format($summaryInternal->total_tl_admin_kasus ?? 0) }}/{{ number_format($summaryInternal->total_temuan_admin_kasus ?? 0) }} Kasus
+                </span>
+            </h3>
+            <!-- Logo on the right -->
+            <div class="stat-card-icon-wrapper bg-purple-100">
+            <i class="ri-file-search-line  text-purple-500 text-4xl"></i><br>
+            </div>
+          </div>
+          <div id="echart-itjen-internal-trend" style="height: 400px;"></div>
         </div>
-    </div>
+      </div>
+
+    </section>
 @endsection
 
 @push('scripts')

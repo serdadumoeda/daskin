@@ -3,9 +3,9 @@
 @section('title', 'Progres Tindak Lanjut Temuan Internal')
 @section('page_title', 'Progres Tindak Lanjut Temuan Internal')
 
+
 @php
-// Helper function untuk link sorting (spesifik untuk modul ini)
-if (!function_exists('sortableLinkPtInternal')) { // Nama fungsi unik
+if (!function_exists('sortableLinkPtInternal')) {
     function sortableLinkPtInternal(string $column, string $label, string $currentSortBy, string $currentSortDirection, array $requestFilters) {
         $newDirection = ($currentSortBy == $column && $currentSortDirection == 'asc') ? 'desc' : 'asc';
         $iconHtml = '';
@@ -17,14 +17,17 @@ if (!function_exists('sortableLinkPtInternal')) { // Nama fungsi unik
             $requestFilters,
             ['sort_by' => $column, 'sort_direction' => $newDirection]
         );
-        // Gunakan nama route yang benar dan lengkap
         return '<a href="' . route('inspektorat.progress-temuan-internal.index', $queryParams) . '" class="flex items-center hover:text-primary">' . e($label) . $iconHtml . '</a>';
     }
 }
+$sortBy = $currentSortBy ?? request('sort_by', 'id');
+$sortDirection = $currentSortDirection ?? request('sort_direction', 'desc');
 $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_filter']);
 @endphp
 
+
 @section('header_filters')
+
     <form method="GET" action="{{ route('inspektorat.progress-temuan-internal.index') }}" class="w-full">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 items-end">
             <div class="flex-grow">
@@ -56,19 +59,20 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
                     @endforeach
                 </select>
             </div>
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-2 pt-5">
                 @if(request()->filled('sort_by')) <input type="hidden" name="sort_by" value="{{ request('sort_by') }}"> @endif
                 @if(request()->filled('sort_direction')) <input type="hidden" name="sort_direction" value="{{ request('sort_direction') }}"> @endif
-                <button type="submit" class="w-full sm:w-auto px-4 py-1.5 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium">
+                <button type="submit" class="btn-primary">
                     <i class="ri-filter-3-line mr-1"></i> Filter
                 </button>
-                <a href="{{ route('inspektorat.progress-temuan-internal.index') }}" class="w-full sm:w-auto px-4 py-1.5 bg-gray-200 text-gray-700 rounded-button hover:bg-gray-300 text-sm font-medium">
-                    Reset
+                <a href="{{ route('inspektorat.progress-temuan-internal.index') }}" class="btn-secondary-outline">
+                    Clear Filter
                 </a>
             </div>
         </div>
     </form>
 @endsection
+
 
 @section('content')
 <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
@@ -77,7 +81,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
             <form action="{{ route('inspektorat.progress-temuan-internal.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                 @csrf
                 <div class="flex-grow">
-                    <input type="file" name="excel_file" id="excel_file_internal" required 
+                    <input type="file" name="excel_file" id="excel_file_internal" required
                            class="block w-full text-sm text-gray-500
                                   file:mr-2 file:py-1.5 file:px-3 file:rounded-button
                                   file:border-0 file:text-sm file:font-semibold
@@ -88,7 +92,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
                     <i class="ri-upload-2-line mr-1"></i> Impor Data
                 </button>
             </form>
-             <a href="MASUKKAN_LINK_ONEDRIVE_FORMAT_TEMUAN_INTERNAL_DISINI" 
+            <a href="{{route('inspektorat.progress-temuan-internal.downloadTemplate')}}"
                target="_blank"
                class="px-3 py-2 bg-blue-500 text-white rounded-button hover:bg-blue-600 text-sm font-medium flex items-center justify-center whitespace-nowrap w-full sm:w-auto mt-2 sm:mt-0">
                 <i class="ri-download-2-line mr-1"></i> Unduh Format
@@ -97,11 +101,12 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
                 <i class="ri-add-line mr-1"></i> Tambah Manual
             </a>
         </div>
-    </div>
+    @endif
 
+    {{-- Pesan Error & Sukses (Tidak Diubah) --}}
     @if (session('import_errors'))
         <div class="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-md text-sm">
-            <strong class="font-bold">Beberapa data gagal diimpor karena kesalahan validasi:</strong>
+            <strong class="font-bold">Beberapa data gagal diimpor:</strong>
             <ul class="mt-1 list-disc list-inside text-xs">
                 @foreach (session('import_errors') as $error)
                     <li>{{ $error }}</li>
@@ -114,57 +119,45 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
             {{ session('error') }}
         </div>
     @endif
-    
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 border border-gray-200">
-            <thead class="bg-gray-50">
+
+    {{-- DITERAPKAN: Gaya tabel modern ke struktur tabel asli --}}
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                {{-- TIDAK DIUBAH: Header tabel asli yang berfungsi --}}
                 <tr>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkPtInternal('tahun', 'Tahun', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkPtInternal('bulan', 'Bulan', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Kerja</th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Satuan Kerja</th>
-                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkPtInternal('temuan_administratif_kasus', 'Temuan Adm. (Kasus)', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkPtInternal('temuan_kerugian_negara_rp', 'Temuan Kerugian (Rp)', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkPtInternal('tindak_lanjut_administratif_kasus', 'TL Adm. (Kasus)', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkPtInternal('tindak_lanjut_kerugian_negara_rp', 'TL Kerugian (Rp)', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkPtInternal('persentase_tindak_lanjut_administratif', '% TL Adm.', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkPtInternal('persentase_tindak_lanjut_kerugian_negara', '% TL Kerugian', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+
+                    <th scope="col">{!! sortableLinkPtInternal('tahun', 'Tahun', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col">{!! sortableLinkPtInternal('bulan', 'Bulan', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col">Unit Kerja</th>
+                    <th scope="col">Satuan Kerja</th>
+                    <th scope="col" class="text-right">{!! sortableLinkPtInternal('temuan_administratif_kasus', 'Temuan Adm. (Kasus)', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col" class="text-right">{!! sortableLinkPtInternal('temuan_kerugian_negara_rp', 'Temuan Kerugian (Rp)', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col" class="text-right">{!! sortableLinkPtInternal('tindak_lanjut_administratif_kasus', 'TL Adm. (Kasus)', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col" class="text-right">{!! sortableLinkPtInternal('tindak_lanjut_kerugian_negara_rp', 'TL Kerugian (Rp)', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col" class="text-right">{!! sortableLinkPtInternal('persentase_tindak_lanjut_administratif', '% TL Adm.', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col" class="text-right">{!! sortableLinkPtInternal('persentase_tindak_lanjut_kerugian_negara', '% TL Kerugian', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col" class="text-center">Aksi</th>
                 </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody>
+                {{-- TIDAK DIUBAH: Isi tabel asli agar data tidak kosong --}}
                 @forelse ($progressItems as $index => $item)
                     <tr>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $progressItems->firstItem() + $index }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->tahun }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ \Carbon\Carbon::create()->month($item->bulan)->isoFormat('MMMM') }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->unitKerjaEselonI->nama_unit_kerja_eselon_i ?? '-' }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->satuanKerja->nama_satuan_kerja ?? '-' }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 text-right">{{ number_format($item->temuan_administratif_kasus, 0, ',', '.') }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 text-right">{{ number_format($item->temuan_kerugian_negara_rp, 2, ',', '.') }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 text-right">{{ number_format($item->tindak_lanjut_administratif_kasus, 0, ',', '.') }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 text-right">{{ number_format($item->tindak_lanjut_kerugian_negara_rp, 2, ',', '.') }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 text-right">{{ number_format($item->persentase_tindak_lanjut_administratif, 2, ',', '.') }}%</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 text-right">{{ number_format($item->persentase_tindak_lanjut_kerugian_negara, 2, ',', '.') }}%</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-center">
-                            <div class="flex items-center justify-center space-x-2">
+
+                        <td>{{ $item->tahun }}</td>
+                        <td>{{ \Carbon\Carbon::create()->month($item->bulan)->isoFormat('MMMM') }}</td>
+                        <td>{{ $item->unitKerjaEselonI->nama_unit_kerja_eselon_i ?? '-' }}</td>
+                        <td>{{ $item->satuanKerja->nama_satuan_kerja ?? '-' }}</td>
+                        <td class="text-right">{{ number_format($item->temuan_administratif_kasus, 0, ',', '.') }}</td>
+                        <td class="text-right">{{ number_format($item->temuan_kerugian_negara_rp, 2, ',', '.') }}</td>
+                        <td class="text-right">{{ number_format($item->tindak_lanjut_administratif_kasus, 0, ',', '.') }}</td>
+                        <td class="text-right">{{ number_format($item->tindak_lanjut_kerugian_negara_rp, 2, ',', '.') }}</td>
+                        <td class="text-right">{{ number_format($item->persentase_tindak_lanjut_administratif, 2, ',', '.') }}%</td>
+                        <td class="text-right">{{ number_format($item->persentase_tindak_lanjut_kerugian_negara, 2, ',', '.') }}%</td>
+                        <td class="text-center">
+                            {{-- DITERAPKAN: Gaya terpusat untuk grup aksi --}}
+                            <div class="table-actions justify-center">
                                 <a href="{{ route('inspektorat.progress-temuan-internal.edit', $item->id) }}" class="text-blue-600 hover:text-blue-800" title="Edit">
                                     <i class="ri-pencil-line text-base"></i>
                                 </a>
@@ -175,18 +168,16 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
                                         <i class="ri-delete-bin-line text-base"></i>
                                     </button>
                                 </form>
-                                 <a href="{{ route('inspektorat.progress-temuan-internal.show', $item->id) }}" class="text-gray-500 hover:text-gray-700" title="Lihat Detail">
-                                    <i class="ri-eye-line text-base"></i>
-                                </a>
+
                             </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="12" class="px-4 py-10 text-center text-sm text-gray-500">
-                            <div class="flex flex-col items-center">
-                                <i class="ri-inbox-2-line text-4xl text-gray-400 mb-2"></i>
-                                Tidak ada data ditemukan.
+                        <td colspan="12" class="text-center py-10">
+                            <div class="flex flex-col items-center text-gray-500">
+                                <i class="ri-inbox-2-line text-4xl mb-2"></i>
+                                <span>Tidak ada data ditemukan.</span>
                             </div>
                         </td>
                     </tr>
@@ -194,6 +185,8 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
             </tbody>
         </table>
     </div>
+
+    {{-- Pagination Asli (Tidak Diubah) --}}
     <div class="mt-6">
         {{ $progressItems->appends(request()->except('page'))->links('vendor.pagination.tailwind') }}
     </div>

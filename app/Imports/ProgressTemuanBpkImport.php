@@ -8,11 +8,12 @@ use App\Models\SatuanKerja;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Maatwebsite\Excel\Concerns\Importable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log; // Untuk logging jika ada masalah
 
-class ProgressTemuanBpkImport implements ToModel, WithHeadingRow, WithValidation
+class ProgressTemuanBpkImport implements ToModel, WithHeadingRow, WithValidation, WithMultipleSheets
 {
     use Importable;
 
@@ -37,6 +38,15 @@ class ProgressTemuanBpkImport implements ToModel, WithHeadingRow, WithValidation
     *
     * @return \Illuminate\Database\Eloquent\Model|null
     */
+
+    //Make import by first sheet
+    public function sheets(): array
+    {
+        return [
+            0 => new ProgressTemuanBpkImport(), // 0 = first sheet
+        ];
+    }
+
     public function model(array $row)
     {
         // Cek apakah kode unit kerja dan satuan kerja ada di database

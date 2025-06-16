@@ -42,7 +42,7 @@
     </div>
 
     <div class="mt-8 flex justify-end">
-        <a href="{{ route('inspektorat.progress-temuan-bpk.edit', $progressTemuanBpk->id) }}" class="px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium">
+        <a href="{{ route('inspektorat.progress-temuan-bpk.edit', $progressTemuanBpk->id) }}" class="btn-primary">
             <i class="ri-pencil-line mr-1"></i> Edit
         </a>
     </div>

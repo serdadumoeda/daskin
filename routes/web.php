@@ -105,6 +105,7 @@ Route::prefix('inspektorat-jenderal')->name('inspektorat.')->middleware(['auth']
             Route::get('/{progressTemuanBpk}/edit', [ProgressTemuanBpkController::class, 'edit'])->name('edit');
             Route::put('/{progressTemuanBpk}', [ProgressTemuanBpkController::class, 'update'])->name('update');
             Route::delete('/{progressTemuanBpk}', [ProgressTemuanBpkController::class, 'destroy'])->name('destroy');
+            Route::get("/downloadTemplate", [ProgressTemuanBpkController::class, 'downloadTemplate'])->name('downloadTemplate');
         });
         Route::get('/{progressTemuanBpk}', [ProgressTemuanBpkController::class, 'show'])->name('show')->middleware('role:' . $crudRolesItjen . ',' . $readOnlyRoles); // Rute show setelah CRUD
     });
@@ -119,6 +120,8 @@ Route::prefix('inspektorat-jenderal')->name('inspektorat.')->middleware(['auth']
             Route::get('/{progressTemuanInternal}/edit', [ProgressTemuanInternalController::class, 'edit'])->name('edit');
             Route::put('/{progressTemuanInternal}', [ProgressTemuanInternalController::class, 'update'])->name('update');
             Route::delete('/{progressTemuanInternal}', [ProgressTemuanInternalController::class, 'destroy'])->name('destroy');
+            Route::get("/downloadTemplate", [ProgressTemuanInternalController::class, 'downloadTemplate'])->name('downloadTemplate');
+
         });
         Route::get('/{progressTemuanInternal}', [ProgressTemuanInternalController::class, 'show'])->name('show')->middleware('role:' . $crudRolesItjen . ',' . $readOnlyRoles); // Rute show setelah CRUD
     });
