@@ -6,6 +6,7 @@ use App\Models\ProgressTemuanInternal;
 use App\Models\UnitKerjaEselonI;
 use App\Models\SatuanKerja;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 use App\Imports\ProgressTemuanInternalImport;
@@ -198,5 +199,15 @@ class ProgressTemuanInternalController extends Controller
             return redirect()->route($this->routeNamePrefix . 'index')
                              ->with('error', 'Terjadi kesalahan saat mengimpor data: ' . $e->getMessage());
         }
+    }
+
+    public function downloadTemplate(Request $request) {
+        $filePath = 'template_import_Itjen.xlsx';
+
+        if (Storage::disk('public')->exists($filePath)) {
+
+            return Storage::disk('public')->download($filePath);
+        }
+        abort(404, 'File not found.');
     }
 }
