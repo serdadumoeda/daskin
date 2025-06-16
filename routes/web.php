@@ -43,8 +43,9 @@ use App\Http\Controllers\AplikasiIntegrasiSiapkerjaController;
 
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    return redirect()->route('dashboard');
+})->name('home');
+
 
 Route::middleware(['auth', 'verified'])->group(function () {
     
