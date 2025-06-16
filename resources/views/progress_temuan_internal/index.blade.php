@@ -27,7 +27,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
 
 
 @section('header_filters')
-
+    
     <form method="GET" action="{{ route('inspektorat.progress-temuan-internal.index') }}" class="w-full">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 items-end">
             <div class="flex-grow">
@@ -76,30 +76,33 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
 
 @section('content')
 <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-        <div class="w-full sm:w-auto sm:ml-auto flex flex-col sm:flex-row items-start sm:items-center gap-2">
-            <form action="{{ route('inspektorat.progress-temuan-internal.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
-                @csrf
-                <div class="flex-grow">
-                    <input type="file" name="excel_file" id="excel_file_internal" required
-                           class="block w-full text-sm text-gray-500
-                                  file:mr-2 file:py-1.5 file:px-3 file:rounded-button
-                                  file:border-0 file:text-sm file:font-semibold
-                                  file:bg-green-50 file:text-green-700
-                                  hover:file:bg-green-100 form-input p-0.5 h-full border border-gray-300">
-                </div>
-                <button type="submit" class="px-3 py-2 bg-green-600 text-white rounded-button hover:bg-green-700 text-sm font-medium flex items-center justify-center whitespace-nowrap">
-                    <i class="ri-upload-2-line mr-1"></i> Impor Data
-                </button>
-            </form>
-            <a href="{{route('inspektorat.progress-temuan-internal.downloadTemplate')}}"
-               target="_blank"
-               class="px-3 py-2 bg-blue-500 text-white rounded-button hover:bg-blue-600 text-sm font-medium flex items-center justify-center whitespace-nowrap w-full sm:w-auto mt-2 sm:mt-0">
-                <i class="ri-download-2-line mr-1"></i> Unduh Format
-            </a>
-            <a href="{{ route('inspektorat.progress-temuan-internal.create') }}" class="w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium whitespace-nowrap mt-2 sm:mt-0">
-                <i class="ri-add-line mr-1"></i> Tambah Manual
-            </a>
+    
+    @if (Auth::user()->role === 'superadmin' || Auth::user()->role === 'itjen')
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+            <div class="w-full sm:w-auto sm:ml-auto flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                <form action="{{ route('inspektorat.progress-temuan-internal.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                    @csrf
+                    <div class="flex-grow">
+                        <input type="file" name="excel_file" id="excel_file_internal" required 
+                               class="block w-full text-sm text-gray-500
+                                      file:mr-2 file:py-1.5 file:px-3 file:rounded-button
+                                      file:border-0 file:text-sm file:font-semibold
+                                      file:bg-green-50 file:text-green-700
+                                      hover:file:bg-green-100 form-input p-0.5 h-full border border-gray-300">
+                    </div>
+                    <button type="submit" class="btn-primary">
+                        <i class="ri-upload-2-line mr-1"></i> Impor Data
+                    </button>
+                </form>
+                 <a href=""
+                   target="_blank"
+                   class="btn-primary">
+                    <i class="ri-download-2-line mr-1"></i> Unduh Format
+                </a>
+                <a href="{{ route('inspektorat.progress-temuan-internal.create') }}" class="btn-primary">
+                    <i class="ri-add-line mr-1"></i> Tambah Data
+                </a>
+            </div>
         </div>
     @endif
 
@@ -119,14 +122,14 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
             {{ session('error') }}
         </div>
     @endif
-
+    
     {{-- DITERAPKAN: Gaya tabel modern ke struktur tabel asli --}}
     <div class="table-wrapper">
         <table class="data-table">
             <thead>
                 {{-- TIDAK DIUBAH: Header tabel asli yang berfungsi --}}
                 <tr>
-
+                    
                     <th scope="col">{!! sortableLinkPtInternal('tahun', 'Tahun', $sortBy, $sortDirection, $requestFilters) !!}</th>
                     <th scope="col">{!! sortableLinkPtInternal('bulan', 'Bulan', $sortBy, $sortDirection, $requestFilters) !!}</th>
                     <th scope="col">Unit Kerja</th>
@@ -144,7 +147,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
                 {{-- TIDAK DIUBAH: Isi tabel asli agar data tidak kosong --}}
                 @forelse ($progressItems as $index => $item)
                     <tr>
-
+                        
                         <td>{{ $item->tahun }}</td>
                         <td>{{ \Carbon\Carbon::create()->month($item->bulan)->isoFormat('MMMM') }}</td>
                         <td>{{ $item->unitKerjaEselonI->nama_unit_kerja_eselon_i ?? '-' }}</td>
@@ -185,7 +188,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
             </tbody>
         </table>
     </div>
-
+    
     {{-- Pagination Asli (Tidak Diubah) --}}
     <div class="mt-6">
         {{ $progressItems->appends(request()->except('page'))->links('vendor.pagination.tailwind') }}
