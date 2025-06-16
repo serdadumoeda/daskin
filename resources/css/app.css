@@ -46,8 +46,8 @@
    Stat Card Styles 
    ========================================================================== */
 
-.stat-card-link-wrapper {
-    @apply block bg-white p-5 rounded-lg shadow transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+   .stat-card-link-wrapper {
+    @apply block bg-white p-0 rounded-lg transition-all duration-300 hover:-translate-y-1 mb-10;
 }
 
 .stat-card-link-wrapper-include {
@@ -55,7 +55,7 @@
 }
 
 .stat-card {
-    @apply flex items-center;
+    @apply flex items-center justify-between;
 }
 
 .stat-card-info {
