@@ -55,7 +55,7 @@
 }
 
 .stat-card {
-    @apply flex items-center;
+    @apply flex items-center justify-between;
 }
 
 .stat-card-info {
