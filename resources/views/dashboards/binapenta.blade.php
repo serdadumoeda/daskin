@@ -90,7 +90,7 @@
         <div class="bg-white p-6 rounded-xl shadow-md">
             {{-- Kartu Jml Penempatan oleh Kemnaker --}}
         <a href="{{ route('binapenta.jumlah-penempatan-kemnaker.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
+            <div class="stat-card justify-between">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Jml Penempatan oleh Kemnaker</p>
                     <p class="stat-card-value">{{ number_format($totalPenempatanKemnaker ?? 0) }} <span class="text-sm font-normal">Orang</span></p> {{-- Sesuaikan nama variabel --}}
@@ -107,7 +107,7 @@
         <div class="bg-white p-6 rounded-xl shadow-md">
              {{-- Kartu Jml Lowongan Kerja Baru (Pasker) --}}
         <a href="{{ route('binapenta.jumlah-lowongan-pasker.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
+            <div class="stat-card justify-between">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Jml Lowongan Kerja Baru (Pasker)</p>
                     <p class="stat-card-value">{{ number_format($totalLowonganPasker ?? 0) }} <span class="text-sm font-normal">Lowongan</span></p> {{-- Sesuaikan nama variabel --}}
@@ -127,7 +127,7 @@
         <div class="bg-white p-6 rounded-xl shadow-md">
             {{-- Kartu Persetujuan RPTKA --}}
         <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
+            <div class="stat-card justify-between">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Persetujuan RPTKA</p>
                     <p class="stat-card-value">{{ number_format($totalTkaDisetujui ?? 0) }} <span class="text-sm font-normal">TKA</span></p> {{-- Sesuaikan nama variabel --}}
