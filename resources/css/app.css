@@ -22,7 +22,7 @@
 }
 
 .stat-card {
-    @apply flex items-center justify-between;
+    @apply flex items-center;
 }
 
 .stat-card-title {
