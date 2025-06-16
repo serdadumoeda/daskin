@@ -29,67 +29,65 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8f9fa; /* Warna latar body dari contoh (atau bisa juga theme('colors.gray.50') dari Tailwind) */
+            background-color: #f8f9fa;
         }
-
-        /* Sidebar Styling Baru menggunakan theme() dari tailwind.config.js */
-        /* Tidak perlu kelas .sidebar-custom-bg atau .sidebar-custom-border-color lagi jika kelas Tailwind langsung dipakai di HTML */
 
         /* Styling untuk Tombol Induk Menu */
         .sidebar-parent-button {
-            /* color: theme('colors.sidebar-text'); // Akan diatur oleh kelas text-sidebar-text */
             transition: background-color 0.3s ease, color 0.3s ease;
-            border-left: 3px solid theme('colors.transparent'); /* Placeholder untuk indikator */
-            padding-left: calc(1rem - 3px); /* 1rem (px-4) - 3px (border) */
+            border-left: 3px solid transparent;
+            padding-left: calc(1rem - 3px);
         }
         .sidebar-parent-button:hover {
-            background-color: theme('colors.sidebar-active-bg');
-            color: theme('colors.white');
-            border-left-color: theme('colors.sidebar-active-indicator');
+            background-color: #3E8785; /* Hijau Cerah dari config */
+            color: #ffffff;
         }
+
+        /* === PERUBAHAN UTAMA DI SINI (MENU UTAMA AKTIF) === */
         .sidebar-parent-button.active-parent,
         .sidebar-parent-button.expanded {
-             background-color: theme('colors.sidebar-active-bg');
-             color: theme('colors.white');
-             border-left-color: theme('colors.sidebar-active-indicator');
+            background-color: #3E8785 !important; /* DIPAKSA: Hijau Cerah */
+            color: #ffffff !important;
+            border-left-color: #FFBF00 !important; /* DIPAKSA: Emas */
         }
+
         .sidebar-parent-button.active-parent .main-menu-icon,
         .sidebar-parent-button.expanded .main-menu-icon {
-             color: theme('colors.white');
+            color: #ffffff;
         }
-         .sidebar-parent-button.active-parent > div > span:first-child,
-         .sidebar-parent-button.expanded > div > span:first-child {
+        .sidebar-parent-button.active-parent > div > span:first-child,
+        .sidebar-parent-button.expanded > div > span:first-child {
             font-weight: 600;
         }
 
         /* Styling untuk Item Submenu */
         .sidebar-submenu-item {
-            /* color: theme('colors.sidebar-text'); // Akan diatur oleh kelas text-sidebar-text */
-            padding-left: calc(1.5rem - 3px); /* pl-6 default, dikurangi border */
-            border-left: 3px solid theme('colors.transparent'); /* Placeholder untuk indikator */
+            padding-left: calc(1.5rem - 3px);
+            border-left: 3px solid transparent;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
-         .sidebar-submenu-item:hover {
-            background-color: theme('colors.sidebar-active-bg');
-            color: theme('colors.white');
-        }
-        .sidebar-submenu-item.active {
-            background-color: theme('colors.sidebar-active-bg');
-            color: theme('colors.white');
-            font-weight: 500; /* atau 600 agar lebih tebal */
-            border-left-color: theme('colors.sidebar-active-indicator');
+        .sidebar-submenu-item:hover {
+            background-color: #3E8785; /* Hijau Cerah dari config */
+            color: #ffffff;
         }
 
-        /* Penyesuaian padding karena border kiri ditambahkan */
+        /* === PERUBAHAN UTAMA DI SINI (SUB-MENU AKTIF) === */
+        .sidebar-submenu-item.active {
+            background-color: #3E8785 !important; /* DIPAKSA: Hijau Cerah */
+            color: #ffffff !important;
+            font-weight: 500;
+            border-left-color: #FFBF00 !important; /* DIPAKSA: Emas */
+        }
+
+        /* Penyesuaian padding (Sudah benar) */
         .sidebar-parent-button.active-parent,
         .sidebar-parent-button.expanded {
-             padding-left: calc(1rem - 3px); /* px-4 */
+            padding-left: calc(1rem - 3px);
         }
-         .sidebar-submenu-item.active {
-            /* Jika pl-6 (1.5rem) adalah target awal submenu */
+        .sidebar-submenu-item.active {
             padding-left: calc(1.5rem - 3px);
         }
-         .sidebar-submenu-item.active.pl-10 { /* Jika ada submenu yang lebih dalam (2.5rem) */
+        .sidebar-submenu-item.active.pl-10 {
             padding-left: calc(2.5rem - 3px);
         }
 
@@ -98,22 +96,21 @@
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease-in-out;
-            background-color: rgba(0,0,0,0.1); /* Latar submenu sedikit berbeda */
+            background-color: rgba(0,0,0,0.1);
         }
         .submenu-list.expanded {
-            max-height: 1000px; /* Adjust as needed */
+            max-height: 1000px;
         }
         .form-input {
-             border-width: 1px;
-             border-color: #d1d5db; /* theme('colors.gray.300') */
-             border-radius: theme('borderRadius.button');
-             box-shadow: theme('boxShadow.sm');
+            border-width: 1px;
+            border-color: #d1d5db;
+            border-radius: 0.375rem; /* md */
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); /* sm */
         }
         .form-input:focus {
-            border-color: theme('colors.primary');
-            --tw-ring-color: theme('colors.primary');
-            /* box-shadow: 0 0 0 2px theme('ringOpacity.50', 'colors.primary'); */ /* Tailwind v2 syntax */
-            box-shadow: 0 0 0 2px theme('colors.primary / 50%'); /* Tailwind v3 syntax for ring opacity */
+            border-color: #3b82f6; /* primary */
+            --tw-ring-color: #3b82f6; /* primary */
+            box-shadow: 0 0 0 2px rgb(59 130 246 / 0.5);
         }
         .chart-container {
             width: 100%;
@@ -121,10 +118,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #f3f4f6; /* theme('colors.gray.100') */
-            border-radius: theme('borderRadius.DEFAULT');
-            color: #9ca3af; /* theme('colors.gray.400') */
-            font-size: theme('fontSize.xs');
+            background-color: #f3f4f6;
+            border-radius: 0.375rem; /* md */
+            color: #9ca3af;
+            font-size: 0.75rem; /* xs */
         }
     </style>
     @stack('styles')

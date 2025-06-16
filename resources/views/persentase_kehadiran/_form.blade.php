@@ -70,11 +70,11 @@
 
 <div class="flex justify-end space-x-3 mt-8">
     <a href="{{ route('sekretariat-jenderal.persentase-kehadiran.index') }}"
-       class="px-4 py-2 bg-gray-200 text-gray-700 rounded-button hover:bg-gray-300 text-sm font-medium">
+       class="btn-secondary-outline">
         Batal
     </a>
     <button type="submit"
-            class="px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium">
+            class="btn-primary ">
         <i class="ri-save-line mr-1"></i> Simpan
     </button>
 </div>

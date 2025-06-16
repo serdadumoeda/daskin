@@ -16,7 +16,7 @@
     <body class="font-sans text-gray-900 antialiased">
         <div class="min-h-screen flex items-center justify-center bg-gray-100 p-4">
             <div class="flex w-full max-w-5xl bg-white shadow-lg rounded-xl overflow-hidden">
-                <div class="hidden md:flex w-1/2 text-white p-12 flex-col justify-center items-center" style="background-color: #0A134F;">
+                <div class="hidden md:flex w-1/2 text-white p-12 flex-col justify-center items-center" style="background-color: #3E8785;">
                     <a href="/">
                         <img src="{{ asset('image/logo/Kemnaker_Logo_White.png') }}" alt="Logo" class="w-auto h-20 mb-6" />
                     </a>

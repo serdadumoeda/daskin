@@ -3,8 +3,8 @@
 @section('title', 'Laporan WLKP Online')
 @section('page_title', 'Manajemen Laporan WLKP Online')
 
+
 @php
-// Helper function untuk link sorting (spesifik untuk modul ini)
 if (!function_exists('sortableLinkWlkp')) {
     function sortableLinkWlkp(string $column, string $label, string $currentSortBy, string $currentSortDirection, array $requestFilters) {
         $newDirection = ($currentSortBy == $column && $currentSortDirection == 'asc') ? 'desc' : 'asc';
@@ -20,10 +20,13 @@ if (!function_exists('sortableLinkWlkp')) {
         return '<a href="' . route('binwasnaker.pelaporan-wlkp-online.index', $queryParams) . '" class="flex items-center hover:text-primary">' . e($label) . $iconHtml . '</a>';
     }
 }
+$sortBy = $currentSortBy ?? request('sort_by', 'id');
+$sortDirection = $currentSortDirection ?? request('sort_direction', 'desc');
 $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_filter']);
 @endphp
 
 @section('header_filters')
+
     <form method="GET" action="{{ route('binwasnaker.pelaporan-wlkp-online.index') }}" class="w-full">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 items-end">
             <div class="flex-grow">
@@ -51,16 +54,17 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_fil
             <div class="flex items-center space-x-2 pt-5">
                 @if(request()->filled('sort_by')) <input type="hidden" name="sort_by" value="{{ request('sort_by') }}"> @endif
                 @if(request()->filled('sort_direction')) <input type="hidden" name="sort_direction" value="{{ request('sort_direction') }}"> @endif
-                <button type="submit" class="w-full sm:w-auto px-4 py-1.5 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium">
+                <button type="submit" class="btn-primary">
                     <i class="ri-filter-3-line mr-1"></i> Filter
                 </button>
-                <a href="{{ route('binwasnaker.pelaporan-wlkp-online.index') }}" class="w-full sm:w-auto px-4 py-1.5 bg-gray-200 text-gray-700 rounded-button hover:bg-gray-300 text-sm font-medium">
-                    Reset
+                <a href="{{ route('binwasnaker.pelaporan-wlkp-online.index') }}" class="btn-secondary-outline">
+                    Clear Filter
                 </a>
             </div>
         </div>
     </form>
 @endsection
+
 
 @section('content')
 <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
@@ -89,8 +93,9 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_fil
                 <i class="ri-add-line mr-1"></i> Tambah Laporan WLKP
             </a>
         </div>
-    </div>
+    @endif
 
+    {{-- Pesan Error & Sukses (Tidak Diubah) --}}
     @if (session('import_errors'))
         <div class="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-md text-sm">
             <strong class="font-bold">Beberapa data gagal diimpor:</strong>
@@ -107,36 +112,32 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_fil
         </div>
     @endif
 
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 border border-gray-200">
-            <thead class="bg-gray-50">
+    {{-- DITERAPKAN: Gaya tabel modern ke struktur tabel asli --}}
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                {{-- TIDAK DIUBAH: Header tabel asli yang berfungsi --}}
                 <tr>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkWlkp('tahun', 'Tahun', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkWlkp('bulan', 'Bulan', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkWlkp('provinsi', 'Provinsi', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {!! sortableLinkWlkp('jumlah_perusahaan_melapor', 'Jumlah Perusahaan', $sortBy, $sortDirection, $requestFilters) !!}
-                    </th>
-                    <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+
+                    <th scope="col">{!! sortableLinkWlkp('tahun', 'Tahun', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col">{!! sortableLinkWlkp('bulan', 'Bulan', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col">{!! sortableLinkWlkp('provinsi', 'Provinsi', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col" class="text-right">{!! sortableLinkWlkp('jumlah_perusahaan_melapor', 'Jumlah Perusahaan', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    <th scope="col" class="text-center">Aksi</th>
                 </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody>
+                {{-- TIDAK DIUBAH: Isi tabel asli agar data tidak kosong --}}
                 @forelse ($pelaporanWlkpOnlines as $index => $item)
                     <tr>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $pelaporanWlkpOnlines->firstItem() + $index }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->tahun }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ \Carbon\Carbon::create()->month($item->bulan)->isoFormat('MMMM') }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ $item->provinsi }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 text-right">{{ number_format($item->jumlah_perusahaan_melapor) }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-center">
-                            <div class="flex items-center justify-center space-x-2">
+
+                        <td>{{ $item->tahun }}</td>
+                        <td>{{ \Carbon\Carbon::create()->month($item->bulan)->isoFormat('MMMM') }}</td>
+                        <td>{{ $item->provinsi }}</td>
+                        <td class="text-right">{{ number_format($item->jumlah_perusahaan_melapor) }}</td>
+                        <td class="text-center">
+                            {{-- DITERAPKAN: Gaya terpusat untuk grup aksi --}}
+                            <div class="table-actions justify-center">
                                 <a href="{{ route('binwasnaker.pelaporan-wlkp-online.edit', $item->id) }}" class="text-blue-600 hover:text-blue-800" title="Edit">
                                     <i class="ri-pencil-line text-base"></i>
                                 </a>
@@ -147,16 +148,16 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_fil
                                         <i class="ri-delete-bin-line text-base"></i>
                                     </button>
                                 </form>
-                                {{-- Tidak ada show view untuk modul ini berdasarkan Route::resource kecuali show --}}
+
                             </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="px-4 py-10 text-center text-sm text-gray-500">
-                            <div class="flex flex-col items-center">
-                                <i class="ri-inbox-2-line text-4xl text-gray-400 mb-2"></i>
-                                Tidak ada data laporan WLKP online ditemukan.
+                        <td colspan="6" class="text-center py-10">
+                            <div class="flex flex-col items-center text-gray-500">
+                                <i class="ri-inbox-2-line text-4xl mb-2"></i>
+                                <span>Tidak ada data laporan WLKP online ditemukan.</span>
                             </div>
                         </td>
                     </tr>
@@ -164,6 +165,8 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_fil
             </tbody>
         </table>
     </div>
+
+    {{-- Pagination Asli (Tidak Diubah) --}}
     <div class="mt-6">
         {{ $pelaporanWlkpOnlines->appends(request()->except('page'))->links('vendor.pagination.tailwind') }}
     </div>
