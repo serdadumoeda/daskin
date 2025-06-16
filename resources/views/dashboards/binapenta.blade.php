@@ -76,7 +76,7 @@
     {{-- Bagian Grafik --}}
     {{-- Pastikan ID chart dan variabel data chart sesuai dengan yang ada di BinapentaDashboardController --}}
     <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-6">
-        <div class="bg-white p-6 rounded-xl shadow-md">
+        {{-- <div class="bg-white p-6 rounded-xl shadow-md"> --}}
         
 
        
