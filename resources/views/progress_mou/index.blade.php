@@ -92,7 +92,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'search_judul
                         <i class="ri-upload-2-line mr-1"></i> Impor Data
                     </button>
                 </form>
-                 <a href=""
+                 <a href="https://kemnaker-my.sharepoint.com/:x:/r/personal/arif365_kemnaker_go_id/_layouts/15/Doc.aspx?sourcedoc=%7BC44728E4-DFAE-4523-B9A3-359FD97C1F2A%7D&file=import%20data%20jumlah%20mou.xlsx&action=default&mobileredirect=true"
                    target="_blank"
                    class="btn-primary">
                     <i class="ri-download-2-line mr-1"></i> Unduh Format
