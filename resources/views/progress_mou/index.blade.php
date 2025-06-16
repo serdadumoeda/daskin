@@ -89,7 +89,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'search_judul
                     <i class="ri-upload-2-line mr-1"></i> Impor Data
                 </button>
             </form>
-             <a href="{{ route('sekretariat-jenderal.progress-mou.downloadTemplate') }}"
+             <a href="https://kemnaker-my.sharepoint.com/:x:/r/personal/arif365_kemnaker_go_id/_layouts/15/Doc.aspx?sourcedoc=%7BC44728E4-DFAE-4523-B9A3-359FD97C1F2A%7D&file=import%20data%20jumlah%20mou.xlsx&action=default&mobileredirect=true"
                target="_blank"
                class="px-3 py-2 bg-blue-500 text-white rounded-button hover:bg-blue-600 text-sm font-medium flex items-center justify-center whitespace-nowrap w-full sm:w-auto mt-2 sm:mt-0">
                 <i class="ri-download-2-line mr-1"></i> Unduh Format
