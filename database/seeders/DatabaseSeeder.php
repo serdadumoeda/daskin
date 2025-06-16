@@ -14,9 +14,11 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             // Master Data Awal
+            RolesAndPermissionsSeeder::class,
             UnitKerjaEselonISeeder::class,
             SatuanKerjaSeeder::class,
-            UserSeeder::class, // Seeder untuk pengguna dan peran
+            UserSeeder::class, 
+            KemnakerDataSeeder::class,
 
             // Seeder (Temuan BPK & Internal) - Inspektorat Jenderal
             ProgressTemuanBpkSeeder::class,

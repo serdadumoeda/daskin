@@ -6,7 +6,7 @@
     <form method="GET" action="{{ route('dashboard') }}" class="flex flex-col sm:flex-row items-center gap-3 w-full">
         <div class="flex-1 w-full sm:w-auto">
             <label for="tahun" class="sr-only">Tahun</label>
-            <select name="tahun" id="tahun" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+            <select name="tahun" id="tahun" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm">
                 @foreach ($availableYears as $yearOption)
                     <option value="{{ $yearOption }}" {{ $selectedYear == $yearOption ? 'selected' : '' }}>{{ $yearOption }}</option>
                 @endforeach
@@ -14,7 +14,7 @@
         </div>
         <div class="flex-1 w-full sm:w-auto">
             <label for="bulan" class="sr-only">Bulan</label>
-            <select name="bulan" id="bulan" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+            <select name="bulan" id="bulan" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm">
                 <option value="">Semua Bulan (Tahunan)</option>
                 @php $monthsForFilter = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']; @endphp
                 @foreach ($monthsForFilter as $monthKey => $monthName)
@@ -23,12 +23,8 @@
             </select>
         </div>
         <div class="flex items-center gap-2 w-full sm:w-auto">
-            <button type="submit" class="w-full sm:w-auto text-sm font-medium text-filter-btn-apply-text bg-filter-btn-apply-bg border border-filter-btn-apply-border hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-md px-4 py-2">
-                Terapkan
-            </button>
-            <a href="{{ route('dashboard') }}" class="w-full sm:w-auto text-center text-sm font-medium text-filter-btn-clear-text bg-filter-btn-clear-bg border border-filter-btn-clear-border hover:bg-red-200 focus:ring-4 focus:outline-none focus:ring-red-100 rounded-md px-4 py-2">
-                Bersihkan
-            </a>
+            <button type="submit" class="w-full sm:w-auto text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md px-4 py-2">Terapkan</button>
+            <a href="{{ route('dashboard') }}" class="w-full sm:w-auto text-center text-sm font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-md px-4 py-2">Bersihkan</a>
         </div>
     </form>
 @endsection
@@ -36,124 +32,48 @@
 @section('content')
 <div class="space-y-6">
     <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        
         <div class="bg-white p-5 rounded-xl shadow-md">
-            <a href="{{ route('binapenta.jumlah-penempatan-kemnaker.index') }}" class="stat-card-link-wrapper-include">
-                <div class="stat-card flex items-center">
-                    <div class="stat-card-icon-wrapper bg-blue-100 mr-4">
-                        <i class="ri-auction-fill text-blue-500 text-2xl"></i>
-                    </div>
-                    <div class="stat-card-info">
-                        <p class="stat-card-title">Penyelesaian Temuan BPK</p>
-                        <p class="stat-card-value">{{ number_format($persenSelesaiBpk ?? 0, 2) }} <span class="text-sm font-normal">%</span></p> 
-                    </div>
-                </div>
-            </a>
-            <!-- <h3 class="font-semibold text-lg text-gray-800">Tren Peserta Pelatihan</h3> -->
-            <div id="main-chart-penyelesaian-bpk" style="height: 350px;"></div>
+            <a href="{{ Auth::user()->can('manage data') ? route('inspektorat.progress-temuan-bpk.index') : '#' }}" class="block">
+                <div class="flex items-center"><div class="stat-card-icon-wrapper bg-blue-100 mr-4"><i class="ri-auction-fill text-blue-500 text-2xl"></i></div><div class="stat-card-info"><p class="stat-card-title">Penyelesaian Temuan BPK</p><p class="stat-card-value">{{ number_format($persenSelesaiBpk ?? 0, 2) }} <span class="text-sm font-normal">%</span></p></div></div>
+            </a><div id="main-chart-penyelesaian-bpk" style="height: 350px;"></div>
         </div>
-
         <div class="bg-white p-5 rounded-xl shadow-md">
-            <a href="{{ route('binapenta.jumlah-lowongan-pasker.index') }}" class="stat-card-link-wrapper-include">
-                <div class="stat-card flex items-center">
-                    <div class="stat-card-icon-wrapper bg-green-100 mr-4">
-                        <i class="ri-checkbox-multiple-fill text-green-500 text-2xl"></i>
-                    </div>
-                    <div class="stat-card-info">
-                        <p class="stat-card-title">Penyelesaian Temuan Internal</p>
-                        <p class="stat-card-value">{{ number_format($persenSelesaiInternal ?? 0, 2) }} <span class="text-sm font-normal">%</span></p> 
-                    </div>
-                </div>
-            </a>
-            <!-- <h3 class="font-semibold text-lg text-gray-800">Tren Peserta Pelatihan</h3> -->
-            <div id="main-chart-penyelesaian-internal" style="height: 350px;"></div>
+            <a href="{{ Auth::user()->can('manage data') ? route('inspektorat.progress-temuan-internal.index') : '#' }}" class="block">
+                <div class="flex items-center"><div class="stat-card-icon-wrapper bg-green-100 mr-4"><i class="ri-checkbox-multiple-fill text-green-500 text-2xl"></i></div><div class="stat-card-info"><p class="stat-card-title">Penyelesaian Temuan Internal</p><p class="stat-card-value">{{ number_format($persenSelesaiInternal ?? 0, 2) }} <span class="text-sm font-normal">%</span></p></div></div>
+            </a><div id="main-chart-penyelesaian-internal" style="height: 350px;"></div>
         </div>
-
         <div class="bg-white p-5 rounded-xl shadow-md">
-            <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper-include">
-                <div class="stat-card flex items-center">
-                    <div class="stat-card-icon-wrapper bg-purple-100 mr-4">
-                        <i class="ri-account-box-line text-purple-500 text-2xl"></i>
-                    </div>
-                    <div class="stat-card-info">
-                        <p class="stat-card-title">Penempatan Tenaga Kerja</p>
-                        <p class="stat-card-value">{{ number_format($totalPenempatanKemenaker ?? 0) }} <span class="text-sm font-normal">Orang</span></p> 
-                    </div>
-                </div>
-            </a>
-            <!-- <h3 class="font-semibold text-lg text-gray-800">Tren Peserta Pelatihan</h3> -->
-            <div id="main-chart-penempatan-kemnaker" style="height: 350px;"></div>
+            <a href="{{ Auth::user()->can('manage data') ? route('binapenta.jumlah-penempatan-kemnaker.index') : '#' }}" class="block">
+                <div class="flex items-center"><div class="stat-card-icon-wrapper bg-purple-100 mr-4"><i class="ri-account-box-line text-purple-500 text-2xl"></i></div><div class="stat-card-info"><p class="stat-card-title">Penempatan Tenaga Kerja</p><p class="stat-card-value">{{ number_format($totalPenempatanKemenaker ?? 0) }} <span class="text-sm font-normal">Orang</span></p></div></div>
+            </a><div id="main-chart-penempatan-kemnaker" style="height: 350px;"></div>
         </div>
-
         <div class="bg-white p-5 rounded-xl shadow-md">
-            <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper-include">
-                <div class="stat-card flex items-center">
-                    <div class="stat-card-icon-wrapper bg-yellow-100 mr-4">
-                        <i class="ri-team-line text-yellow-500 text-2xl"></i>
-                    </div>
-                    <div class="stat-card-info">
-                        <p class="stat-card-title">Peserta Pelatihan</p>
-                        <p class="stat-card-value">{{ number_format($totalPesertaPelatihan ?? 0) }} <span class="text-sm font-normal">Orang</span></p> 
-                    </div>
-                </div>
-            </a>
-            <!-- <h3 class="font-semibold text-lg text-gray-800">Tren Peserta Pelatihan</h3> -->
-            <div id="main-chart-peserta-pelatihan" style="height: 350px;"></div>
+            <a href="{{ Auth::user()->can('manage data') ? route('binalavotas.jumlah-kepesertaan-pelatihan.index') : '#' }}" class="block">
+                <div class="flex items-center"><div class="stat-card-icon-wrapper bg-yellow-100 mr-4"><i class="ri-team-line text-yellow-500 text-2xl"></i></div><div class="stat-card-info"><p class="stat-card-title">Peserta Pelatihan</p><p class="stat-card-value">{{ number_format($totalPesertaPelatihan ?? 0) }} <span class="text-sm font-normal">Orang</span></p></div></div>
+            </a><div id="main-chart-peserta-pelatihan" style="height: 350px;"></div>
         </div>
-
         <div class="bg-white p-5 rounded-xl shadow-md">
-            <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper-include">
-                <div class="stat-card flex items-center">
-                    <div class="stat-card-icon-wrapper bg-red-100 mr-4">
-                        <i class=" ri-user-2-fill text-red-500 text-2xl"></i>
-                    </div>
-                    <div class="stat-card-info">
-                        <p class="stat-card-title">Lulusan Polteknaker Bekerja</p>
-                        <p class="stat-card-value">{{ number_format($totalLulusanBekerja ?? 0) }} <span class="text-sm font-normal">Orang</span></p> 
-                    </div>
-                </div>
-            </a>
-            <!-- <h3 class="font-semibold text-lg text-gray-800">Tren Lulusan Polteknaker Bekerja</h3> -->
-            <div id="main-chart-lulusan-bekerja" style="height: 350px;"></div>
+            <a href="{{ Auth::user()->can('manage data') ? route('sekretariat-jenderal.lulusan-polteknaker-bekerja.index') : '#' }}" class="block">
+                <div class="flex items-center"><div class="stat-card-icon-wrapper bg-red-100 mr-4"><i class=" ri-user-2-fill text-red-500 text-2xl"></i></div><div class="stat-card-info"><p class="stat-card-title">Lulusan Polteknaker Bekerja</p><p class="stat-card-value">{{ number_format($totalLulusanBekerja ?? 0) }} <span class="text-sm font-normal">Orang</span></p></div></div>
+            </a><div id="main-chart-lulusan-bekerja" style="height: 350px;"></div>
         </div>
-
         <div class="bg-white p-5 rounded-xl shadow-md">
-            <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper-include">
-                <div class="stat-card flex items-center">
-                    <div class="stat-card-icon-wrapper bg-blue-100 mr-4">
-                        <i class="ri-apps-2-line text-blue-500 text-2xl"></i>
-                    </div>
-                    <div class="stat-card-info">
-                        <p class="stat-card-title">Rekomendasi Kebijakan</p>
-                        <p class="stat-card-value">{{ number_format($totalRekomendasiKebijakan ?? 0) }} </p> 
-                    </div>
-                </div>
-            </a>
-            <!-- <h3 class="font-semibold text-lg text-gray-800">Tren Rekomendasi Kebijakan</h3> -->
-            <div id="main-chart-rekomendasi-kebijakan" style="height: 350px;"></div>
+            <a href="{{ Auth::user()->can('manage data') ? route('barenbang.jumlah-kajian-rekomendasi.index') : '#' }}" class="block">
+                <div class="flex items-center"><div class="stat-card-icon-wrapper bg-blue-100 mr-4"><i class="ri-apps-2-line text-blue-500 text-2xl"></i></div><div class="stat-card-info"><p class="stat-card-title">Rekomendasi Kebijakan</p><p class="stat-card-value">{{ number_format($totalRekomendasiKebijakan ?? 0) }}</p></div></div>
+            </a><div id="main-chart-rekomendasi-kebijakan" style="height: 350px;"></div>
         </div>
-
-         <div class="bg-white p-5 rounded-xl shadow-md">
-            <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper-include">
-                <div class="stat-card flex items-center">
-                    <div class="stat-card-icon-wrapper bg-green-100 mr-4">
-                        <i class="ri-bank-card-fill text-green-500 text-2xl"></i>
-                    </div>
-                    <div class="stat-card-info">
-                        <p class="stat-card-title">Rata-rata IKPA</p>
-                        <p class="stat-card-value">{{ number_format($avgIkpaKementerian ?? 0, 2) }} </p> 
-                    </div>
-                </div>
-            </a>
-            <!-- <h3 class="font-semibold text-lg text-gray-800">Tren Rata-rata IKPA</h3> -->
-            <div id="main-chart-ikpa" style="height: 350px;"></div>
+        <div class="bg-white p-5 rounded-xl shadow-md">
+            <a href="{{ Auth::user()->can('manage data') ? route('sekretariat-jenderal.ikpa.index') : '#' }}" class="block">
+                <div class="flex items-center"><div class="stat-card-icon-wrapper bg-green-100 mr-4"><i class="ri-bank-card-fill text-green-500 text-2xl"></i></div><div class="stat-card-info"><p class="stat-card-title">Rata-rata IKPA</p><p class="stat-card-value">{{ number_format($avgIkpaKementerian ?? 0, 2) }}</p></div></div>
+            </a><div id="main-chart-ikpa" style="height: 350px;"></div>
         </div>
-        
     </div>
 </div>
 @endsection
 
+
 @push('scripts')
+
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
