@@ -30,7 +30,7 @@ class JumlahPhkController extends Controller
 
         $sortBy = $request->input('sort_by', 'tahun');
         $sortDirection = $request->input('sort_direction', 'desc');
-        $sortableColumns = ['tahun', 'bulan', 'provinsi', 'jumlah_perusahaan_phk', 'jumlah_tk_phk'];
+        $sortableColumns = ['tahun', 'bulan', 'provinsi', 'jumlah_tk_phk'];
 
         if (in_array($sortBy, $sortableColumns) && in_array(strtolower($sortDirection), ['asc', 'desc'])) {
             $query->orderBy($sortBy, $sortDirection);
@@ -61,7 +61,7 @@ class JumlahPhkController extends Controller
             'tahun' => 'required|integer|digits:4|min:2000|max:' . (date('Y') + 5),
             'bulan' => 'required|integer|min:1|max:12',
             'provinsi' => 'required|string|max:255',
-            'jumlah_perusahaan_phk' => 'required|integer|min:0',
+            // 'jumlah_perusahaan_phk' => 'required|integer|min:0',
             'jumlah_tk_phk' => 'required|integer|min:0',
         ]);
 
@@ -93,7 +93,7 @@ class JumlahPhkController extends Controller
             'tahun' => 'required|integer|digits:4|min:2000|max:' . (date('Y') + 5),
             'bulan' => 'required|integer|min:1|max:12',
             'provinsi' => 'required|string|max:255',
-            'jumlah_perusahaan_phk' => 'required|integer|min:0',
+            // 'jumlah_perusahaan_phk' => 'required|integer|min:0',
             'jumlah_tk_phk' => 'required|integer|min:0',
         ]);
 
