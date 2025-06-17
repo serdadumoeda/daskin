@@ -23,10 +23,10 @@ class DataKetenagakerjaan extends Model
         'sekolah',                 
         'mengurus_rumah_tangga',   
         'lainnya_bak', 
-        'tingkat_partisipasi_angkatan_kerja', 
+        'tpak', 
         'bekerja',
         'pengangguran_terbuka',
-        'tingkat_pengangguran_terbuka', 
+        'tpt', 
         'tingkat_kesempatan_kerja', 
     ];
 
