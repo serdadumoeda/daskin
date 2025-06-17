@@ -22,7 +22,7 @@ class DataKetenagakerjaan extends Model
         'bukan_angkatan_kerja',    
         'sekolah',                 
         'mengurus_rumah_tangga',   
-        'lainnya_bukan_angkatan_kerja', 
+        'lainnya_bak', 
         'tingkat_partisipasi_angkatan_kerja', 
         'bekerja',
         'pengangguran_terbuka',
