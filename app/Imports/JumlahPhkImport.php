@@ -42,14 +42,14 @@ class JumlahPhkImport implements ToModel, WithHeadingRow, WithValidation
         }
         
         // Sesuaikan nama header dari Excel jika berbeda
-        $jumlahPerusahaan = (int)($row['jumlah_perusahaan_phk'] ?? $row['jumlah_perusahaan'] ?? 0);
+        // $jumlahPerusahaan = (int)($row['jumlah_perusahaan_phk'] ?? $row['jumlah_perusahaan'] ?? 0);
         $jumlahTkPhk = (int)($row['jumlah_tk_phk'] ?? $row['jumlah_tenaga_kerja_yang_di_phk'] ?? 0);
 
         return new JumlahPhk([
             'tahun'                   => $row['tahun'],
             'bulan'                   => $bulan,
             'provinsi'                => $row['provinsi'] ?? null,
-            'jumlah_perusahaan_phk'   => $jumlahPerusahaan,
+            // 'jumlah_perusahaan_phk'   => $jumlahPerusahaan,
             'jumlah_tk_phk'           => $jumlahTkPhk,
         ]);
     }
@@ -61,8 +61,9 @@ class JumlahPhkImport implements ToModel, WithHeadingRow, WithValidation
             '*.bulan' => 'required',
             '*.provinsi' => 'required|string|max:255',
             // Validasi untuk kolom jumlah, bisa salah satu dari dua nama header Excel
-            '*.jumlah_perusahaan_phk' => 'exclude_if:*.jumlah_perusahaan,present|required_without:*.jumlah_perusahaan|integer|min:0',
-            '*.jumlah_perusahaan' => 'exclude_if:*.jumlah_perusahaan_phk,present|required_without:*.jumlah_perusahaan_phk|integer|min:0',
+            // '*.jumlah_perusahaan_phk' => 'exclude_if:*.jumlah_perusahaan,present|required_without:*.jumlah_perusahaan|integer|min:0',
+            // '*.jumlah_perusahaan' => 'exclude_if:*.jumlah_perusahaan_phk,present|required_without:*.jumlah_perusahaan_phk|integer|min:0',
+            '*.jumlah_perusahaan' => 'integer|min:0',
             
             '*.jumlah_tk_phk' => 'exclude_if:*.jumlah_tenaga_kerja_yang_di_phk,present|required_without:*.jumlah_tenaga_kerja_yang_di_phk|integer|min:0',
             '*.jumlah_tenaga_kerja_yang_di_phk' => 'exclude_if:*.jumlah_tk_phk,present|required_without:*.jumlah_tk_phk|integer|min:0',
@@ -76,7 +77,7 @@ class JumlahPhkImport implements ToModel, WithHeadingRow, WithValidation
             '*.bulan.required' => 'Kolom bulan wajib diisi atau formatnya tidak valid.',
             '*.provinsi.required' => 'Kolom provinsi wajib diisi.',
             '*.jumlah_perusahaan_phk.required_without' => 'Kolom jumlah_perusahaan_phk atau jumlah_perusahaan wajib diisi.',
-            '*.jumlah_perusahaan.required_without' => 'Kolom jumlah_perusahaan atau jumlah_perusahaan_phk wajib diisi.',
+            // '*.jumlah_perusahaan.required_without' => 'Kolom jumlah_perusahaan atau jumlah_perusahaan_phk wajib diisi.',
             '*.jumlah_tk_phk.required_without' => 'Kolom jumlah_tk_phk atau jumlah_tenaga_kerja_yang_di_phk wajib diisi.',
             '*.jumlah_tenaga_kerja_yang_di_phk.required_without' => 'Kolom jumlah_tenaga_kerja_yang_di_phk atau jumlah_tk_phk wajib diisi.',
         ];
