@@ -17,7 +17,7 @@ class DataKetenagakerjaan extends Model
     protected $fillable = [
         'tahun',
         'bulan',
-        'penduduk_15_tahun_ke_atas', 
+        'penduduk_15_atas', 
         'angkatan_kerja',
         'bukan_angkatan_kerja',    
         'sekolah',                 
