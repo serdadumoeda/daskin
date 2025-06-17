@@ -68,6 +68,8 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_fil
 
 @section('content')
 <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+
+    @if (Auth::user()->role === 'superadmin' || Auth::user()->role === 'binwasnaker')
     <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
         <div class="w-full sm:w-auto sm:ml-auto flex flex-col sm:flex-row items-start sm:items-center gap-2">
             <form action="{{ route('binwasnaker.pelaporan-wlkp-online.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
@@ -80,19 +82,20 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_fil
                                   file:bg-green-50 file:text-green-700
                                   hover:file:bg-green-100 form-input p-0.5 h-full border border-gray-300">
                 </div>
-                <button type="submit" class="px-3 py-2 bg-green-600 text-white rounded-button hover:bg-green-700 text-sm font-medium flex items-center justify-center whitespace-nowrap">
+                <button type="submit" class="btn-primary">
                     <i class="ri-upload-2-line mr-1"></i> Impor Data
                 </button>
             </form>
              <a href="{{ route("binwasnaker.pelaporan-wlkp-online.download-template") }}"
                target="_blank"
-               class="px-3 py-2 bg-blue-500 text-white rounded-button hover:bg-blue-600 text-sm font-medium flex items-center justify-center whitespace-nowrap w-full sm:w-auto mt-2 sm:mt-0">
+               class="btn-primary">
                 <i class="ri-download-2-line mr-1"></i> Unduh Format
             </a>
-            <a href="{{ route('binwasnaker.pelaporan-wlkp-online.create') }}" class="w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 text-sm font-medium whitespace-nowrap mt-2 sm:mt-0">
+            <a href="{{ route('binwasnaker.pelaporan-wlkp-online.create') }}" class="btn-primary">
                 <i class="ri-add-line mr-1"></i> Tambah Laporan WLKP
             </a>
         </div>
+    </div>
     @endif
 
     {{-- Pesan Error & Sukses (Tidak Diubah) --}}

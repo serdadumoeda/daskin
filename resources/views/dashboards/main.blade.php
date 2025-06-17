@@ -49,7 +49,6 @@
                     </div>
                 </div>
             </a>
-            <!-- <h3 class="font-semibold text-lg text-gray-800">Tren Peserta Pelatihan</h3> -->
             <div id="main-chart-penyelesaian-bpk" style="height: 350px;"></div>
         </div>
 
@@ -65,7 +64,6 @@
                     </div>
                 </div>
             </a>
-            <!-- <h3 class="font-semibold text-lg text-gray-800">Tren Peserta Pelatihan</h3> -->
             <div id="main-chart-penyelesaian-internal" style="height: 350px;"></div>
         </div>
 
@@ -81,7 +79,6 @@
                     </div>
                 </div>
             </a>
-            <!-- <h3 class="font-semibold text-lg text-gray-800">Tren Peserta Pelatihan</h3> -->
             <div id="main-chart-penempatan-kemnaker" style="height: 350px;"></div>
         </div>
 
@@ -97,7 +94,6 @@
                     </div>
                 </div>
             </a>
-            <!-- <h3 class="font-semibold text-lg text-gray-800">Tren Peserta Pelatihan</h3> -->
             <div id="main-chart-peserta-pelatihan" style="height: 350px;"></div>
         </div>
 
@@ -113,7 +109,6 @@
                     </div>
                 </div>
             </a>
-            <!-- <h3 class="font-semibold text-lg text-gray-800">Tren Lulusan Polteknaker Bekerja</h3> -->
             <div id="main-chart-lulusan-bekerja" style="height: 350px;"></div>
         </div>
 
@@ -129,7 +124,6 @@
                     </div>
                 </div>
             </a>
-            <!-- <h3 class="font-semibold text-lg text-gray-800">Tren Rekomendasi Kebijakan</h3> -->
             <div id="main-chart-rekomendasi-kebijakan" style="height: 350px;"></div>
         </div>
 
@@ -145,7 +139,6 @@
                     </div>
                 </div>
             </a>
-            <!-- <h3 class="font-semibold text-lg text-gray-800">Tren Rata-rata IKPA</h3> -->
             <div id="main-chart-ikpa" style="height: 350px;"></div>
         </div>
         
@@ -177,11 +170,11 @@
             const option = {
                 tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
                 legend: { data: legendData, bottom: 0, type: 'scroll' },
-                grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
+                grid: { left: '5%', right: '5%', bottom: '15%', containLabel: true },
                 xAxis: [{ type: 'category', data: labels, axisPointer: { type: 'shadow' } }],
                 yAxis: [
-                    { type: 'value', name: yAxisNames[0], min: 0, position: 'left', axisLabel: { formatter: '{value}' } },
-                    { type: 'value', name: yAxisNames[1], min: 0, max: yAxisNames[1].includes('%') ? 100 : undefined, position: 'right', splitLine: { show: false }, axisLabel: { formatter: yAxisNames[1].includes('%') ? '{value}%' : '{value}' } }
+                    { type: 'value', name: 'Jumlah Kasus', min: 0, position: 'left', axisLabel: { formatter: '{value}' } },
+                    { type: 'value', name: 'Kumulatif', min: 0, max: yAxisNames[1].includes('%') ? 100 : undefined, position: 'right', splitLine: { show: false }, axisLabel: { formatter: yAxisNames[1].includes('%') ? '{value}%' : '{value}' } }
                 ],
                 series: series
             };
