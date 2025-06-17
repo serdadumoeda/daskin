@@ -27,7 +27,7 @@ class DataKetenagakerjaan extends Model
         'bekerja',
         'pengangguran_terbuka',
         'tpt', 
-        'tingkat_kesempatan_kerja', 
+        'tingkat_kesempatan_kerja',
     ];
 
     /**
