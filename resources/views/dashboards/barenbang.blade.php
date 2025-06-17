@@ -84,7 +84,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <div class="bg-white p-6 rounded-xl shadow-md">
                 <a href="{{ route('barenbang.jumlah-kajian-rekomendasi.index') }}" class="stat-card-link-wrapper">
-                <div class="stat-card">
+                <div class="stat-card justify-between">
                     <div class="stat-card-info">
                         <p class="stat-card-title">Total Kajian</p>
                         <p class="stat-card-value">{{ number_format($totalKajian ?? 0) }}</p>
@@ -100,7 +100,7 @@
             </div>
             <div class="bg-white p-6 rounded-xl shadow-md">
                  <a href="{{ route('barenbang.jumlah-kajian-rekomendasi.index') }}" class="stat-card-link-wrapper">
-                <div class="stat-card">
+                <div class="stat-card justify-between">
                     <div class="stat-card-info">
                         <p class="stat-card-title">Total Rekomendasi Kebijakan</p>
                         <p class="stat-card-value">{{ number_format($totalRekomendasi ?? 0) }}</p>
@@ -116,7 +116,7 @@
             </div>
             <div class="bg-white p-6 rounded-xl shadow-md">
                  <a href="{{ route('barenbang.aplikasi-integrasi-siapkerja.index') }}" class="stat-card-link-wrapper">
-                <div class="stat-card">
+                <div class="stat-card justify-between">
                     <div class="stat-card-info">
                         <p class="stat-card-title">Total Aplikasi Terintegrasi SiapKerja</p>
                         <p class="stat-card-value">{{ number_format($totalAplikasiTerintegrasi ?? 0) }}</p>

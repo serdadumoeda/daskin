@@ -77,7 +77,7 @@
         <div class="bg-white p-5 rounded-lg shadow">
              {{-- Kartu Jumlah PHK --}}
         <a href="{{ route('phi.jumlah-phk.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
+            <div class="stat-card justify-between">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Jumlah PHK</p>
                     {{-- Pastikan variabel $totalPhk digunakan dengan benar --}}
@@ -96,7 +96,7 @@
         <div class="bg-white p-5 rounded-lg shadow">
             {{-- Kartu Perselisihan (TL) --}}
         <a href="{{ route('phi.perselisihan-ditindaklanjuti.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
+            <div class="stat-card justify-between">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Perselisihan (TL)</p>
                     {{-- Pastikan variabel $totalPerselisihan digunakan dengan benar --}}
@@ -114,7 +114,7 @@
         <div class="bg-white p-5 rounded-lg shadow">
              {{-- Kartu Mediasi Berhasil --}}
         <a href="{{ route('phi.mediasi-berhasil.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
+            <div class="stat-card justify-between">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Mediasi Berhasil</p>
                     <p class="stat-card-value">{{ number_format($totalMediasiBerhasil ?? 0) }}</p>
@@ -131,7 +131,7 @@
         <div class="bg-white p-5 rounded-lg shadow">
             {{-- Kartu Perusahaan Penerap SUSU --}}
         <a href="{{ route('phi.perusahaan-menerapkan-susu.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card">
+            <div class="stat-card justify-between">
                 <div class="stat-card-info">
                     <p class="stat-card-title">Perusahaan Penerap SUSU</p>
                     <p class="stat-card-value">{{ number_format($totalPerusahaanSusu ?? 0) }}</p>
