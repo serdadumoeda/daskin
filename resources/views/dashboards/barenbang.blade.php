@@ -81,7 +81,7 @@
                             <i class="ri-lightbulb-flash-line text-purple-500 text-2xl"></i>
                         </div>
                         <div class="stat-card-info">
-                            <p class="stat-card-title">Total Kajian</p>
+                            <p class="stat-card-title">Kajian</p>
                             <p class="stat-card-value">{{ number_format($totalKajian ?? 0) }}</p>
                         </div>
                     </div>
@@ -97,7 +97,7 @@
                             <i class="ri-link-m text-green-500 text-2xl"></i>
                         </div>
                         <div class="stat-card-info">
-                            <p class="stat-card-title">Total Rekomendasi Kebijakan</p>
+                            <p class="stat-card-title">Rekomendasi Kebijakan</p>
                             <p class="stat-card-value">{{ number_format($totalRekomendasi ?? 0) }}</p>
                         </div>
                     </div>
@@ -113,7 +113,7 @@
                             <i class="ri-link-m text-green-500 text-2xl"></i>
                         </div>
                         <div class="stat-card-info">
-                            <p class="stat-card-title">Total Aplikasi Terintegrasi SiapKerja</p>
+                            <p class="stat-card-title">Aplikasi Terintegrasi SiapKerja</p>
                             <p class="stat-card-value">{{ number_format($totalAplikasiTerintegrasi ?? 0) }}</p>
                         </div>
                     </div>

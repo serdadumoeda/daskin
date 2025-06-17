@@ -63,7 +63,7 @@
 
               <!-- title on the right -->  
                 <div class="stat-card-info font-semibold text-lg text-gray-800">
-                TL Temuan BPK: 
+                THP BPK 
                 <p class="stat-card-value">{{ number_format($persentaseSelesaiBpkAdmin ?? 0, 2) }}% Selesai</p>
                 <span class="{{ ($persentaseSelesaiBpkAdmin ?? 0) >= 75 ? 'text-green-500' : (($persentaseSelesaiBpkAdmin ?? 0) >= 50 ? 'text-yellow-500' : 'text-red-500') }}">
                     {{ number_format($summaryBpk->total_tl_admin_kasus ?? 0) }}/{{ number_format($summaryBpk->total_temuan_admin_kasus ?? 0) }} Kasus
@@ -88,7 +88,7 @@
 
             <!-- Title on the right -->
             <div class="stat-card-info font-semibold text-lg text-gray-800">
-                TL Internal (Administratif): 
+                THP Itjen
             <p class="stat-card-value">{{ number_format($persentaseSelesaiInternalAdmin ?? 0, 2) }}% Selesai </p>
             <span class="{{ ($persentaseSelesaiInternalAdmin ?? 0) >= 75 ? 'text-green-500' : (($persentaseSelesaiInternalAdmin ?? 0) >= 50 ? 'text-yellow-500' : 'text-red-500') }}">
                 {{ number_format($summaryInternal->total_tl_admin_kasus ?? 0) }}/{{ number_format($summaryInternal->total_temuan_admin_kasus ?? 0) }} Kasus

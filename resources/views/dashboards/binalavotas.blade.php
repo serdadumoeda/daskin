@@ -87,7 +87,6 @@
                     </div>
                     <div class="stat-card-footer">{{ $periodText }}</div>
                 </a>
-                <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Jumlah Peserta Pelatihan</h3>
                 <div id="echart-binalavotas-peserta-pelatihan-trend" style="height: 400px;"></div>
             </div>
 
@@ -105,7 +104,6 @@
                     </div>
                     <div class="stat-card-footer">{{ $periodText }}</div>
                 </a>
-                <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Jumlah Lulus Pelatihan</h3>
                 <div id="echart-binalavotas-lulus-pelatihan-trend" style="height: 400px;"></div>
             </div>
 
@@ -117,13 +115,12 @@
                             <i class="ri-shield-star-line text-green-500 text-2xl"></i>
                         </div>
                         <div class="stat-card-info">
-                            <p class="stat-card-title">Jml Sertifikasi Kompetensi</p>
+                            <p class="stat-card-title">Sertifikasi</p>
                             <p class="stat-card-value">{{ number_format($totalSertifikasi ?? 0) }}</p> {{-- Sesuaikan nama variabel --}}
                         </div>
                     </div>
                     <div class="stat-card-footer">{{ $periodText }}</div>
                 </a>
-                <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Jumlah Sertifikasi Kompetensi</h3>
                 <div id="echart-binalavotas-sertifikasi-trend" style="height: 400px;"></div>
             </div>
         </div>

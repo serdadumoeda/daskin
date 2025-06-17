@@ -75,13 +75,12 @@
                         <i class="ri-computer-line text-blue-500 text-2xl"></i>
                     </div>
                     <div class="stat-card-info">
-                        <p class="stat-card-title">Laporan WLKP Online</p>
+                        <p class="stat-card-title">WLKP Online</p>
                         <p class="stat-card-value">{{ number_format($totalWlkpReported ?? 0) }}</p>
                     </div>
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Laporan WLKP Online ({{ $yearToDisplay }})</h3>
             <div id="echart-binwasnaker-wlkp-trend" style="width: 100%; height: 300px;"></div>
         </div>
 
@@ -98,7 +97,6 @@
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Pengaduan Pelanggaran Norma (TL) ({{ $yearToDisplay }})</h3>
             <div id="echart-binwasnaker-pengaduan-trend" style="width: 100%; height: 300px;"></div>
         </div>
 
@@ -109,13 +107,12 @@
                         <i class="ri-shield-keyhole-line text-green-500 text-2xl"></i>
                     </div>
                     <div class="stat-card-info">
-                        <p class="stat-card-title">Penerapan SMK3</p>
+                        <p class="stat-card-title">SMK3</p>
                         <p class="stat-card-value">{{ number_format($totalPenerapanSmk3 ?? 0) }}</p>
                     </div>
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Penerapan SMK3 ({{ $yearToDisplay }})</h3>
             <div id="echart-binwasnaker-smk3-trend" style="width: 100%; height: 300px;"></div>
         </div>
 
@@ -132,7 +129,6 @@
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Self-Assessment Norma 100 ({{ $yearToDisplay }})</h3>
             <div id="echart-binwasnaker-sa-trend" style="width: 100%; height: 300px;"></div>
         </div>
     </section>

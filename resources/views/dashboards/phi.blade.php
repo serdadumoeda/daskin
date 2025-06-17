@@ -90,7 +90,6 @@
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Jumlah PHK ({{ $yearToDisplay }})</h3>
             <div id="echart-phi-phk-trend" style="width: 100%; height: 300px;"></div>
         </div>
 
@@ -102,14 +101,13 @@
                         <i class="ri-auction-line text-yellow-500 text-2xl"></i>
                     </div>
                     <div class="stat-card-info">
-                        <p class="stat-card-title">Perselisihan (TL)</p>
+                        <p class="stat-card-title">Perselisihan (Case/Kejadian)</p>
                         {{-- Pastikan variabel $totalPerselisihan digunakan dengan benar --}}
                         <p class="stat-card-value">{{ number_format($totalPerselisihanDitindaklanjuti ?? 0) }} </p>
                     </div>
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Perselisihan Ditindaklanjuti ({{ $yearToDisplay }})</h3>
             <div id="echart-phi-perselisihan-trend" style="width: 100%; height: 300px;"></div>
         </div>
 
@@ -127,7 +125,6 @@
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Mediasi Berhasil ({{ $yearToDisplay }})</h3>
             <div id="echart-phi-mediasi-trend" style="width: 100%; height: 300px;"></div>
         </div>
 
@@ -145,7 +142,6 @@
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Perusahaan Menerapkan SUSU ({{ $yearToDisplay }})</h3>
             <div id="echart-phi-susu-trend" style="width: 100%; height: 300px;"></div>
         </div>
     </section>

@@ -35,37 +35,24 @@
 
 @section('content')
 <div class="space-y-6">
-    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        
-        <div class="bg-white p-5 rounded-xl shadow-md">
-            <a href="{{ route('binapenta.jumlah-penempatan-kemnaker.index') }}" class="stat-card-link-wrapper-include">
-                <div class="stat-card flex items-center">
-                    <div class="stat-card-icon-wrapper bg-blue-100 mr-4">
-                        <i class="ri-auction-fill text-blue-500 text-2xl"></i>
-                    </div>
-                    <div class="stat-card-info">
-                        <p class="stat-card-title">Penyelesaian Temuan BPK</p>
-                        <p class="stat-card-value">{{ number_format($persenSelesaiBpk ?? 0, 2) }} <span class="text-sm font-normal">%</span></p> 
-                    </div>
-                </div>
-            </a>
-            <div id="main-chart-penyelesaian-bpk" style="height: 350px;"></div>
-        </div>
 
-        <div class="bg-white p-5 rounded-xl shadow-md">
-            <a href="{{ route('binapenta.jumlah-lowongan-pasker.index') }}" class="stat-card-link-wrapper-include">
-                <div class="stat-card flex items-center">
-                    <div class="stat-card-icon-wrapper bg-green-100 mr-4">
-                        <i class="ri-checkbox-multiple-fill text-green-500 text-2xl"></i>
-                    </div>
-                    <div class="stat-card-info">
-                        <p class="stat-card-title">Penyelesaian Temuan Internal</p>
-                        <p class="stat-card-value">{{ number_format($persenSelesaiInternal ?? 0, 2) }} <span class="text-sm font-normal">%</span></p> 
-                    </div>
-                </div>
-            </a>
-            <div id="main-chart-penyelesaian-internal" style="height: 350px;"></div>
-        </div>
+    <!-- <h2 class="text-xl font-semibold text-gray-800 -mb-4">Kinerja Umum PHI & Jamsos</h2> -->
+    @php
+        $yearToDisplay = $selectedYear ?: date('Y');
+        $monthValue = null;
+        if ($selectedMonth && is_numeric($selectedMonth)) {
+            $monthValue = (int)$selectedMonth;
+        }
+
+        if ($monthValue && $monthValue >= 1 && $monthValue <= 12) {
+            $endMonthName = \Carbon\Carbon::create()->month($monthValue)->isoFormat('MMMM');
+            $periodText = "Periode: Januari - " . $endMonthName . " " . $yearToDisplay;
+        } else {
+            $periodText = "Sepanjang Tahun " . $yearToDisplay;
+        }
+    @endphp
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
 
         <div class="bg-white p-5 rounded-xl shadow-md">
             <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper-include">
@@ -95,6 +82,53 @@
                 </div>
             </a>
             <div id="main-chart-peserta-pelatihan" style="height: 350px;"></div>
+        </div>
+
+        <!-- PENERAPAN SUSU -->
+        <!-- <div class="bg-white p-5 rounded-xl shadow-md">
+            <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper-include">
+                <div class="stat-card flex items-center">
+                    <div class="stat-card-icon-wrapper bg-blue-100 mr-4">
+                        <i class="ri-currency-line text-blue-500 text-2xl"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">Perusahaan Penerap SUSU</p>
+                        <p class="stat-card-value">{{ number_format($totalPerusahaanSusu ?? 0) }}</p>
+                    </div>
+                </div>
+                <div class="stat-card-footer">{{ $periodText }}</div>
+            </a>
+            <div id="main-chart-peserta-pelatihan" style="height: 350px;"></div>
+        </div> -->
+        
+        <div class="bg-white p-5 rounded-xl shadow-md">
+            <a href="{{ route('binapenta.jumlah-penempatan-kemnaker.index') }}" class="stat-card-link-wrapper-include">
+                <div class="stat-card flex items-center">
+                    <div class="stat-card-icon-wrapper bg-blue-100 mr-4">
+                        <i class="ri-auction-fill text-blue-500 text-2xl"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">TLHP BPK</p>
+                        <p class="stat-card-value">{{ number_format($persenSelesaiBpk ?? 0, 2) }} <span class="text-sm font-normal">%</span></p> 
+                    </div>
+                </div>
+            </a>
+            <div id="main-chart-penyelesaian-bpk" style="height: 350px;"></div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl shadow-md">
+            <a href="{{ route('binapenta.jumlah-lowongan-pasker.index') }}" class="stat-card-link-wrapper-include">
+                <div class="stat-card flex items-center">
+                    <div class="stat-card-icon-wrapper bg-green-100 mr-4">
+                        <i class="ri-checkbox-multiple-fill text-green-500 text-2xl"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">TLHP Itjen</p>
+                        <p class="stat-card-value">{{ number_format($persenSelesaiInternal ?? 0, 2) }} <span class="text-sm font-normal">%</span></p> 
+                    </div>
+                </div>
+            </a>
+            <div id="main-chart-penyelesaian-internal" style="height: 350px;"></div>
         </div>
 
         <div class="bg-white p-5 rounded-xl shadow-md">
@@ -170,11 +204,12 @@
             const option = {
                 tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
                 legend: { data: legendData, bottom: 0, type: 'scroll' },
-                grid: { left: '5%', right: '5%', bottom: '15%', containLabel: true },
+                grid: { left: '5%', right: '8%', bottom: '15%', containLabel: true },
                 xAxis: [{ type: 'category', data: labels, axisPointer: { type: 'shadow' } }],
                 yAxis: [
+
                     { type: 'value', name: 'Jumlah Kasus', min: 0, position: 'left', axisLabel: { formatter: '{value}' } },
-                    { type: 'value', name: 'Kumulatif', min: 0, max: yAxisNames[1].includes('%') ? 100 : undefined, position: 'right', splitLine: { show: false }, axisLabel: { formatter: yAxisNames[1].includes('%') ? '{value}%' : '{value}' } }
+                    { type: 'value', name: 'Penyelesaian (%)', min: 0, max: yAxisNames[1].includes('%') ? 100 : undefined, position: 'right', splitLine: { show: false }, axisLabel: { formatter: yAxisNames[1].includes('%') ? '{value}%' : '{value}' } }
                 ],
                 series: series
             };

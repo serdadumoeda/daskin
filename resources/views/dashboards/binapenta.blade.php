@@ -87,13 +87,12 @@
                         <i class="ri-user-add-line text-blue-500 text-2xl"></i>
                     </div>
                     <div class="stat-card-info">
-                        <p class="stat-card-title">Jml Penempatan oleh Kemnaker</p>
+                        <p class="stat-card-title">Jumlah Penempatan Kerja</p>
                         <p class="stat-card-value">{{ number_format($totalPenempatanKemnaker ?? 0) }} <span class="text-sm font-normal">Orang</span></p> {{-- Sesuaikan nama variabel --}}
                     </div>
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
-            <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Penempatan oleh Kemnaker</h3>
             <div id="echart-binapenta-penempatan-trend" style="height: 400px;"></div>
         </div>
 
@@ -105,17 +104,15 @@
                         <i class="ri-briefcase-4-line text-green-500 text-2xl"></i>
                     </div>
                     <div class="stat-card-info">
-                        <p class="stat-card-title">Jml Lowongan Kerja Baru (Pasker)</p>
+                        <p class="stat-card-title">Jumlah Lowongan Kerja</p>
                         <p class="stat-card-value">{{ number_format($totalLowonganPasker ?? 0) }} <span class="text-sm font-normal">Lowongan</span></p> {{-- Sesuaikan nama variabel --}}
                     </div>
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
-            <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Lowongan Kerja Pasker</h3>
             <div id="echart-binapenta-lowongan-pasker-trend" style="height: 400px;"></div>
         </div>
-
-        <div class="bg-white p-6 rounded-xl shadow-md"> <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Persetujuan RPTKA (TKA Disetujui)</h3>
+        <div class="bg-white p-6 rounded-xl shadow-md">
             <div id="echart-binapenta-tka-disetujui-trend" style="height: 400px;"></div>
         </div>
         <div class="bg-white p-6 rounded-xl shadow-md">
@@ -126,7 +123,7 @@
                         <i class="ri-user-shared-line text-purple-500 text-2xl"></i>
                     </div>
                     <div class="stat-card-info">
-                        <p class="stat-card-title">Persetujuan RPTKA</p>
+                        <p class="stat-card-title">RPTKA</p>
                         <p class="stat-card-value">{{ number_format($totalTkaDisetujui ?? 0) }} <span class="text-sm font-normal">TKA</span></p> {{-- Sesuaikan nama variabel --}}
                     </div>
                 </div>
