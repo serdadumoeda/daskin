@@ -76,72 +76,75 @@
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="bg-white p-5 rounded-lg shadow">
              {{-- Kartu Jumlah PHK --}}
-        <a href="{{ route('phi.jumlah-phk.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card justify-between">
-                <div class="stat-card-info">
-                    <p class="stat-card-title">Jumlah PHK</p>
-                    {{-- Pastikan variabel $totalPhk digunakan dengan benar --}}
-                    <p class="stat-card-value">{{ number_format($totalTkPhk ?? 0) }} </p>
-                    <p class="text-xs text-gray-500">{{ number_format($totalPerusahaanPhk ?? 0) }} Perusahaan</p>
+            <a href="{{ route('phi.jumlah-phk.index') }}" class="stat-card-link-wrapper">
+                <div class="stat-card">
+                    <div class="stat-card-icon-wrapper bg-red-100 mr-4">
+                        <i class="ri-user-unfollow-fill text-red-500 text-2xl"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">Jumlah PHK</p>
+                        {{-- Pastikan variabel $totalPhk digunakan dengan benar --}}
+                        <p class="stat-card-value">{{ number_format($totalTkPhk ?? 0) }} </p>
+                        <p class="text-xs text-gray-500">{{ number_format($totalPerusahaanPhk ?? 0) }} Perusahaan</p>
+                    </div>
                 </div>
-                <div class="stat-card-icon-wrapper bg-red-100">
-                    <i class="ri-user-unfollow-fill text-red-500 text-2xl"></i>
-                </div>
-            </div>
-            <div class="stat-card-footer">{{ $periodText }}</div>
-        </a>
+                <div class="stat-card-footer">{{ $periodText }}</div>
+            </a>
             <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Jumlah PHK ({{ $yearToDisplay }})</h3>
             <div id="echart-phi-phk-trend" style="width: 100%; height: 300px;"></div>
         </div>
+
         <div class="bg-white p-5 rounded-lg shadow">
             {{-- Kartu Perselisihan (TL) --}}
-        <a href="{{ route('phi.perselisihan-ditindaklanjuti.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card justify-between">
-                <div class="stat-card-info">
-                    <p class="stat-card-title">Perselisihan (TL)</p>
-                    {{-- Pastikan variabel $totalPerselisihan digunakan dengan benar --}}
-                    <p class="stat-card-value">{{ number_format($totalPerselisihanDitindaklanjuti ?? 0) }} </p>
+            <a href="{{ route('phi.perselisihan-ditindaklanjuti.index') }}" class="stat-card-link-wrapper">
+                <div class="stat-card">
+                    <div class="stat-card-icon-wrapper bg-yellow-100 mr-4">
+                        <i class="ri-auction-line text-yellow-500 text-2xl"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">Perselisihan (TL)</p>
+                        {{-- Pastikan variabel $totalPerselisihan digunakan dengan benar --}}
+                        <p class="stat-card-value">{{ number_format($totalPerselisihanDitindaklanjuti ?? 0) }} </p>
+                    </div>
                 </div>
-                <div class="stat-card-icon-wrapper bg-yellow-100">
-                    <i class="ri-auction-line text-yellow-500 text-2xl"></i>
-                </div>
-            </div>
-            <div class="stat-card-footer">{{ $periodText }}</div>
-        </a>
+                <div class="stat-card-footer">{{ $periodText }}</div>
+            </a>
             <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Perselisihan Ditindaklanjuti ({{ $yearToDisplay }})</h3>
             <div id="echart-phi-perselisihan-trend" style="width: 100%; height: 300px;"></div>
         </div>
+
         <div class="bg-white p-5 rounded-lg shadow">
              {{-- Kartu Mediasi Berhasil --}}
-        <a href="{{ route('phi.mediasi-berhasil.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card justify-between">
-                <div class="stat-card-info">
-                    <p class="stat-card-title">Mediasi Berhasil</p>
-                    <p class="stat-card-value">{{ number_format($totalMediasiBerhasil ?? 0) }}</p>
+            <a href="{{ route('phi.mediasi-berhasil.index') }}" class="stat-card-link-wrapper">
+                <div class="stat-card">
+                    <div class="stat-card-icon-wrapper bg-green-100 mr-4">
+                        <i class="ri-shake-hands-line text-green-500 text-2xl"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">Mediasi Berhasil</p>
+                        <p class="stat-card-value">{{ number_format($totalMediasiBerhasil ?? 0) }}</p>
+                    </div>
                 </div>
-                <div class="stat-card-icon-wrapper bg-green-100">
-                    <i class="ri-shake-hands-line text-green-500 text-2xl"></i>
-                </div>
-            </div>
-            <div class="stat-card-footer">{{ $periodText }}</div>
-        </a>
+                <div class="stat-card-footer">{{ $periodText }}</div>
+            </a>
             <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Mediasi Berhasil ({{ $yearToDisplay }})</h3>
             <div id="echart-phi-mediasi-trend" style="width: 100%; height: 300px;"></div>
         </div>
+
         <div class="bg-white p-5 rounded-lg shadow">
             {{-- Kartu Perusahaan Penerap SUSU --}}
-        <a href="{{ route('phi.perusahaan-menerapkan-susu.index') }}" class="stat-card-link-wrapper">
-            <div class="stat-card justify-between">
-                <div class="stat-card-info">
-                    <p class="stat-card-title">Perusahaan Penerap SUSU</p>
-                    <p class="stat-card-value">{{ number_format($totalPerusahaanSusu ?? 0) }}</p>
+            <a href="{{ route('phi.perusahaan-menerapkan-susu.index') }}" class="stat-card-link-wrapper">
+                <div class="stat-card">
+                    <div class="stat-card-icon-wrapper bg-blue-100 mr-4">
+                        <i class="ri-currency-line text-blue-500 text-2xl"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">Perusahaan Penerap SUSU</p>
+                        <p class="stat-card-value">{{ number_format($totalPerusahaanSusu ?? 0) }}</p>
+                    </div>
                 </div>
-                <div class="stat-card-icon-wrapper bg-blue-100">
-                    <i class="ri-currency-line text-blue-500 text-2xl"></i>
-                </div>
-            </div>
-            <div class="stat-card-footer">{{ $periodText }}</div>
-        </a>
+                <div class="stat-card-footer">{{ $periodText }}</div>
+            </a>
             <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Perusahaan Menerapkan SUSU ({{ $yearToDisplay }})</h3>
             <div id="echart-phi-susu-trend" style="width: 100%; height: 300px;"></div>
         </div>
