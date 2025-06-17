@@ -16,7 +16,7 @@ class JumlahPhk extends Model
         'bulan',
         'provinsi',
         'kbli',
-        'jumlah_perusahaan_phk', // Kolom (6) di PDF: Jumlah Perusahaan
+        // 'jumlah_perusahaan_phk', // Kolom (6) di PDF: Jumlah Perusahaan
         'jumlah_tk_phk',        // Kolom (7) di PDF: Jumlah Tenaga Kerja yang di PHK
     ];
 
@@ -28,7 +28,7 @@ class JumlahPhk extends Model
     protected $casts = [
         'tahun' => 'integer',
         'bulan' => 'integer',
-        'jumlah_perusahaan_phk' => 'integer',
+        // 'jumlah_perusahaan_phk' => 'integer',
         'jumlah_tk_phk' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
