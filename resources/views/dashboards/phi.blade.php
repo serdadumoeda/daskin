@@ -223,7 +223,7 @@
         if (chartData.susu) {
             createMultiSeriesChart('echart-phi-susu-trend', labels, [
                 { name: 'Perusahaan Terapkan SUSU', type: 'bar', yAxisIndex: 0, data: chartData.susu.susu, color: '#3b82f6' },
-                { name: 'Kumulatif', type: 'line', yAxisIndex: 1, data: chartData.susu.kumulatif, color: '#ef4444' }
+                { name: 'Kumulatif', type: 'none', yAxisIndex: 1, data: chartData.susu.kumulatif, color: '#ef4444' }
             ]);
         }
     });
