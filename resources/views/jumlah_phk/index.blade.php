@@ -126,7 +126,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_fil
                     <th scope="col">{!! sortableLinkPhk('tahun', 'Tahun', $sortBy, $sortDirection, $requestFilters) !!}</th>
                     <th scope="col">{!! sortableLinkPhk('bulan', 'Bulan', $sortBy, $sortDirection, $requestFilters) !!}</th>
                     <th scope="col">{!! sortableLinkPhk('provinsi', 'Provinsi', $sortBy, $sortDirection, $requestFilters) !!}</th>
-                    <th scope="col" class="text-right">{!! sortableLinkPhk('jumlah_perusahaan_phk', 'Jml Perusahaan', $sortBy, $sortDirection, $requestFilters) !!}</th>
+                    {{-- <th scope="col" class="text-right">{!! sortableLinkPhk('jumlah_perusahaan_phk', 'Jml Perusahaan', $sortBy, $sortDirection, $requestFilters) !!}</th> --}}
                     <th scope="col" class="text-right">{!! sortableLinkPhk('jumlah_tk_phk', 'Jml Tenaga Kerja PHK', $sortBy, $sortDirection, $requestFilters) !!}</th>
                     <th scope="col" class="text-center">Aksi</th>
                 </tr>
@@ -139,8 +139,8 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'provinsi_fil
                         <td>{{ $item->tahun }}</td>
                         <td>{{ \Carbon\Carbon::create()->month($item->bulan)->isoFormat('MMMM') }}</td>
                         <td>{{ $item->provinsi }}</td>
-                        <td class="text-right">{{ number_format($item->jumlah_perusahaan_phk) }}</td>
-                        <td class="text-right">{{ number_format($item->jumlah_tk_phk) }}</td>
+                        {{-- <td class="text-right">{{ number_format($item->jumlah_perusahaan_phk) }}</td> --}}
+                        <td class="text-left">{{ number_format($item->jumlah_tk_phk) }}</td>
                         <td class="text-center">
                             {{-- DITERAPKAN: Gaya terpusat untuk grup aksi --}}
                             <div class="table-actions justify-center">

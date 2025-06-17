@@ -27,12 +27,12 @@
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-    <div>
+    {{-- <div>
         <label for="jumlah_perusahaan_phk_input" class="block text-sm font-medium text-gray-700 mb-1">Jumlah Perusahaan PHK <span class="text-red-500">*</span></label>
         <input type="number" name="jumlah_perusahaan_phk" id="jumlah_perusahaan_phk_input" value="{{ old('jumlah_perusahaan_phk', $jumlahPhk->jumlah_perusahaan_phk ?? 0) }}" required
                class="form-input w-full" min="0">
         @error('jumlah_perusahaan_phk') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
-    </div>
+    </div> --}}
     <div>
         <label for="jumlah_tk_phk_input" class="block text-sm font-medium text-gray-700 mb-1">Jumlah Tenaga Kerja di PHK <span class="text-red-500">*</span></label>
         <input type="number" name="jumlah_tk_phk" id="jumlah_tk_phk_input" value="{{ old('jumlah_tk_phk', $jumlahPhk->jumlah_tk_phk ?? 0) }}" required

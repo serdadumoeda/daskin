@@ -104,7 +104,7 @@
         <div class="bg-white p-6 rounded-xl shadow-md">
             <a href="{{ route('sekretariat-jenderal.jumlah-penanganan-kasus.index') }}">
                 <div class="stat-card">
-                     <div class="stat-card-icon-wrapper bg-purple-100">
+                     <div class="stat-card-icon-wrapper bg-purple-100 mr-4">
                         <i class="ri-scales-2-line text-purple-500 text-2xl"></i>
                     </div>
                     <div class="stat-card-info">

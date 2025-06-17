@@ -73,60 +73,52 @@
             }
         @endphp
         
-        
-        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            
-            
-           
-           
-        </section>
-        
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <div class="bg-white p-6 rounded-xl shadow-md">
                 <a href="{{ route('barenbang.jumlah-kajian-rekomendasi.index') }}" class="stat-card-link-wrapper">
-                <div class="stat-card justify-between">
-                    <div class="stat-card-info">
-                        <p class="stat-card-title">Total Kajian</p>
-                        <p class="stat-card-value">{{ number_format($totalKajian ?? 0) }}</p>
+                    <div class="stat-card">
+                        <div class="stat-card-icon-wrapper bg-purple-100 mr-4">
+                            <i class="ri-lightbulb-flash-line text-purple-500 text-2xl"></i>
+                        </div>
+                        <div class="stat-card-info">
+                            <p class="stat-card-title">Total Kajian</p>
+                            <p class="stat-card-value">{{ number_format($totalKajian ?? 0) }}</p>
+                        </div>
                     </div>
-                    <div class="stat-card-icon-wrapper bg-purple-100">
-                        <i class="ri-lightbulb-flash-line text-purple-500 text-2xl"></i>
-                    </div>
-                </div>
-                <div class="stat-card-footer"></div>
-            </a>
+                    <div class="stat-card-footer"></div>
+                </a>
                 <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Jumlah Kajian</h3>
                 <div id="echart-barenbang-kajian-trend" style="height: 350px;"></div>
             </div>
             <div class="bg-white p-6 rounded-xl shadow-md">
                  <a href="{{ route('barenbang.jumlah-kajian-rekomendasi.index') }}" class="stat-card-link-wrapper">
-                <div class="stat-card justify-between">
-                    <div class="stat-card-info">
-                        <p class="stat-card-title">Total Rekomendasi Kebijakan</p>
-                        <p class="stat-card-value">{{ number_format($totalRekomendasi ?? 0) }}</p>
+                    <div class="stat-card">
+                        <div class="stat-card-icon-wrapper bg-green-100 mr-4">
+                            <i class="ri-link-m text-green-500 text-2xl"></i>
+                        </div>
+                        <div class="stat-card-info">
+                            <p class="stat-card-title">Total Rekomendasi Kebijakan</p>
+                            <p class="stat-card-value">{{ number_format($totalRekomendasi ?? 0) }}</p>
+                        </div>
                     </div>
-                    <div class="stat-card-icon-wrapper bg-green-100">
-                        <i class="ri-link-m text-green-500 text-2xl"></i>
-                    </div>
-                </div>
-                <div class="stat-card-footer"></div>
-            </a>
+                    <div class="stat-card-footer"></div>
+                </a>
                 <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Jumlah Rekomendasi</h3>
                 <div id="echart-barenbang-rekomendasi-trend" style="height: 350px;"></div>
             </div>
             <div class="bg-white p-6 rounded-xl shadow-md">
-                 <a href="{{ route('barenbang.aplikasi-integrasi-siapkerja.index') }}" class="stat-card-link-wrapper">
-                <div class="stat-card justify-between">
-                    <div class="stat-card-info">
-                        <p class="stat-card-title">Total Aplikasi Terintegrasi SiapKerja</p>
-                        <p class="stat-card-value">{{ number_format($totalAplikasiTerintegrasi ?? 0) }}</p>
+                <a href="{{ route('barenbang.aplikasi-integrasi-siapkerja.index') }}" class="stat-card-link-wrapper">
+                    <div class="stat-card">
+                        <div class="stat-card-icon-wrapper bg-green-100 mr-4">
+                            <i class="ri-link-m text-green-500 text-2xl"></i>
+                        </div>
+                        <div class="stat-card-info">
+                            <p class="stat-card-title">Total Aplikasi Terintegrasi SiapKerja</p>
+                            <p class="stat-card-value">{{ number_format($totalAplikasiTerintegrasi ?? 0) }}</p>
+                        </div>
                     </div>
-                    <div class="stat-card-icon-wrapper bg-green-100">
-                        <i class="ri-link-m text-green-500 text-2xl"></i>
-                    </div>
-                </div>
-                <div class="stat-card-footer"></div>
-            </a>
+                    <div class="stat-card-footer"></div>
+                </a>
                 <h3 class="font-semibold text-lg text-gray-800 mb-4">Tren Aplikasi Terintegrasi</h3>
                 <div id="echart-barenbang-aplikasi-trend" style="height: 350px;"></div>
             </div>
