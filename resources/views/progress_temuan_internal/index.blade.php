@@ -27,7 +27,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
 
 
 @section('header_filters')
-    
+
     <form method="GET" action="{{ route('inspektorat.progress-temuan-internal.index') }}" class="w-full">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 items-end">
             <div class="flex-grow">
@@ -76,14 +76,14 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
 
 @section('content')
 <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-    
+
     @if (Auth::user()->role === 'superadmin' || Auth::user()->role === 'itjen')
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
             <div class="w-full sm:w-auto sm:ml-auto flex flex-col sm:flex-row items-start sm:items-center gap-2">
                 <form action="{{ route('inspektorat.progress-temuan-internal.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                     @csrf
                     <div class="flex-grow">
-                        <input type="file" name="excel_file" id="excel_file_internal" required 
+                        <input type="file" name="excel_file" id="excel_file_internal" required
                                class="block w-full text-sm text-gray-500
                                       file:mr-2 file:py-1.5 file:px-3 file:rounded-button
                                       file:border-0 file:text-sm file:font-semibold
@@ -122,14 +122,14 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
             {{ session('error') }}
         </div>
     @endif
-    
+
     {{-- DITERAPKAN: Gaya tabel modern ke struktur tabel asli --}}
     <div class="table-wrapper">
         <table class="data-table">
             <thead>
                 {{-- TIDAK DIUBAH: Header tabel asli yang berfungsi --}}
                 <tr>
-                    
+
                     <th scope="col">{!! sortableLinkPtInternal('tahun', 'Tahun', $sortBy, $sortDirection, $requestFilters) !!}</th>
                     <th scope="col">{!! sortableLinkPtInternal('bulan', 'Bulan', $sortBy, $sortDirection, $requestFilters) !!}</th>
                     <th scope="col">Unit Kerja</th>
@@ -147,7 +147,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
                 {{-- TIDAK DIUBAH: Isi tabel asli agar data tidak kosong --}}
                 @forelse ($progressItems as $index => $item)
                     <tr>
-                        
+
                         <td>{{ $item->tahun }}</td>
                         <td>{{ \Carbon\Carbon::create()->month($item->bulan)->isoFormat('MMMM') }}</td>
                         <td>{{ $item->unitKerjaEselonI->nama_unit_kerja_eselon_i ?? '-' }}</td>
@@ -188,7 +188,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'unit_kerja_f
             </tbody>
         </table>
     </div>
-    
+
     {{-- Pagination Asli (Tidak Diubah) --}}
     <div class="mt-6">
         {{ $progressItems->appends(request()->except('page'))->links('vendor.pagination.tailwind') }}
