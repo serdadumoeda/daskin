@@ -12,21 +12,21 @@ class DataKetenagakerjaan extends Model
     /**
      * Nama tabel yang terhubung dengan model.
      */
-    protected $table = 'data_ketenagakerjaan'; // <-- PASTIKAN INI BENAR
+    protected $table = 'data_ketenagakerjaan'; 
 
     protected $fillable = [
         'tahun',
         'bulan',
-        'penduduk_15_tahun_ke_atas', // Sesuai revisi migrasi Anda
+        'penduduk_15_tahun_ke_atas', 
         'angkatan_kerja',
         'bukan_angkatan_kerja',    
         'sekolah',                 
         'mengurus_rumah_tangga',   
         'lainnya_bukan_angkatan_kerja', 
-        'tingkat_partisipasi_angkatan_kerja', // Sesuai revisi migrasi Anda
+        'tingkat_partisipasi_angkatan_kerja', 
         'bekerja',
         'pengangguran_terbuka',
-        'tingkat_pengangguran_terbuka', // Sesuai revisi migrasi Anda
+        'tingkat_pengangguran_terbuka', 
         'tingkat_kesempatan_kerja', 
     ];
 
