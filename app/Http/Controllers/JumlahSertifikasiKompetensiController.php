@@ -9,6 +9,7 @@ use App\Imports\JumlahSertifikasiKompetensiImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class JumlahSertifikasiKompetensiController extends Controller
@@ -41,7 +42,7 @@ class JumlahSertifikasiKompetensiController extends Controller
         $sortBy = $request->input('sort_by', 'tahun');
         $sortDirection = $request->input('sort_direction', 'desc');
         $sortableColumns = [
-            'tahun', 'bulan', 'jenis_lsp', 'jenis_kelamin', 
+            'tahun', 'bulan', 'jenis_lsp', 'jenis_kelamin',
             'provinsi', 'lapangan_usaha_kbli', 'jumlah_sertifikasi'
         ];
 
@@ -53,7 +54,7 @@ class JumlahSertifikasiKompetensiController extends Controller
 
         $jumlahSertifikasiKompetensis = $query->paginate(10)->appends($request->except('page'));
         $availableYears = JumlahSertifikasiKompetensi::select('tahun')->distinct()->orderBy('tahun', 'desc')->pluck('tahun');
-        
+
         $jenisLspOptions = JumlahSertifikasiKompetensi::getJenisLspOptions();
         $jenisKelaminOptions = JumlahSertifikasiKompetensi::getJenisKelaminOptions();
 
@@ -155,7 +156,7 @@ class JumlahSertifikasiKompetensiController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->route($this->routeNamePrefix . 'index') 
+            return redirect()->route($this->routeNamePrefix . 'index')
                         ->withErrors($validator)
                         ->with('error', 'Gagal mengimpor data. Pastikan file valid.');
         }
@@ -180,5 +181,14 @@ class JumlahSertifikasiKompetensiController extends Controller
             return redirect()->route($this->routeNamePrefix . 'index')
                              ->with('error', 'Terjadi kesalahan saat mengimpor data: ' . $e->getMessage());
         }
+    }
+
+    public function downloadTemplate(Request $request) {
+        $filePath = 'template_input_jml_sertifikasi_kompetensi.xlsx';
+
+        if (Storage::disk('public')->exists($filePath)) {
+            return Storage::disk('public')->download($filePath);
+        }
+        abort(404, 'File not found.');
     }
 }
