@@ -253,8 +253,8 @@
                 xAxis: [{ type: 'category', data: labels, axisPointer: { type: 'shadow' } }],
                 yAxis: [
 
-                    { type: 'value', name: 'Jumlah Kasus', min: 0, position: 'left', axisLabel: { formatter: '{value}' } },
-                    { type: 'value', name: 'Penyelesaian (%)', min: 0, max: yAxisNames[1].includes('%') ? 100 : undefined, position: 'right', splitLine: { show: false }, axisLabel: { formatter: yAxisNames[1].includes('%') ? '{value}%' : '{value}' } }
+                    { type: 'value', name: 'Jumlah', min: 0, position: 'left', axisLabel: { formatter: '{value}' } },
+                    { type: 'value', name: 'Kumulatif', min: 0, max: yAxisNames[1].includes('%') ? 100 : undefined, position: 'right', splitLine: { show: false }, axisLabel: { formatter: yAxisNames[1].includes('%') ? '{value}%' : '{value}' } }
                 ],
                 series: series
             };
