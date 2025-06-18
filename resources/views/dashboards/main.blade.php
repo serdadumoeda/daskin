@@ -84,66 +84,51 @@
             <div id="main-chart-peserta-pelatihan" style="height: 350px;"></div>
         </div>
 
-        <!-- PENERAPAN SUSU -->
-        <!-- <div class="bg-white p-5 rounded-xl shadow-md">
+        <div class="bg-white p-5 rounded-xl shadow-md">
             <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper-include">
                 <div class="stat-card flex items-center">
                     <div class="stat-card-icon-wrapper bg-blue-100 mr-4">
                         <i class="ri-currency-line text-blue-500 text-2xl"></i>
                     </div>
-                    <div class="stat-card-info">
+                    <div class="stat-card-info mb-6">
                         <p class="stat-card-title">Perusahaan Penerap SUSU</p>
                         <p class="stat-card-value">{{ number_format($totalPerusahaanSusu ?? 0) }}</p>
                     </div>
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
-            <div id="main-chart-peserta-pelatihan" style="height: 350px;"></div>
-        </div> -->
-        
-        <div class="bg-white p-5 rounded-xl shadow-md">
-            <a href="{{ route('binapenta.jumlah-penempatan-kemnaker.index') }}" class="stat-card-link-wrapper-include">
-                <div class="stat-card flex items-center">
-                    <div class="stat-card-icon-wrapper bg-blue-100 mr-4">
-                        <i class="ri-auction-fill text-blue-500 text-2xl"></i>
-                    </div>
-                    <div class="stat-card-info">
-                        <p class="stat-card-title">TLHP BPK</p>
-                        <p class="stat-card-value">{{ number_format($persenSelesaiBpk ?? 0, 2) }} <span class="text-sm font-normal">%</span></p> 
-                    </div>
-                </div>
-            </a>
-            <div id="main-chart-penyelesaian-bpk" style="height: 350px;"></div>
-        </div>
-
-        <div class="bg-white p-5 rounded-xl shadow-md">
-            <a href="{{ route('binapenta.jumlah-lowongan-pasker.index') }}" class="stat-card-link-wrapper-include">
-                <div class="stat-card flex items-center">
-                    <div class="stat-card-icon-wrapper bg-green-100 mr-4">
-                        <i class="ri-checkbox-multiple-fill text-green-500 text-2xl"></i>
-                    </div>
-                    <div class="stat-card-info">
-                        <p class="stat-card-title">TLHP Itjen</p>
-                        <p class="stat-card-value">{{ number_format($persenSelesaiInternal ?? 0, 2) }} <span class="text-sm font-normal">%</span></p> 
-                    </div>
-                </div>
-            </a>
-            <div id="main-chart-penyelesaian-internal" style="height: 350px;"></div>
+            <div id="echart-phi-susu-trend" style="width: 100%; height: 300px;"></div>
         </div>
 
         <div class="bg-white p-5 rounded-xl shadow-md">
             <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper-include">
                 <div class="stat-card flex items-center">
-                    <div class="stat-card-icon-wrapper bg-red-100 mr-4">
-                        <i class=" ri-user-2-fill text-red-500 text-2xl"></i>
+                    <div class="stat-card-icon-wrapper bg-blue-100 mr-4">
+                        <i class="ri-computer-line text-blue-500 text-2xl"></i>
                     </div>
                     <div class="stat-card-info">
-                        <p class="stat-card-title">Lulusan Polteknaker Bekerja</p>
-                        <p class="stat-card-value">{{ number_format($totalLulusanBekerja ?? 0) }} <span class="text-sm font-normal">Orang</span></p> 
+                        <p class="stat-card-title">WLKP Online</p>
+                        <p class="stat-card-value">{{ number_format($totalWlkpReported ?? 0) }}</p>
+                    </div>
+                </div>
+                <div class="stat-card-footer">{{ $periodText }}</div>
+            </a>
+            <div id="echart-binwasnaker-wlkp-trend" style="width: 100%; height: 300px;"></div>
+        </div>
+
+        <div class="bg-white p-5 rounded-lg shadow">
+            <a href="{{ route('binwasnaker.pelaporan-wlkp-online.index') }}" class="stat-card-link-wrapper">
+                <div class="stat-card">
+                    <div class="stat-card-icon-wrapper bg-green-100 mr-4">
+                        <i class="ri-file-list-3-line text-green-500 text-2xl"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">Regulasi</p>
+                        <p class="stat-card-value">{{ number_format($totalRegulasiBaru ?? 0) }} <span class="text-sm">Dokumen</span></p>
                     </div>
                 </div>
             </a>
-            <div id="main-chart-lulusan-bekerja" style="height: 350px;"></div>
+            <div id="echart-sekjen-regulasi-trend" style="height: 250px;"></div>
         </div>
 
         <div class="bg-white p-5 rounded-xl shadow-md">
@@ -161,20 +146,80 @@
             <div id="main-chart-rekomendasi-kebijakan" style="height: 350px;"></div>
         </div>
 
-         <div class="bg-white p-5 rounded-xl shadow-md">
+        <div class="bg-white p-5 rounded-lg shadow">
+            <a href="{{ route('binwasnaker.pelaporan-wlkp-online.index') }}" class="stat-card-link-wrapper">
+                <div class="stat-card">
+                    <div class="stat-card-icon-wrapper bg-green-100 mr-4">
+                        <i class="ri-briefcase-4-line text-green-500 text-2xl"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">Jumlah Lowongan Kerja</p>
+                        <p class="stat-card-value">{{ number_format($totalLowonganPasker ?? 0) }} <span class="text-sm font-normal">Lowongan</span></p> {{-- Sesuaikan nama variabel --}}
+                    </div>
+                </div>
+            </a>
+            <div id="echart-binapenta-lowongan-pasker-trend" style="height: 400px;"></div>
+        </div>
+        
+        <!-- <div class="bg-white p-5 rounded-xl shadow-md">
+            <a href="{{ route('binapenta.jumlah-penempatan-kemnaker.index') }}" class="stat-card-link-wrapper-include">
+                <div class="stat-card flex items-center">
+                    <div class="stat-card-icon-wrapper bg-blue-100 mr-4">
+                        <i class="ri-auction-fill text-blue-500 text-2xl"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">TLHP BPK</p>
+                        <p class="stat-card-value">{{ number_format($persenSelesaiBpk ?? 0, 2) }} <span class="text-sm font-normal">%</span></p> 
+                    </div>
+                </div>
+            </a>
+            <div id="main-chart-penyelesaian-bpk" style="height: 350px;"></div>
+        </div> -->
+
+        <!-- <div class="bg-white p-5 rounded-xl shadow-md">
+            <a href="{{ route('binapenta.jumlah-lowongan-pasker.index') }}" class="stat-card-link-wrapper-include">
+                <div class="stat-card flex items-center">
+                    <div class="stat-card-icon-wrapper bg-green-100 mr-4">
+                        <i class="ri-checkbox-multiple-fill text-green-500 text-2xl"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">TLHP Itjen</p>
+                        <p class="stat-card-value">{{ number_format($persenSelesaiInternal ?? 0, 2) }} <span class="text-sm font-normal">%</span></p> 
+                    </div>
+                </div>
+            </a>
+            <div id="main-chart-penyelesaian-internal" style="height: 350px;"></div>
+        </div> -->
+
+        <!-- <div class="bg-white p-5 rounded-xl shadow-md">
+            <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper-include">
+                <div class="stat-card flex items-center">
+                    <div class="stat-card-icon-wrapper bg-red-100 mr-4">
+                        <i class=" ri-user-2-fill text-red-500 text-2xl"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <p class="stat-card-title">Lulusan Polteknaker Bekerja</p>
+                        <p class="stat-card-value">{{ number_format($totalLulusanBekerja ?? 0) }} <span class="text-sm font-normal">Orang</span></p> 
+                    </div>
+                </div>
+            </a>
+            <div id="main-chart-lulusan-bekerja" style="height: 350px;"></div>
+        </div> -->
+
+        <!-- <div class="bg-white p-5 rounded-xl shadow-md">
             <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper-include">
                 <div class="stat-card flex items-center">
                     <div class="stat-card-icon-wrapper bg-green-100 mr-4">
                         <i class="ri-bank-card-fill text-green-500 text-2xl"></i>
                     </div>
                     <div class="stat-card-info">
-                        <p class="stat-card-title">Rata-rata IKPA</p>
+                        <p class="stat-card-title">IKPA</p>
                         <p class="stat-card-value">{{ number_format($avgIkpaKementerian ?? 0, 2) }} </p> 
                     </div>
                 </div>
             </a>
             <div id="main-chart-ikpa" style="height: 350px;"></div>
-        </div>
+        </div> -->
         
     </div>
 </div>
@@ -264,6 +309,44 @@
             }
         }
 
+        // Fungsi Render Penerapan SUSU
+        function renderSusuMainChart(chartId, dataKey, defaultSeriesName, barColor, lineColor, yAxisName = 'Jumlah', kumulatifLineName = 'Kumulatif') {
+            const chartEl = document.getElementById(chartId);
+            if (chartEl && chartData[dataKey] && chartData[dataKey].labels && Array.isArray(chartData[dataKey].bulanan) && Array.isArray(chartData[dataKey].kumulatif)) {
+                const isDataEffectivelyEmpty = chartData[dataKey].bulanan.every(val => val === 0);
+                if (chartData[dataKey].labels.length > 0 && !isDataEffectivelyEmpty) {
+                    createMainMultiSeriesChart(chartId, chartData[dataKey].labels, [
+                        { name: `${defaultSeriesName}`, type: 'bar', yAxisIndex: 0, data: chartData[dataKey].bulanan, color: barColor, unit: '' },
+                        { name: `${kumulatifLineName} ${defaultSeriesName}`, type: 'none', yAxisIndex: 1, data: chartData[dataKey].kumulatif, color: lineColor, unit: '' }
+                    ], yAxisName, kumulatifLineName);
+                } else {
+                    chartEl.innerHTML = `<p class="text-center text-gray-500 py-5">Tidak ada data untuk ditampilkan pada chart ${defaultSeriesName}.</p>`;
+                }
+            } else {
+                console.warn(`Data untuk chart ${defaultSeriesName} tidak lengkap. Data diterima:`, chartData[dataKey]);
+                if(chartEl) chartEl.innerHTML = `<p class="text-center text-gray-500 py-5">Data chart ${defaultSeriesName} tidak tersedia.</p>`;
+            }
+        }
+
+        // Fungsi Render WLKP Online
+        function renderWLKPChart(chartId, dataKey, defaultSeriesName, barColor, lineColor, yAxisName = 'Jumlah', kumulatifLineName = 'Kumulatif') {
+            const chartEl = document.getElementById(chartId);
+            if (chartEl && chartData[dataKey] && chartData[dataKey].labels && Array.isArray(chartData[dataKey].bulanan) && Array.isArray(chartData[dataKey].kumulatif)) {
+                const isDataEffectivelyEmpty = chartData[dataKey].bulanan.every(val => val === 0);
+                if (chartData[dataKey].labels.length > 0 && !isDataEffectivelyEmpty) {
+                    createMainMultiSeriesChart(chartId, chartData[dataKey].labels, [
+                        { name: `${defaultSeriesName}`, type: 'bar', yAxisIndex: 0, data: chartData[dataKey].bulanan, color: barColor, unit: '' },
+                        { name: `${kumulatifLineName}`, type: 'line', yAxisIndex: 1, data: chartData[dataKey].kumulatif, color: lineColor, unit: '' }
+                    ], yAxisName, kumulatifLineName);
+                } else {
+                    chartEl.innerHTML = `<p class="text-center text-gray-500 py-5">Tidak ada data untuk ditampilkan pada chart ${defaultSeriesName}.</p>`;
+                }
+            } else {
+                console.warn(`Data untuk chart ${defaultSeriesName} tidak lengkap. Data diterima:`, chartData[dataKey]);
+                if(chartEl) chartEl.innerHTML = `<p class="text-center text-gray-500 py-5">Data chart ${defaultSeriesName} tidak tersedia.</p>`;
+            }
+        }
+
         // Render Charts
         renderPenyelesaianChart('main-chart-penyelesaian-bpk', 'penyelesaian_bpk', 'BPK');
         renderPenyelesaianChart('main-chart-penyelesaian-internal', 'penyelesaian_internal', 'Internal');
@@ -272,6 +355,8 @@
         renderMainChart('main-chart-lulusan-bekerja', 'lulusan_bekerja', 'Lulusan Bekerja', '#ec4899', '#be185d');
         renderMainChart('main-chart-rekomendasi-kebijakan', 'rekomendasi_kebijakan', 'Rekomendasi Kebijakan', '#6366f1', '#4338ca');
         renderMainChart('main-chart-ikpa', 'ikpa', 'IKPA', '#22c55e', '#15803d', 'Rata-rata Nilai', 'Kumulatif Rata-rata');
+        renderSusuMainChart('echart-phi-susu-trend', 'susu', 'Perusahaan Terapkan SUSU', '#3b82f6', '#ef4444');
+        renderWLKPChart('echart-binwasnaker-wlkp-trend', 'wlkp', 'Perusahaan Melapor WLKP', '#3b82f6', '#10b981', 'Test', 'Kumulatif Perusahaan');
 
     });
 </script>

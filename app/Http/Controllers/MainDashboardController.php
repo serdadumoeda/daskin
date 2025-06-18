@@ -16,6 +16,7 @@ use App\Models\JumlahKajianRekomendasi;     // Barenbang
 use App\Models\MediasiBerhasil;             // PHI (Persentase Penyelesaian Kasus HI)
 use App\Models\PelaporanWlkpOnline;         // Binwasnaker (Indikasi Kepatuhan)
 use App\Models\IKPA;                        // Sekjen
+use App\Models\PerusahaanMenerapkanSusu;
 // Tambahkan model lain yang relevan dengan IKU Permenaker jika ada
 
 class MainDashboardController extends Controller
@@ -154,7 +155,6 @@ class MainDashboardController extends Controller
             ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
             ->avg('nilai_akhir');
 
-
         // --- Data untuk Chart Tren Utama Kementerian ---
         $chartData = [];
 
@@ -231,6 +231,21 @@ class MainDashboardController extends Controller
             'kumulatif' => $this->calculateCumulative($ikpaBulanan) // Ini adalah kumulatif dari rata-rata bulanan, interpretasinya perlu hati-hati
         ];
 
+        $querySusu = PerusahaanMenerapkanSusu::query()->where('tahun', $selectedYear);
+        $susuBulanan = $this->getMonthlyTrendData(clone $querySusu, 'bulan', 'jumlah_perusahaan_susu', 'AVG');
+        $chartData['susu'] = [
+            'labels' => $chartLabels,
+            'bulanan' => $susuBulanan, // Ini adalah rata-rata bulanan
+            'kumulatif' => $this->calculateCumulative($susuBulanan) // Ini adalah kumulatif dari rata-rata bulanan, interpretasinya perlu hati-hati
+        ];
+
+        $queryWLKP = PelaporanWlkpOnline::query()->where('tahun', $selectedYear);
+        $WLKPBulanan = $this->getMonthlyTrendData(clone $queryWLKP, 'bulan', 'jumlah_perusahaan_melapor', 'AVG');
+        $chartData['wlkp'] = [
+            'labels' => $chartLabels,
+            'bulanan' => $WLKPBulanan, // Ini adalah rata-rata bulanan
+            'kumulatif' => $this->calculateCumulative($WLKPBulanan) // Ini adalah kumulatif dari rata-rata bulanan, interpretasinya perlu hati-hati
+        ];
 
         // Ambil tahun yang tersedia untuk filter
         $distinctYearsQueries = [
@@ -251,10 +266,12 @@ class MainDashboardController extends Controller
             $availableYears = $availableYears->sortDesc()->values();
         }
         
+        $totalWlkpReported = PelaporanWlkpOnline::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_perusahaan_melapor');
+        $totalPerusahaanSusu = PerusahaanMenerapkanSusu::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_perusahaan_susu');
         $viewData = compact(
             'persenSelesaiBpk', 'persenSelesaiInternal', 'totalPenempatanKemenaker',
             'totalPesertaPelatihan', 'totalLulusanBekerja', 'totalRekomendasiKebijakan', 'avgIkpaKementerian',
-            'availableYears', 'selectedYear', 'selectedMonth'
+            'availableYears', 'selectedYear', 'selectedMonth', 'totalPerusahaanSusu', 'totalWlkpReported'
         );
         
         return view('dashboards.main', array_merge($viewData, ['chartData' => $chartData]));
