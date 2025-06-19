@@ -16,6 +16,7 @@ use App\Models\JumlahKajianRekomendasi;     // Barenbang
 use App\Models\MediasiBerhasil;             // PHI (Persentase Penyelesaian Kasus HI)
 use App\Models\PelaporanWlkpOnline;         // Binwasnaker (Indikasi Kepatuhan)
 use App\Models\IKPA;                        // Sekjen
+use App\Models\JumlahLowonganPasker;
 use App\Models\PerusahaanMenerapkanSusu;
 // Tambahkan model lain yang relevan dengan IKU Permenaker jika ada
 
@@ -247,6 +248,15 @@ class MainDashboardController extends Controller
             'kumulatif' => $this->calculateCumulative($WLKPBulanan) // Ini adalah kumulatif dari rata-rata bulanan, interpretasinya perlu hati-hati
         ];
 
+        // Chart 8: Tren Rata-rata Loker (Binapenta)
+        $queryLoker = JumlahLowonganPasker::query()->where('tahun', $selectedYear);
+        $LokerBulanan = $this->getMonthlyTrendData(clone $queryLoker, 'bulan', 'jumlah_lowongan', 'AVG');
+        $chartData['lowongan_pasker'] = [
+            'labels' => $chartLabels,
+            'bulanan' => $LokerBulanan, // Ini adalah rata-rata bulanan
+            'kumulatif' => $this->calculateCumulative($LokerBulanan) // Ini adalah kumulatif dari rata-rata bulanan, interpretasinya perlu hati-hati
+        ];
+
         // Ambil tahun yang tersedia untuk filter
         $distinctYearsQueries = [
             ProgressTemuanBpk::select('tahun')->distinct(), ProgressTemuanInternal::select('tahun')->distinct(),
@@ -268,10 +278,11 @@ class MainDashboardController extends Controller
         
         $totalWlkpReported = PelaporanWlkpOnline::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_perusahaan_melapor');
         $totalPerusahaanSusu = PerusahaanMenerapkanSusu::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_perusahaan_susu');
+        $totalLowonganPasker = JumlahLowonganPasker::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_lowongan');
         $viewData = compact(
             'persenSelesaiBpk', 'persenSelesaiInternal', 'totalPenempatanKemenaker',
             'totalPesertaPelatihan', 'totalLulusanBekerja', 'totalRekomendasiKebijakan', 'avgIkpaKementerian',
-            'availableYears', 'selectedYear', 'selectedMonth', 'totalPerusahaanSusu', 'totalWlkpReported'
+            'availableYears', 'selectedYear', 'selectedMonth', 'totalPerusahaanSusu', 'totalWlkpReported', 'totalLowonganPasker'
         );
         
         return view('dashboards.main', array_merge($viewData, ['chartData' => $chartData]));
