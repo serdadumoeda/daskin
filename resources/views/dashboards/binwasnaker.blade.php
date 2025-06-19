@@ -29,7 +29,7 @@
                 @endforeach
             </select>
         </div>
-        
+
         <div class="flex items-center gap-2 w-full sm:w-auto">
             <button type="submit" class="w-full sm:w-auto text-sm font-medium text-filter-btn-apply-text bg-filter-btn-apply-bg border border-filter-btn-apply-border hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-md px-4 py-2 transition-colors duration-200">
                 Terapkan
@@ -61,11 +61,6 @@
         }
     @endphp
 
-    {{-- Kartu Statistik Binwasnaker & K3 --}}
-    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      
-    </section>
-
     {{-- Bagian Grafik --}}
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="bg-white p-5 rounded-lg shadow">
@@ -75,13 +70,12 @@
                         <i class="ri-computer-line text-blue-500 text-2xl"></i>
                     </div>
                     <div class="stat-card-info">
-                        <p class="stat-card-title">Laporan WLKP Online</p>
+                        <p class="stat-card-title">WLKP Online</p>
                         <p class="stat-card-value">{{ number_format($totalWlkpReported ?? 0) }}</p>
                     </div>
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Laporan WLKP Online ({{ $yearToDisplay }})</h3>
             <div id="echart-binwasnaker-wlkp-trend" style="width: 100%; height: 300px;"></div>
         </div>
 
@@ -98,7 +92,6 @@
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Pengaduan Pelanggaran Norma (TL) ({{ $yearToDisplay }})</h3>
             <div id="echart-binwasnaker-pengaduan-trend" style="width: 100%; height: 300px;"></div>
         </div>
 
@@ -109,13 +102,12 @@
                         <i class="ri-shield-keyhole-line text-green-500 text-2xl"></i>
                     </div>
                     <div class="stat-card-info">
-                        <p class="stat-card-title">Penerapan SMK3</p>
+                        <p class="stat-card-title">SMK3</p>
                         <p class="stat-card-value">{{ number_format($totalPenerapanSmk3 ?? 0) }}</p>
                     </div>
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Penerapan SMK3 ({{ $yearToDisplay }})</h3>
             <div id="echart-binwasnaker-smk3-trend" style="width: 100%; height: 300px;"></div>
         </div>
 
@@ -132,7 +124,6 @@
                 </div>
                 <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Self-Assessment Norma 100 ({{ $yearToDisplay }})</h3>
             <div id="echart-binwasnaker-sa-trend" style="width: 100%; height: 300px;"></div>
         </div>
     </section>
@@ -143,7 +134,7 @@
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        
+
         function createMultiSeriesChart(elementId, labels, seriesConfig) {
             const chartDom = document.getElementById(elementId);
             if (!chartDom) {
@@ -155,12 +146,12 @@
                 existingChart.dispose();
             }
             const myChart = echarts.init(chartDom);
-            
+
             const series = seriesConfig.map(s => ({
                 name: s.name, type: s.type, yAxisIndex: s.yAxisIndex || 0, stack: s.stack || null,
                 smooth: s.type === 'line', data: s.data, itemStyle: { color: s.color }, lineStyle: { color: s.color }
             }));
-            
+
             const legendData = series.map(s => s.name);
 
             const option = {
@@ -217,7 +208,7 @@
                 pengaduanChartEl.innerHTML = '<p class="text-center text-gray-500 py-5">Data chart Pengaduan tidak tersedia.</p>';
             }
         }
-        
+
         // 3. Render Chart Penerapan SMK3
         const smk3ChartEl = document.getElementById('echart-binwasnaker-smk3-trend');
         if (smk3ChartEl) {

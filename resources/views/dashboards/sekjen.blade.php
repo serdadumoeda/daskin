@@ -74,7 +74,7 @@
                         <i class="ri-honour-line text-blue-500 text-2xl"></i>
                     </div>
                     <div class="stat-card-info">
-                        <p class="stat-card-title">MOU</p>
+                        <p class="stat-card-title">Kerja Sama</p>
                         <p class="stat-card-value">{{ number_format($totalMouBaru ?? 0) }} <span class="text-sm">Dokumen</span></p>
                     </div>
                     
@@ -108,7 +108,7 @@
                         <i class="ri-scales-2-line text-purple-500 text-2xl"></i>
                     </div>
                     <div class="stat-card-info">
-                        <p class="stat-card-title">Penanganan Kasus</p>
+                        <p class="stat-card-title">Perkara</p>
                         <p class="stat-card-value">{{ number_format($totalPenangananKasus ?? 0) }} <span class="text-sm">Kasus</span></p>
                     </div>
                    
@@ -128,7 +128,7 @@
                         <i class="ri-archive-drawer-line text-orange-500 text-2xl"></i>
                     </div>
                     <div class="stat-card-info">
-                        <p class="stat-card-title">BMN Selesai</p>
+                        <p class="stat-card-title">BMN</p>
                         <p class="stat-card-value">{{ number_format($totalKuantitasBmn ?? 0) }}</p>
                     </div>
                    
@@ -145,7 +145,7 @@
                         <i class="ri-user-follow-line text-yellow-500 text-2xl"></i>
                     </div>
                     <div class="stat-card-info">
-                        <p class="stat-card-title">Kehadiran WFO</p>
+                        <p class="stat-card-title">Kehadiran</p>
                         <p class="stat-card-value">{{ number_format($totalOrangHadirWFO ?? 0) }} <span class="text-sm">Orang</span></p>
                     </div>
                     
@@ -162,7 +162,7 @@
                         <i class="ri-rss-line text-teal-500 text-2xl"></i>
                     </div>
                     <div class="stat-card-info">
-                        <p class="stat-card-title">Monev Monitoring Media</p>
+                        <p class="stat-card-title">Monitoring Media</p>
                         <p class="stat-card-value">{{ number_format($totalBeritaMonev ?? 0) }}</p>
                     </div>
                    
@@ -199,7 +199,7 @@
                         <i class="ri-team-line text-pink-500 text-2xl"></i>
                     </div>
                     <div class="stat-card-info">
-                        <p class="stat-card-title">SDM Mengikuti Pelatihan</p>
+                        <p class="stat-card-title">Pelatihan Kemnaker</p>
                         <p class="stat-card-value">{{ number_format($totalSdmPelatihan ?? 0) }} <span class="text-sm">Orang</span></p>
                     </div>
                    
@@ -216,7 +216,7 @@
                         <i class="ri-secure-payment-fill text-teal-500 text-2xl"></i>
                     </div>
                     <div class="stat-card-info">
-                        <p class="stat-card-title">Rata-rata IKPA</p>
+                        <p class="stat-card-title">IKPA</p>
                         <p class="stat-card-value">{{ number_format($totalIkpa ?? 0, 2) }}</p>
                     </div>
                     

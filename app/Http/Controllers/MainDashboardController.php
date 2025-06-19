@@ -10,12 +10,15 @@ use Carbon\Carbon;
 use App\Models\ProgressTemuanBpk;           // Itjen
 use App\Models\ProgressTemuanInternal;      // Itjen
 use App\Models\JumlahPenempatanKemnaker;    // Binapenta
-use App\Models\JumlahKepesertaanPelatihan; // Binalavotas
+use App\Models\JumlahKepesertaanPelatihan;  // Binalavotas
 use App\Models\LulusanPolteknakerBekerja;   // Sekjen (untuk Polteknaker)
 use App\Models\JumlahKajianRekomendasi;     // Barenbang
 use App\Models\MediasiBerhasil;             // PHI (Persentase Penyelesaian Kasus HI)
 use App\Models\PelaporanWlkpOnline;         // Binwasnaker (Indikasi Kepatuhan)
 use App\Models\IKPA;                        // Sekjen
+use App\Models\PerusahaanMenerapkanSusu;    // PHI Jamsos
+use App\Models\JumlahRegulasiBaru;          // Sekjen
+use App\Models\JumlahLowonganPasker;        // Binapenta
 // Tambahkan model lain yang relevan dengan IKU Permenaker jika ada
 
 class MainDashboardController extends Controller
@@ -154,37 +157,10 @@ class MainDashboardController extends Controller
             ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
             ->avg('nilai_akhir');
 
-
         // --- Data untuk Chart Tren Utama Kementerian ---
         $chartData = [];
 
-        // Chart 1: Tren Penyelesaian Temuan BPK (Persentase Kumulatif)
-        $queryBpkChart = ProgressTemuanBpk::query()->where('tahun', $selectedYear);
-        $bpkTemuanBulanan = $this->getMonthlyTrendData(clone $queryBpkChart, 'bulan', 'temuan_administratif_kasus');
-        $bpkTlBulanan = $this->getMonthlyTrendData(clone $queryBpkChart, 'bulan', 'tindak_lanjut_administratif_kasus');
-        $kumulatifTemuanBpk = $this->calculateCumulative($bpkTemuanBulanan);
-        $kumulatifTlBpk = $this->calculateCumulative($bpkTlBulanan);
-        $chartData['penyelesaian_bpk'] = [
-            'labels' => $chartLabels,
-            'bulanan_temuan' => $bpkTemuanBulanan, // Untuk konteks jika diperlukan
-            'bulanan_tl' => $bpkTlBulanan,         // Untuk konteks jika diperlukan
-            'persentase_kumulatif' => $this->calculateCumulativePercentage($kumulatifTlBpk, $kumulatifTemuanBpk)
-        ];
-
-        // Chart 2: Tren Penyelesaian Temuan Internal (Persentase Kumulatif)
-        $queryInternalChart = ProgressTemuanInternal::query()->where('tahun', $selectedYear);
-        $internalTemuanBulanan = $this->getMonthlyTrendData(clone $queryInternalChart, 'bulan', 'temuan_administratif_kasus');
-        $internalTlBulanan = $this->getMonthlyTrendData(clone $queryInternalChart, 'bulan', 'tindak_lanjut_administratif_kasus');
-        $kumulatifTemuanInternal = $this->calculateCumulative($internalTemuanBulanan);
-        $kumulatifTlInternal = $this->calculateCumulative($internalTlBulanan);
-        $chartData['penyelesaian_internal'] = [
-            'labels' => $chartLabels,
-            'bulanan_temuan' => $internalTemuanBulanan,
-            'bulanan_tl' => $internalTlBulanan,
-            'persentase_kumulatif' => $this->calculateCumulativePercentage($kumulatifTlInternal, $kumulatifTemuanInternal)
-        ];
-        
-        // Chart 3: Tren Penempatan Tenaga Kerja (Binapenta)
+        // Chart 1: Tren Penempatan Tenaga Kerja (Binapenta)
         $queryPenempatan = JumlahPenempatanKemnaker::query()->where('tahun', $selectedYear);
         $penempatanBulanan = $this->getMonthlyTrendData(clone $queryPenempatan, 'bulan', 'jumlah');
         $chartData['penempatan_kemnaker'] = [
@@ -193,7 +169,7 @@ class MainDashboardController extends Controller
             'kumulatif' => $this->calculateCumulative($penempatanBulanan)
         ];
 
-        // Chart 4: Tren Peserta Pelatihan (Binalavotas)
+        // Chart 2: Tren Peserta Pelatihan (Binalavotas)
         $queryPesertaPelatihan = JumlahKepesertaanPelatihan::query()->where('tahun', $selectedYear);
         $pesertaPelatihanBulanan = $this->getMonthlyTrendData(clone $queryPesertaPelatihan, 'bulan', 'jumlah');
         $chartData['peserta_pelatihan'] = [
@@ -201,14 +177,32 @@ class MainDashboardController extends Controller
             'bulanan' => $pesertaPelatihanBulanan,
             'kumulatif' => $this->calculateCumulative($pesertaPelatihanBulanan)
         ];
-        
-        // Chart 5: Tren Lulusan Polteknaker Bekerja (Sekjen)
-        $queryLulusanBekerja = LulusanPolteknakerBekerja::query()->where('tahun', $selectedYear);
-        $lulusanBekerjaBulanan = $this->getMonthlyTrendData(clone $queryLulusanBekerja, 'bulan', 'jumlah_lulusan_bekerja');
-        $chartData['lulusan_bekerja'] = [
+
+        // Char 3: Tren Penerap SUSU (PHI Jamsos)
+        $querySusu = PerusahaanMenerapkanSusu::query()->where('tahun', $selectedYear);
+        $susuBulanan = $this->getMonthlyTrendData(clone $querySusu, 'bulan', 'jumlah_perusahaan_susu', 'AVG');
+        $chartData['susu'] = [
             'labels' => $chartLabels,
-            'bulanan' => $lulusanBekerjaBulanan,
-            'kumulatif' => $this->calculateCumulative($lulusanBekerjaBulanan)
+            'bulanan' => $susuBulanan, // Ini adalah rata-rata bulanan
+            'kumulatif' => $this->calculateCumulative($susuBulanan) // Ini adalah kumulatif dari rata-rata bulanan, interpretasinya perlu hati-hati
+        ];
+
+        // Chart 4: WLKP Online (Binwasnaker K3)
+        $queryWLKP = PelaporanWlkpOnline::query()->where('tahun', $selectedYear);
+        $WLKPBulanan = $this->getMonthlyTrendData(clone $queryWLKP, 'bulan', 'jumlah_perusahaan_melapor', 'AVG');
+        $chartData['wlkp'] = [
+            'labels' => $chartLabels,
+            'bulanan' => $WLKPBulanan, // Ini adalah rata-rata bulanan
+            'kumulatif' => $this->calculateCumulative($WLKPBulanan) // Ini adalah kumulatif dari rata-rata bulanan, interpretasinya perlu hati-hati
+        ];
+
+        //Chart 5: Regulasi (Sekjen)
+        $queryRegulasi = JumlahRegulasiBaru::query()->where('tahun', $selectedYear);
+        $RegulasiBulanan = $this->getMonthlyTrendData(clone $queryRegulasi, 'bulan', 'jumlah_regulasi', 'AVG');
+        $chartData['regulasi'] = [
+            'labels' => $chartLabels,
+            'bulanan' => $RegulasiBulanan,
+            'kumulatif' => $this->calculateCumulative($RegulasiBulanan)
         ];
 
         // Chart 6: Tren Rekomendasi Kebijakan (Barenbang)
@@ -219,18 +213,15 @@ class MainDashboardController extends Controller
             'bulanan' => $rekomendasiBulanan,
             'kumulatif' => $this->calculateCumulative($rekomendasiBulanan)
         ];
-        
-        // Chart 7: Tren Rata-rata IKPA (Sekjen)
-        $queryIkpa = Ikpa::query()->where('tahun', $selectedYear);
-        // Untuk IKPA, kita tampilkan nilai rata-rata bulanan, dan kumulatifnya adalah rata-rata dari rata-rata bulanan (kurang ideal, tapi untuk tren)
-        // Atau bisa juga kumulatif jumlah nilai IKPA / jumlah bulan (perlu penyesuaian)
-        $ikpaBulanan = $this->getMonthlyTrendData(clone $queryIkpa, 'bulan', 'nilai_akhir', 'AVG');
-        $chartData['ikpa'] = [
-            'labels' => $chartLabels,
-            'bulanan' => $ikpaBulanan, // Ini adalah rata-rata bulanan
-            'kumulatif' => $this->calculateCumulative($ikpaBulanan) // Ini adalah kumulatif dari rata-rata bulanan, interpretasinya perlu hati-hati
-        ];
 
+        // Chart 7: Jumlah Lowongan Pekerjaan (Binapenta)
+        $queryLoker = JumlahLowonganPasker::query()->where('tahun', $selectedYear);
+        $LokerBulanan = $this->getMonthlyTrendData(clone $queryLoker, 'bulan', 'jumlah_lowongan', 'AVG');
+        $chartData['lowongan_pasker'] = [
+            'labels' => $chartLabels,
+            'bulanan' => $LokerBulanan, // Ini adalah rata-rata bulanan
+            'kumulatif' => $this->calculateCumulative($LokerBulanan) // Ini adalah kumulatif dari rata-rata bulanan, interpretasinya perlu hati-hati
+        ];
 
         // Ambil tahun yang tersedia untuk filter
         $distinctYearsQueries = [
@@ -251,10 +242,14 @@ class MainDashboardController extends Controller
             $availableYears = $availableYears->sortDesc()->values();
         }
         
+        $totalWlkpReported = PelaporanWlkpOnline::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_perusahaan_melapor');
+        $totalPerusahaanSusu = PerusahaanMenerapkanSusu::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_perusahaan_susu');
+        $totalRegulasi = JumlahRegulasiBaru::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_regulasi');
+        $totalLowonganPasker = JumlahLowonganPasker::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_lowongan');
         $viewData = compact(
             'persenSelesaiBpk', 'persenSelesaiInternal', 'totalPenempatanKemenaker',
             'totalPesertaPelatihan', 'totalLulusanBekerja', 'totalRekomendasiKebijakan', 'avgIkpaKementerian',
-            'availableYears', 'selectedYear', 'selectedMonth'
+            'availableYears', 'selectedYear', 'selectedMonth', 'totalPerusahaanSusu', 'totalWlkpReported', 'totalRegulasi', 'totalLowonganPasker'
         );
         
         return view('dashboards.main', array_merge($viewData, ['chartData' => $chartData]));

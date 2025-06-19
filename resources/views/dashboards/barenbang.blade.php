@@ -40,7 +40,7 @@
                     @endforeach
                 </select>
             </div>
-            
+
             {{-- Tombol Aksi --}}
             <div class="flex items-center gap-2 w-full sm:w-auto">
                 {{-- Tombol submit dengan teks dari barenbang & class dari UI baru --}}
@@ -56,8 +56,6 @@
 
         </section>
 
-
-        
         @php
             $yearToDisplayMain = $selectedYearMain ?: date('Y');
             $monthValueMain = null;
@@ -72,7 +70,7 @@
                 $periodTextMain = "Sepanjang Tahun " . $yearToDisplayMain;
             }
         @endphp
-        
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <div class="bg-white p-6 rounded-xl shadow-md">
                 <a href="{{ route('barenbang.jumlah-kajian-rekomendasi.index') }}" class="stat-card-link-wrapper">
@@ -81,7 +79,7 @@
                             <i class="ri-lightbulb-flash-line text-purple-500 text-2xl"></i>
                         </div>
                         <div class="stat-card-info">
-                            <p class="stat-card-title">Total Kajian</p>
+                            <p class="stat-card-title">Kajian</p>
                             <p class="stat-card-value">{{ number_format($totalKajian ?? 0) }}</p>
                         </div>
                     </div>
@@ -97,7 +95,7 @@
                             <i class="ri-link-m text-green-500 text-2xl"></i>
                         </div>
                         <div class="stat-card-info">
-                            <p class="stat-card-title">Total Rekomendasi Kebijakan</p>
+                            <p class="stat-card-title">Rekomendasi Kebijakan</p>
                             <p class="stat-card-value">{{ number_format($totalRekomendasi ?? 0) }}</p>
                         </div>
                     </div>
@@ -113,7 +111,7 @@
                             <i class="ri-link-m text-green-500 text-2xl"></i>
                         </div>
                         <div class="stat-card-info">
-                            <p class="stat-card-title">Total Aplikasi Terintegrasi SiapKerja</p>
+                            <p class="stat-card-title">Aplikasi Terintegrasi SiapKerja</p>
                             <p class="stat-card-value">{{ number_format($totalAplikasiTerintegrasi ?? 0) }}</p>
                         </div>
                     </div>
@@ -127,7 +125,7 @@
                 <div id="echart-barenbang-aplikasi-trend" style="height: 350px;"></div>
             </div>
         </div>
-    
+
 
     <hr class="my-8 border-gray-300">
 
@@ -160,7 +158,7 @@
                     <option value="ags" {{ $selectedPeriodeSakernas == 'ags' ? 'selected' : '' }}>Agustus</option>
                 </select>
             </div>
-            
+
             {{-- Tombol Aksi --}}
             <div class="flex items-center gap-2 w-full sm:w-auto">
                 {{-- Tombol submit dengan teks dari Sakernas & class dari UI baru --}}
@@ -174,8 +172,8 @@
             </div>
         </form>
 
-        
-        
+
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         @if(isset($latestSakernasData))
              <div class="stat-card-link-wrapper">
@@ -204,7 +202,7 @@
             </div>
             @endif
         </div>
-        
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <div class="bg-white p-6 rounded-xl shadow-md">
                 <h3 class="font-semibold text-lg text-gray-800 mb-4">Data Angkatan Kerja & Bekerja (Sakernas)</h3>
@@ -223,7 +221,7 @@
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        
+
         // Fungsi untuk membuat chart tren bulanan & kumulatif reguler
         function createMultiSeriesChart(elementId, labels, seriesConfig, yAxisName = 'Jumlah') {
             const chartDom = document.getElementById(elementId);
@@ -231,7 +229,7 @@
             let existingChart = echarts.getInstanceByDom(chartDom);
             if (existingChart) { existingChart.dispose(); }
             const myChart = echarts.init(chartDom);
-            
+
             const series = seriesConfig.map(s => ({
                 name: s.name, type: s.type, yAxisIndex: s.yAxisIndex || 0, stack: s.stack || null,
                 smooth: s.type === 'line', data: s.data, itemStyle: { color: s.color }, lineStyle: { color: s.color, width: s.lineWidth || 2},
