@@ -29,7 +29,7 @@
                 @endforeach
             </select>
         </div>
-        
+
         <div class="flex items-center gap-2 w-full sm:w-auto">
             <button type="submit" class="w-full sm:w-auto text-sm font-medium text-filter-btn-apply-text bg-filter-btn-apply-bg border border-filter-btn-apply-border hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-md px-4 py-2 transition-colors duration-200">
                 Terapkan
@@ -63,15 +63,9 @@
         }
     @endphp
 
-    {{-- Kartu Statistik Binalavotas --}}
-    {{-- Pastikan variabel total dan rute sesuai dengan yang ada di BinalavotasDashboardController --}}
-    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-       
-    </section>
-
     {{-- Bagian Grafik --}}
     {{-- Pastikan ID chart dan variabel data chart sesuai dengan yang ada di BinalavotasDashboardController --}}
-    
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <div class="bg-white p-6 rounded-xl shadow-md">
                  {{-- Kartu Lulus Pelatihan Internal --}}
@@ -135,7 +129,7 @@
                 <div id="echart-binalavotas-sertifikasi-jenis-lsp-pie" style="height: 400px;"></div>
             </div>
         </div>
-    
+
 </div>
 @endsection
 
@@ -143,7 +137,7 @@
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        
+
         // Fungsi untuk membuat chart tren bulanan & kumulatif
         function createMultiSeriesChart(elementId, labels, seriesConfig) {
             const chartDom = document.getElementById(elementId);
@@ -151,7 +145,7 @@
             let existingChart = echarts.getInstanceByDom(chartDom);
             if (existingChart) { existingChart.dispose(); }
             const myChart = echarts.init(chartDom);
-            
+
             const series = seriesConfig.map(s => ({
                 name: s.name, type: s.type, yAxisIndex: s.yAxisIndex || 0, stack: s.stack || null,
                 smooth: s.type === 'line', data: s.data, itemStyle: { color: s.color }, lineStyle: { color: s.color }
@@ -222,7 +216,7 @@
                 }
             }
         }
-        
+
         // Fungsi render helper untuk pie chart
         function renderPieChart(chartId, dataKey, title) {
             const chartEl = document.getElementById(chartId);
@@ -242,7 +236,7 @@
 
         // 1. Render Chart Tren Peserta Pelatihan
         renderTrendChart('echart-binalavotas-peserta-pelatihan-trend', 'peserta_pelatihan', 'Peserta Pelatihan', '#3b82f6', '#1e40af');
-        
+
         // 2. Render Chart Tren Lulus Pelatihan
         renderTrendChart('echart-binalavotas-lulus-pelatihan-trend', 'lulus_pelatihan', 'Lulus Pelatihan', '#10b981', '#059669');
 
