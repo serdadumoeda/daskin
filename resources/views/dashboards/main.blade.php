@@ -147,7 +147,7 @@
         </div>
 
         <div class="bg-white p-5 rounded-lg shadow">
-            <a href="{{ route('binwasnaker.pelaporan-wlkp-online.index') }}" class="stat-card-link-wrapper">
+            <a href="{{ route('binapenta.jumlah-lowongan-pasker.index') }}" class="stat-card-link-wrapper">
                 <div class="stat-card">
                     <div class="stat-card-icon-wrapper bg-green-100 mr-4">
                         <i class="ri-briefcase-4-line text-green-500 text-2xl"></i>
@@ -158,7 +158,7 @@
                     </div>
                 </div>
             </a>
-            <div id="echart-binapenta-lowongan-pasker-trend" style="height: 400px;"></div>
+         <div id="echart-binapenta-lowongan-pasker-trend" style="height: 400px;"></div>
         </div>
         
         <!-- <div class="bg-white p-5 rounded-xl shadow-md">
@@ -347,6 +347,27 @@
             }
         }
 
+        // Fungsi render Loker 
+        function renderLoker(chartId, dataKey, seriesName, barColor, lineColor) {
+            const chartEl = document.getElementById(chartId);
+            if (chartEl) {
+                if (chartData[dataKey] && chartData[dataKey].labels && Array.isArray(chartData[dataKey].bulanan) && Array.isArray(chartData[dataKey].kumulatif)) {
+                    const isDataEffectivelyEmpty = chartData[dataKey].bulanan.every(val => val === 0);
+                    if (chartData[dataKey].labels.length > 0 && !isDataEffectivelyEmpty) {
+                        createMainMultiSeriesChart(chartId, chartData[dataKey].labels, [
+                            { name: `${seriesName} (Bulanan)`, type: 'bar', yAxisIndex: 0, data: chartData[dataKey].bulanan, color: barColor },
+                            { name: `Kumulatif ${seriesName}`, type: 'line', yAxisIndex: 1, data: chartData[dataKey].kumulatif, color: lineColor }
+                        ]);
+                    } else {
+                        chartEl.innerHTML = `<p class="text-center text-gray-500 py-5">Tidak ada data untuk ditampilkan pada chart ${seriesName}.</p>`;
+                    }
+                } else {
+                    console.warn(`Data untuk chart ${seriesName} tidak lengkap. Data diterima:`, chartData[dataKey]);
+                    chartEl.innerHTML = `<p class="text-center text-gray-500 py-5">Data chart ${seriesName} tidak tersedia.</p>`;
+                }
+            }
+        }
+
         // Render Charts
         renderPenyelesaianChart('main-chart-penyelesaian-bpk', 'penyelesaian_bpk', 'BPK');
         renderPenyelesaianChart('main-chart-penyelesaian-internal', 'penyelesaian_internal', 'Internal');
@@ -357,6 +378,8 @@
         renderMainChart('main-chart-ikpa', 'ikpa', 'IKPA', '#22c55e', '#15803d', 'Rata-rata Nilai', 'Kumulatif Rata-rata');
         renderSusuMainChart('echart-phi-susu-trend', 'susu', 'Perusahaan Terapkan SUSU', '#3b82f6', '#ef4444');
         renderWLKPChart('echart-binwasnaker-wlkp-trend', 'wlkp', 'Perusahaan Melapor WLKP', '#3b82f6', '#10b981', 'Test', 'Kumulatif Perusahaan');
+        renderLoker('echart-binapenta-lowongan-pasker-trend', 'lowongan_pasker', 'Lowongan Pasker', '#10b981', '#059669');
+
 
     });
 </script>
