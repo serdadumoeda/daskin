@@ -36,7 +36,6 @@
 @section('content')
 <div class="space-y-6">
 
-    <!-- <h2 class="text-xl font-semibold text-gray-800 -mb-4">Kinerja Umum PHI & Jamsos</h2> -->
     @php
         $yearToDisplay = $selectedYear ?: date('Y');
         $monthValue = null;
@@ -55,10 +54,10 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
 
         <div class="bg-white p-5 rounded-xl shadow-md">
-            <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper-include">
+            <a href="{{ route('binapenta.jumlah-penempatan-kemnaker.index') }}" class="stat-card-link-wrapper-include">
                 <div class="stat-card flex items-center">
                     <div class="stat-card-icon-wrapper bg-purple-100 mr-4">
-                        <i class="ri-account-box-line text-purple-500 text-2xl"></i>
+                        <i class="ri-user-add-line text-purple-500 text-2xl"></i>
                     </div>
                     <div class="stat-card-info">
                         <p class="stat-card-title">Penempatan Tenaga Kerja</p>
@@ -70,7 +69,7 @@
         </div>
 
         <div class="bg-white p-5 rounded-xl shadow-md">
-            <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper-include">
+            <a href="{{ route('binalavotas.jumlah-kepesertaan-pelatihan.index') }}" class="stat-card-link-wrapper-include">
                 <div class="stat-card flex items-center">
                     <div class="stat-card-icon-wrapper bg-yellow-100 mr-4">
                         <i class="ri-team-line text-yellow-500 text-2xl"></i>
@@ -85,23 +84,22 @@
         </div>
 
         <div class="bg-white p-5 rounded-xl shadow-md">
-            <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper-include">
+            <a href="{{ route('phi.perusahaan-menerapkan-susu.index') }}" class="stat-card-link-wrapper-include">
                 <div class="stat-card flex items-center">
                     <div class="stat-card-icon-wrapper bg-blue-100 mr-4">
                         <i class="ri-currency-line text-blue-500 text-2xl"></i>
                     </div>
-                    <div class="stat-card-info mb-6">
+                    <div class="stat-card-info">
                         <p class="stat-card-title">Perusahaan Penerap SUSU</p>
                         <p class="stat-card-value">{{ number_format($totalPerusahaanSusu ?? 0) }}</p>
                     </div>
                 </div>
-                <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
-            <div id="echart-phi-susu-trend" style="width: 100%; height: 300px;"></div>
+            <div id="echart-phi-susu-trend" style="height: 350px;"></div>
         </div>
 
         <div class="bg-white p-5 rounded-xl shadow-md">
-            <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper-include">
+            <a href="{{ route('binwasnaker.pelaporan-wlkp-online.index') }}" class="stat-card-link-wrapper-include">
                 <div class="stat-card flex items-center">
                     <div class="stat-card-icon-wrapper bg-blue-100 mr-4">
                         <i class="ri-computer-line text-blue-500 text-2xl"></i>
@@ -111,13 +109,12 @@
                         <p class="stat-card-value">{{ number_format($totalWlkpReported ?? 0) }}</p>
                     </div>
                 </div>
-                <div class="stat-card-footer">{{ $periodText }}</div>
             </a>
-            <div id="echart-binwasnaker-wlkp-trend" style="width: 100%; height: 300px;"></div>
+            <div id="echart-binwasnaker-wlkp-trend" style="height: 350px;"></div>
         </div>
 
         <div class="bg-white p-5 rounded-lg shadow">
-            <a href="{{ route('sekretariat-jenderal.jumlah-regulasi-baru.index') }}" class="stat-card-link-wrapper">
+            <a href="{{ route('sekretariat-jenderal.jumlah-regulasi-baru.index') }}" class="stat-card-link-wrapper-include">
                 <div class="stat-card">
                     <div class="stat-card-icon-wrapper bg-green-100 mr-4">
                         <i class="ri-file-list-3-line text-green-500 text-2xl"></i>
@@ -128,14 +125,14 @@
                     </div>
                 </div>
             </a>
-            <div id="echart-sekjen-regulasi-trend" style="height: 300px;"></div>
+            <div id="echart-sekjen-regulasi-trend" style="height: 350px;"></div>
         </div>
 
         <div class="bg-white p-5 rounded-xl shadow-md">
-            <a href="{{ route('binapenta.persetujuan-rptka.index') }}" class="stat-card-link-wrapper-include">
+            <a href="{{ route('barenbang.jumlah-kajian-rekomendasi.index') }}" class="stat-card-link-wrapper-include">
                 <div class="stat-card flex items-center">
-                    <div class="stat-card-icon-wrapper bg-blue-100 mr-4">
-                        <i class="ri-apps-2-line text-blue-500 text-2xl"></i>
+                    <div class="stat-card-icon-wrapper bg-pink-100 mr-4">
+                        <i class="ri-link-m text-pink-500 text-2xl"></i>
                     </div>
                     <div class="stat-card-info">
                         <p class="stat-card-title">Rekomendasi Kebijakan</p>
@@ -147,7 +144,7 @@
         </div>
 
         <div class="bg-white p-5 rounded-lg shadow">
-            <a href="{{ route('binwasnaker.pelaporan-wlkp-online.index') }}" class="stat-card-link-wrapper">
+            <a href="{{ route('binapenta.jumlah-lowongan-pasker.index') }}" class="stat-card-link-wrapper-include">
                 <div class="stat-card">
                     <div class="stat-card-icon-wrapper bg-green-100 mr-4">
                         <i class="ri-briefcase-4-line text-green-500 text-2xl"></i>
@@ -158,7 +155,7 @@
                     </div>
                 </div>
             </a>
-            <div id="echart-binapenta-lowongan-pasker-trend" style="height: 400px;"></div>
+         <div id="echart-binapenta-lowongan-pasker-trend" style="height: 350px;"></div>
         </div>
         
         <!-- <div class="bg-white p-5 rounded-xl shadow-md">
@@ -368,17 +365,40 @@
             }
         }
 
+        // Fungsi render Loker 
+        function renderLoker(chartId, dataKey, seriesName, barColor, lineColor) {
+            const chartEl = document.getElementById(chartId);
+            if (chartEl) {
+                if (chartData[dataKey] && chartData[dataKey].labels && Array.isArray(chartData[dataKey].bulanan) && Array.isArray(chartData[dataKey].kumulatif)) {
+                    const isDataEffectivelyEmpty = chartData[dataKey].bulanan.every(val => val === 0);
+                    if (chartData[dataKey].labels.length > 0 && !isDataEffectivelyEmpty) {
+                        createMainMultiSeriesChart(chartId, chartData[dataKey].labels, [
+                            { name: `${seriesName} (Bulanan)`, type: 'bar', yAxisIndex: 0, data: chartData[dataKey].bulanan, color: barColor },
+                            { name: `Kumulatif ${seriesName}`, type: 'line', yAxisIndex: 1, data: chartData[dataKey].kumulatif, color: lineColor }
+                        ]);
+                    } else {
+                        chartEl.innerHTML = `<p class="text-center text-gray-500 py-5">Tidak ada data untuk ditampilkan pada chart ${seriesName}.</p>`;
+                    }
+                } else {
+                    console.warn(`Data untuk chart ${seriesName} tidak lengkap. Data diterima:`, chartData[dataKey]);
+                    chartEl.innerHTML = `<p class="text-center text-gray-500 py-5">Data chart ${seriesName} tidak tersedia.</p>`;
+                }
+            }
+        }
+
         // Render Charts
         //renderPenyelesaianChart('main-chart-penyelesaian-bpk', 'penyelesaian_bpk', 'BPK');
         //renderPenyelesaianChart('main-chart-penyelesaian-internal', 'penyelesaian_internal', 'Internal');
         renderMainChart('main-chart-penempatan-kemnaker', 'penempatan_kemnaker', 'Penempatan', '#8b5cf6', '#6d28d9');
         renderMainChart('main-chart-peserta-pelatihan', 'peserta_pelatihan', 'Peserta Pelatihan', '#f59e0b', '#d97706');
         //renderMainChart('main-chart-lulusan-bekerja', 'lulusan_bekerja', 'Lulusan Bekerja', '#ec4899', '#be185d');
-        renderMainChart('main-chart-rekomendasi-kebijakan', 'rekomendasi_kebijakan', 'Rekomendasi Kebijakan', '#6366f1', '#4338ca');
+        renderMainChart('main-chart-rekomendasi-kebijakan', 'rekomendasi_kebijakan', 'Rekomendasi Kebijakan', '#ec4899', '#be185d');
         //renderMainChart('main-chart-ikpa', 'ikpa', 'IKPA', '#22c55e', '#15803d', 'Rata-rata Nilai', 'Kumulatif Rata-rata');
         renderSusuMainChart('echart-phi-susu-trend', 'susu', 'Perusahaan Terapkan SUSU', '#3b82f6', '#ef4444');
         renderWLKPChart('echart-binwasnaker-wlkp-trend', 'wlkp', 'Perusahaan Melapor WLKP', '#3b82f6', '#10b981', 'Test', 'Kumulatif Perusahaan');
         renderRegulasiChart('echart-sekjen-regulasi-trend', 'regulasi', 'Regulasi Baru', '#10b981', '#059669');
+        renderLoker('echart-binapenta-lowongan-pasker-trend', 'lowongan_pasker', 'Lowongan Pasker', '#10b981', '#059669');
+
 
     });
 </script>

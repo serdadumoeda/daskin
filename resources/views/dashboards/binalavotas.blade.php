@@ -75,7 +75,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <div class="bg-white p-6 rounded-xl shadow-md">
                  {{-- Kartu Lulus Pelatihan Internal --}}
-                <a href="{{ route('binalavotas.dashboard') }}#internal" class="stat-card-link-wrapper"> {{-- Ganti rute jika ada halaman detail --}}
+                <a href="{{ route('binalavotas.jumlah-kepesertaan-pelatihan.index') }}" class="stat-card-link-wrapper"> {{-- Ganti rute jika ada halaman detail --}}
                     <div class="stat-card">
                         <div class="stat-card-icon-wrapper bg-blue-100 mr-4">
                             <i class="ri-home-heart-line text-blue-500 text-2xl"></i>
@@ -92,7 +92,7 @@
 
             <div class="bg-white p-6 rounded-xl shadow-md">
                  {{-- Kartu Lulus Pelatihan Eksternal --}}
-                <a href="{{ route('binalavotas.dashboard') }}#eksternal" class="stat-card-link-wrapper"> {{-- Ganti rute jika ada halaman detail --}}
+                <a href="{{ route('binalavotas.jumlah-sertifikasi-kompetensi.index') }}" class="stat-card-link-wrapper"> {{-- Ganti rute jika ada halaman detail --}}
                     <div class="stat-card">
                         <div class="stat-card-icon-wrapper bg-purple-100 mr-4">
                             <i class="ri-flight-takeoff-line text-purple-500 text-2xl"></i>
