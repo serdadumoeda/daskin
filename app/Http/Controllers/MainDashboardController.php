@@ -18,6 +18,7 @@ use App\Models\MediasiBerhasil;             // PHI (Persentase Penyelesaian Kasu
 use App\Models\PelaporanWlkpOnline;         // Binwasnaker (Indikasi Kepatuhan)
 use App\Models\IKPA;                        // Sekjen
 use App\Models\JumlahLowonganPasker;
+use App\Models\JumlahRegulasiBaru;
 use App\Models\PerusahaanMenerapkanSusu;
 use Illuminate\Database\Eloquent\Model;
 
@@ -264,8 +265,8 @@ class MainDashboardController extends Controller
         $lulusanBekerjaBulanan = $this->getMonthlyTrendData(clone $queryLulusanBekerja, 'bulan', 'jumlah_lulusan_bekerja');
         $chartData['lulusan_bekerja'] = [
             'labels' => $chartLabels,
-            'bulanan' => $susuBulanan, // Ini adalah rata-rata bulanan
-            'kumulatif' => $this->calculateCumulative($susuBulanan) // Ini adalah kumulatif dari rata-rata bulanan, interpretasinya perlu hati-hati
+            'bulanan' => $lulusanBekerjaBulanan, // Ini adalah rata-rata bulanan
+            'kumulatif' => $this->calculateCumulative($lulusanBekerjaBulanan) // Ini adalah kumulatif dari rata-rata bulanan, interpretasinya perlu hati-hati
         ];
 
         // Chart 4: WLKP Online (Binwasnaker K3)
