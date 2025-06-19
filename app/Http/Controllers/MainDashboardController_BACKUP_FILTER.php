@@ -11,7 +11,7 @@ use Carbon\Carbon;
 use App\Models\ProgressTemuanBpk;           // Itjen
 use App\Models\ProgressTemuanInternal;      // Itjen
 use App\Models\JumlahPenempatanKemnaker;    // Binapenta
-use App\Models\JumlahKepesertaanPelatihan;  // Binalavotas
+use App\Models\JumlahKepesertaanPelatihan; // Binalavotas
 use App\Models\LulusanPolteknakerBekerja;   // Sekjen (untuk Polteknaker)
 use App\Models\JumlahKajianRekomendasi;     // Barenbang
 use App\Models\MediasiBerhasil;             // PHI (Persentase Penyelesaian Kasus HI)
@@ -101,15 +101,27 @@ class MainDashboardController extends Controller
             ->pluck('total_value', $monthColumn);
         
         $result = [];
-        for ($m = 1; $m <= 12; $m++) {
-            if($this->isMonthFilter){
-                 if($m != $this->monthFilter){
-                    continue;
-                }
-            }
+        $total_month = 12;
+        // Untuk memunculkan filter range dari awal bulan sampai bulan dipilih
+        if($this->isMonthFilter){
+            $total_month = $this->monthFilter;
+        }
+        
+        for ($m = 1; $m <= $total_month; $m++) {
+            // Untuk memunculkan filter hanya 1 bulan
+            // if($this->isMonthFilter){
+            //      if($m != $this->monthFilter){
+            //         continue;
+            //     }
+            // }
+            // ====================================
+
+
+            
            
             $result[] = ($aggregationType === 'AVG' ? (float)($monthlyDataGrouped->get($m) ?? 0) : (int)($monthlyDataGrouped->get($m) ?? 0) );
         }
+
         return $result;
     }
 
@@ -134,6 +146,8 @@ class MainDashboardController extends Controller
         }elseif($selectedMonth && $selectedYear != $yearNow){
             $this->isMonthFilter = true;
             $chartLabels = $selectedMonth ? [$months[$selectedMonth - 1]] : $months;
+            $chartLabels = array_slice($months, 0, $selectedMonth);
+
         }elseif($selectedYear != $yearNow){
             $chartLabels = $selectedMonth ? [$months[$selectedMonth - 1]] : $months;
         }
@@ -236,8 +250,7 @@ class MainDashboardController extends Controller
         
         // Chart 3: Tren Penempatan Tenaga Kerja (Binapenta)
         $queryPenempatan = JumlahPenempatanKemnaker::query()
-        ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
-        ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth));
+        ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear));
         $penempatanBulanan = $this->getMonthlyTrendData(clone $queryPenempatan, 'bulan', 'jumlah');
         $chartData['penempatan_kemnaker'] = [
             'labels' => $chartLabels,
@@ -248,8 +261,7 @@ class MainDashboardController extends Controller
 
         // Chart 4: Tren Peserta Pelatihan (Binalavotas)
         $queryPesertaPelatihan = JumlahKepesertaanPelatihan::query()
-         ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
-        ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth));
+         ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear));
         $pesertaPelatihanBulanan = $this->getMonthlyTrendData(clone $queryPesertaPelatihan, 'bulan', 'jumlah');
         $chartData['peserta_pelatihan'] = [
             'labels' => $chartLabels,
@@ -259,37 +271,17 @@ class MainDashboardController extends Controller
         
         // Chart 5: Tren Lulusan Polteknaker Bekerja (Sekjen)
         $queryLulusanBekerja = LulusanPolteknakerBekerja::query()
-         ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
-        ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth));
+         ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear));
         $lulusanBekerjaBulanan = $this->getMonthlyTrendData(clone $queryLulusanBekerja, 'bulan', 'jumlah_lulusan_bekerja');
         $chartData['lulusan_bekerja'] = [
             'labels' => $chartLabels,
-            'bulanan' => $susuBulanan, // Ini adalah rata-rata bulanan
-            'kumulatif' => $this->calculateCumulative($susuBulanan) // Ini adalah kumulatif dari rata-rata bulanan, interpretasinya perlu hati-hati
-        ];
-
-        // Chart 4: WLKP Online (Binwasnaker K3)
-        $queryWLKP = PelaporanWlkpOnline::query()->where('tahun', $selectedYear);
-        $WLKPBulanan = $this->getMonthlyTrendData(clone $queryWLKP, 'bulan', 'jumlah_perusahaan_melapor', 'AVG');
-        $chartData['wlkp'] = [
-            'labels' => $chartLabels,
-            'bulanan' => $WLKPBulanan, // Ini adalah rata-rata bulanan
-            'kumulatif' => $this->calculateCumulative($WLKPBulanan) // Ini adalah kumulatif dari rata-rata bulanan, interpretasinya perlu hati-hati
-        ];
-
-        //Chart 5: Regulasi (Sekjen)
-        $queryRegulasi = JumlahRegulasiBaru::query()->where('tahun', $selectedYear);
-        $RegulasiBulanan = $this->getMonthlyTrendData(clone $queryRegulasi, 'bulan', 'jumlah_regulasi', 'AVG');
-        $chartData['regulasi'] = [
-            'labels' => $chartLabels,
-            'bulanan' => $RegulasiBulanan,
-            'kumulatif' => $this->calculateCumulative($RegulasiBulanan)
+            'bulanan' => $lulusanBekerjaBulanan,
+            'kumulatif' => $this->calculateCumulative($lulusanBekerjaBulanan)
         ];
 
         // Chart 6: Tren Rekomendasi Kebijakan (Barenbang)
         $queryRekomendasi = JumlahKajianRekomendasi::query()
         ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
-        ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
         ->where('jenis_output', 2);
         $rekomendasiBulanan = $this->getMonthlyTrendData(clone $queryRekomendasi, 'bulan', 'jumlah');
         $chartData['rekomendasi_kebijakan'] = [
@@ -300,8 +292,7 @@ class MainDashboardController extends Controller
         
         // Chart 7: Tren Rata-rata IKPA (Sekjen)
         $queryIkpa = Ikpa::query()
-        ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
-        ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth));
+        ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear));
         // Untuk IKPA, kita tampilkan nilai rata-rata bulanan, dan kumulatifnya adalah rata-rata dari rata-rata bulanan (kurang ideal, tapi untuk tren)
         // Atau bisa juga kumulatif jumlah nilai IKPA / jumlah bulan (perlu penyesuaian)
         $ikpaBulanan = $this->getMonthlyTrendData(clone $queryIkpa, 'bulan', 'nilai_akhir', 'AVG');
@@ -312,9 +303,9 @@ class MainDashboardController extends Controller
         ];
 
         $querySusu = PerusahaanMenerapkanSusu::query()
-         ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
-        ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth));
+         ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear));
         $susuBulanan = $this->getMonthlyTrendData(clone $querySusu, 'bulan', 'jumlah_perusahaan_susu', 'AVG');
+
         $chartData['susu'] = [
             'labels' => $chartLabels,
             'bulanan' => $susuBulanan, // Ini adalah rata-rata bulanan
@@ -324,8 +315,7 @@ class MainDashboardController extends Controller
 
 
         $queryWLKP = PelaporanWlkpOnline::query()
-         ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
-        ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth));
+         ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear));
         $WLKPBulanan = $this->getMonthlyTrendData(clone $queryWLKP, 'bulan', 'jumlah_perusahaan_melapor', 'AVG');
         $chartData['wlkp'] = [
             'labels' => $chartLabels,
@@ -335,8 +325,7 @@ class MainDashboardController extends Controller
 
         // Chart 8: Tren Rata-rata Loker (Binapenta)
         $queryLoker = JumlahLowonganPasker::query()
-         ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
-        ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth));
+         ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear));
         $LokerBulanan = $this->getMonthlyTrendData(clone $queryLoker, 'bulan', 'jumlah_lowongan', 'AVG');
         $chartData['lowongan_pasker'] = [
             'labels' => $chartLabels,
@@ -366,7 +355,7 @@ class MainDashboardController extends Controller
          $viewData = compact(
             'persenSelesaiBpk', 'persenSelesaiInternal', 'totalPenempatanKemenaker',
             'totalPesertaPelatihan', 'totalLulusanBekerja', 'totalRekomendasiKebijakan', 'avgIkpaKementerian',
-            'availableYears', 'selectedYear', 'selectedMonth', 'totalPerusahaanSusu', 'totalWlkpReported', 'totalRegulasi', 'totalLowonganPasker'
+            'availableYears', 'selectedYear', 'selectedMonth', 'totalPerusahaanSusu', 'totalWlkpReported', 'totalLowonganPasker'
         );
         
         return view('dashboards.main', array_merge($viewData, ['chartData' => $chartData]));
