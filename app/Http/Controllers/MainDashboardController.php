@@ -10,13 +10,14 @@ use Carbon\Carbon;
 use App\Models\ProgressTemuanBpk;           // Itjen
 use App\Models\ProgressTemuanInternal;      // Itjen
 use App\Models\JumlahPenempatanKemnaker;    // Binapenta
-use App\Models\JumlahKepesertaanPelatihan; // Binalavotas
+use App\Models\JumlahKepesertaanPelatihan;  // Binalavotas
 use App\Models\LulusanPolteknakerBekerja;   // Sekjen (untuk Polteknaker)
 use App\Models\JumlahKajianRekomendasi;     // Barenbang
 use App\Models\MediasiBerhasil;             // PHI (Persentase Penyelesaian Kasus HI)
 use App\Models\PelaporanWlkpOnline;         // Binwasnaker (Indikasi Kepatuhan)
 use App\Models\IKPA;                        // Sekjen
-use App\Models\PerusahaanMenerapkanSusu;
+use App\Models\PerusahaanMenerapkanSusu;    // PHI Jamsos
+use App\Models\JumlahRegulasiBaru;          // Sekjen
 // Tambahkan model lain yang relevan dengan IKU Permenaker jika ada
 
 class MainDashboardController extends Controller
@@ -247,6 +248,14 @@ class MainDashboardController extends Controller
             'kumulatif' => $this->calculateCumulative($WLKPBulanan) // Ini adalah kumulatif dari rata-rata bulanan, interpretasinya perlu hati-hati
         ];
 
+        $queryRegulasi = JumlahRegulasiBaru::query()->where('tahun', $selectedYear);
+        $RegulasiBulanan = $this->getMonthlyTrendData(clone $queryRegulasi, 'bulan', 'jumlah_regulasi', 'AVG');
+        $chartData['regulasi'] = [
+            'labels' => $chartLabels,
+            'bulanan' => $RegulasiBulanan,
+            'kumulatif' => $this->calculateCumulative($RegulasiBulanan)
+        ];
+
         // Ambil tahun yang tersedia untuk filter
         $distinctYearsQueries = [
             ProgressTemuanBpk::select('tahun')->distinct(), ProgressTemuanInternal::select('tahun')->distinct(),
@@ -268,10 +277,11 @@ class MainDashboardController extends Controller
         
         $totalWlkpReported = PelaporanWlkpOnline::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_perusahaan_melapor');
         $totalPerusahaanSusu = PerusahaanMenerapkanSusu::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_perusahaan_susu');
+        $totalRegulasi = JumlahRegulasiBaru::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_regulasi');
         $viewData = compact(
             'persenSelesaiBpk', 'persenSelesaiInternal', 'totalPenempatanKemenaker',
             'totalPesertaPelatihan', 'totalLulusanBekerja', 'totalRekomendasiKebijakan', 'avgIkpaKementerian',
-            'availableYears', 'selectedYear', 'selectedMonth', 'totalPerusahaanSusu', 'totalWlkpReported'
+            'availableYears', 'selectedYear', 'selectedMonth', 'totalPerusahaanSusu', 'totalWlkpReported', 'totalRegulasi'
         );
         
         return view('dashboards.main', array_merge($viewData, ['chartData' => $chartData]));
