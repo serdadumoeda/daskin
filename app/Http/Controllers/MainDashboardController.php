@@ -171,12 +171,15 @@ class MainDashboardController extends Controller
         $totalLulusanBekerja = $helper->totalSummary('sum','jumlah_lulusan_bekerja',LulusanPolteknakerBekerja::class, $s_y, $s_m);
         // 6. Jumlah Rekomendasi Kebijakan (Barenbang - Jenis Output Rekomendasi)
         $totalRekomendasiKebijakan = $helper->totalSummary('sum','jumlah',JumlahKajianRekomendasi::class, $s_y, $s_m);
+        $totalRekomendasiKebijakan = $helper->totalSummary('sum','jumlah',JumlahKajianRekomendasi::class, $s_y, $s_m);
         // 7. Rata-rata IKPA (Sekjen)
         $avgIkpaKementerian = $helper->totalSummary('avg','nilai_akhir',IKPA::class, $s_y, $s_m);
+
         
         $totalWlkpReported = PelaporanWlkpOnline::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_perusahaan_melapor');
         $totalPerusahaanSusu = PerusahaanMenerapkanSusu::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_perusahaan_susu');
         $totalLowonganPasker = JumlahLowonganPasker::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_lowongan');
+        $totalRegulasi = JumlahRegulasiBaru::query()->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))->sum('jumlah_regulasi');
        
         // $totalPenempatanKemenaker = JumlahPenempatanKemnaker::query()
         //     ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
@@ -367,7 +370,7 @@ class MainDashboardController extends Controller
          $viewData = compact(
             'persenSelesaiBpk', 'persenSelesaiInternal', 'totalPenempatanKemenaker',
             'totalPesertaPelatihan', 'totalLulusanBekerja', 'totalRekomendasiKebijakan', 'avgIkpaKementerian',
-            'availableYears', 'selectedYear', 'selectedMonth', 'totalPerusahaanSusu', 'totalWlkpReported', 'totalLowonganPasker'
+            'availableYears', 'selectedYear', 'selectedMonth', 'totalPerusahaanSusu', 'totalWlkpReported', 'totalLowonganPasker', 'totalRegulasi'
         );
         
         return view('dashboards.main', array_merge($viewData, ['chartData' => $chartData]));
