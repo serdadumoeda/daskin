@@ -95,14 +95,14 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'jenis_lsp_fi
 
 @section('content')
 <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-    
+
     @if (Auth::user()->role === 'superadmin' || Auth::user()->role === 'binalavotas')
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
             <div class="w-full sm:w-auto sm:ml-auto flex flex-col sm:flex-row items-start sm:items-center gap-2">
                 <form action="{{ route('binalavotas.jumlah-sertifikasi-kompetensi.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                     @csrf
                     <div class="flex-grow">
-                        <input type="file" name="excel_file" id="excel_file_sertifikasi" required 
+                        <input type="file" name="excel_file" id="excel_file_sertifikasi" required
                                class="block w-full text-sm text-gray-500
                                       file:mr-2 file:py-1.5 file:px-3 file:rounded-button
                                       file:border-0 file:text-sm file:font-semibold
@@ -113,7 +113,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'jenis_lsp_fi
                         <i class="ri-upload-2-line mr-1"></i> Impor Data
                     </button>
                 </form>
-                 <a href=""
+                 <a href="{{ route('binalavotas.jumlah-sertifikasi-kompetensi.downloadTemplate') }}"
                    target="_blank"
                    class="btn-primary">
                     <i class="ri-download-2-line mr-1"></i> Unduh Format
@@ -141,14 +141,14 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'jenis_lsp_fi
             {{ session('error') }}
         </div>
     @endif
-    
+
     {{-- DITERAPKAN: Gaya tabel modern ke struktur tabel asli --}}
     <div class="table-wrapper">
         <table class="data-table">
             <thead>
                 {{-- TIDAK DIUBAH: Header tabel asli yang berfungsi --}}
                 <tr>
-                    
+
                     <th scope="col">{!! sortableLinkSertifikasi('tahun', 'Tahun', $sortBy, $sortDirection, $requestFilters) !!}</th>
                     <th scope="col">{!! sortableLinkSertifikasi('bulan', 'Bulan', $sortBy, $sortDirection, $requestFilters) !!}</th>
                     <th scope="col">{!! sortableLinkSertifikasi('jenis_lsp', 'Jenis LSP', $sortBy, $sortDirection, $requestFilters) !!}</th>
@@ -163,7 +163,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'jenis_lsp_fi
                 {{-- TIDAK DIUBAH: Isi tabel asli agar data tidak kosong --}}
                 @forelse ($jumlahSertifikasiKompetensis as $index => $item)
                     <tr>
-                        
+
                         <td>{{ $item->tahun }}</td>
                         <td>{{ \Carbon\Carbon::create()->month($item->bulan)->isoFormat('MMMM') }}</td>
                         <td>{{ $item->jenis_lsp_text }}</td>
@@ -184,7 +184,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'jenis_lsp_fi
                                         <i class="ri-delete-bin-line text-base"></i>
                                     </button>
                                 </form>
-  
+
                             </div>
                         </td>
                     </tr>
@@ -201,7 +201,7 @@ $requestFilters = request()->only(['tahun_filter', 'bulan_filter', 'jenis_lsp_fi
             </tbody>
         </table>
     </div>
-    
+
     {{-- Pagination Asli (Tidak Diubah) --}}
     <div class="mt-6">
         {{ $jumlahSertifikasiKompetensis->appends(request()->except('page'))->links('vendor.pagination.tailwind') }}

@@ -21,7 +21,7 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
-# /public/build/assets/*.js
-# /public/build/assets/*.css
-# /public/build/manifest.json
-# /public/build/*
+/public/build/assets/*.js
+/public/build/assets/*.css
+/public/build/manifest.json
+/public/build/*

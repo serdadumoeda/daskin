@@ -24,7 +24,7 @@ class JumlahSertifikasiKompetensiImport implements ToModel, WithHeadingRow, With
         foreach (JumlahSertifikasiKompetensi::getJenisLspOptions() as $key => $value) {
             $this->jenisLspTextToKey[strtolower((string)$key)] = $key;
         }
-        
+
         $this->jenisKelaminTextToKey = array_change_key_case(array_flip(JumlahSertifikasiKompetensi::getJenisKelaminOptions()), CASE_LOWER);
          foreach (JumlahSertifikasiKompetensi::getJenisKelaminOptions() as $key => $value) {
             $this->jenisKelaminTextToKey[strtolower((string)$key)] = $key;
@@ -81,7 +81,7 @@ class JumlahSertifikasiKompetensiImport implements ToModel, WithHeadingRow, With
             Log::warning("Import JumlahSertifikasiKompetensi: Jenis Kelamin '{$row['jenis_kelamin']}' tidak valid. Baris dilewati: " . json_encode($row));
             return null;
         }
-        
+
         return new JumlahSertifikasiKompetensi([
             'tahun'                 => $row['tahun'],
             'bulan'                 => $bulan,
@@ -98,8 +98,8 @@ class JumlahSertifikasiKompetensiImport implements ToModel, WithHeadingRow, With
         return [
             '*.tahun' => 'required|integer|digits:4|min:1900|max:' . (date('Y') + 5),
             '*.bulan' => 'required',
-            '*.jenis_lsp' => ['required', 'string_or_numeric', Rule::in(array_merge(array_keys($this->jenisLspTextToKey), array_values($this->jenisLspTextToKey)))],
-            '*.jenis_kelamin' => ['required', 'string_or_numeric', Rule::in(array_merge(array_keys($this->jenisKelaminTextToKey), array_values($this->jenisKelaminTextToKey)))],
+            '*.jenis_lsp' => ['required', Rule::in(['P1', 'P2', 'P3'])],
+            '*.jenis_kelamin' => ['required', Rule::in(array_merge(array_keys($this->jenisKelaminTextToKey), array_values($this->jenisKelaminTextToKey)))],
             '*.provinsi' => 'required|string|max:255',
             '*.lapangan_usaha_kbli' => 'nullable|string|max:255',
             '*.kbli' => 'nullable|string|max:255',
@@ -120,6 +120,6 @@ class JumlahSertifikasiKompetensiImport implements ToModel, WithHeadingRow, With
 
     public function headingRow(): int
     {
-        return 1; 
+        return 1;
     }
 }

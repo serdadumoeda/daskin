@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DataKetenagakerjaan; // Pastikan model di-import dengan benar
+use App\Models\DataKetenagakerjaan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Imports\DataKetenagakerjaanImport; // Pastikan import class juga ada
+use App\Imports\DataKetenagakerjaanImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -13,6 +13,29 @@ use Illuminate\Support\Facades\Log;
 class DataKetenagakerjaanController extends Controller
 {
     private $routeNamePrefix = 'barenbang.data-ketenagakerjaan.';
+
+    /**
+     * Helper function untuk membersihkan input numerik yang diformat.
+     */
+    private function cleanNumericInput(array $data): array
+    {
+        $numericFields = [
+            'penduduk_15_atas', 'angkatan_kerja', 'bukan_angkatan_kerja', 'sekolah',
+            'mengurus_rumah_tangga', 'lainnya_bak', 'bekerja', 'pengangguran_terbuka',
+            'tpak', 'tpt', 'tingkat_kesempatan_kerja',
+        ];
+
+        foreach ($numericFields as $field) {
+            if (isset($data[$field]) && is_string($data[$field])) {
+                // 1. Hapus pemisah ribuan (titik)
+                $value = str_replace('.', '', $data[$field]);
+                // 2. Ganti pemisah desimal (koma) dengan titik
+                $value = str_replace(',', '.', $value);
+                $data[$field] = $value;
+            }
+        }
+        return $data;
+    }
 
     public function index(Request $request)
     {
@@ -28,37 +51,26 @@ class DataKetenagakerjaanController extends Controller
         $sortBy = $request->input('sort_by', 'tahun');
         $sortDirection = $request->input('sort_direction', 'desc');
         
-        // Sesuaikan nama kolom di sortableColumns dengan yang ada di Model & Migrasi
         $sortableColumns = [
-            'tahun', 'bulan', 
-            'penduduk_15_tahun_ke_atas', 
-            'angkatan_kerja', 
-            'bukan_angkatan_kerja',
-            'sekolah', 
-            'mengurus_rumah_tangga', 
-            'lainnya_bukan_angkatan_kerja', 
-            'tingkat_partisipasi_angkatan_kerja', 
-            'bekerja', 
-            'pengangguran_terbuka', 
-            'tingkat_pengangguran_terbuka', 
-            'tingkat_kesempatan_kerja'
+            'tahun', 'bulan', 'penduduk_15_atas', 'angkatan_kerja',
+            'bukan_angkatan_kerja', 'sekolah', 'mengurus_rumah_tangga',
+            'lainnya_bak', 'tpak', 'bekerja', 'pengangguran_terbuka',
+            'tpt', 'tingkat_kesempatan_kerja'
         ];
 
-        if (in_array($sortBy, $sortableColumns) && in_array(strtolower($sortDirection), ['asc', 'desc'])) {
+        if (in_array($sortBy, $sortableColumns)) {
             $query->orderBy($sortBy, $sortDirection);
         } else {
             $query->orderBy('tahun', 'desc')->orderBy('bulan', 'desc');
         }
 
-        $dataKetenagakerjaans = $query->paginate(10)->appends($request->except('page'));
+        $dataKetenagakerjaans = $query->paginate(10);
+        
         $availableYears = DataKetenagakerjaan::select('tahun')->distinct()->orderBy('tahun', 'desc')->pluck('tahun');
         
-        return view('data_ketenagakerjaan.index', compact(
-            'dataKetenagakerjaans',
-            'availableYears',
-            'sortBy',
-            'sortDirection'
-        ));
+        $bulanOptions = range(1, 12);
+
+        return view('data_ketenagakerjaan.index', compact('dataKetenagakerjaans', 'availableYears', 'bulanOptions'));
     }
 
     public function create()
@@ -67,66 +79,32 @@ class DataKetenagakerjaanController extends Controller
         return view('data_ketenagakerjaan.create', compact('dataKetenagakerjaan'));
     }
 
-    private function cleanNumericRequest(Request $request, array $fields) {
-        $cleanedData = $request->except($fields); 
-        foreach ($fields as $field) {
-            $value = $request->input($field);
-            if (is_string($value)) {
-                $cleanedValue = str_replace('.', '', $value); 
-                $cleanedValue = str_replace(',', '.', $cleanedValue); 
-                $cleanedData[$field] = is_numeric($cleanedValue) ? (float)$cleanedValue : null;
-            } elseif (is_numeric($value)) {
-                $cleanedData[$field] = (float)$value;
-            } else {
-                 $cleanedData[$field] = null; 
-            }
-        }
-        return array_merge($request->except($fields), $cleanedData);
-    }
-
-
     public function store(Request $request)
     {
-        $numericFields = [
-            'penduduk_15_tahun_ke_atas', 'angkatan_kerja', 'bukan_angkatan_kerja', 'sekolah', 
-            'mengurus_rumah_tangga', 'lainnya_bukan_angkatan_kerja', 'tingkat_partisipasi_angkatan_kerja', 
-            'bekerja', 'pengangguran_terbuka', 'tingkat_pengangguran_terbuka', 'tingkat_kesempatan_kerja'
-        ];
-        
-        $dataToValidate = $request->all(); // Ambil semua data request awal
-        foreach ($numericFields as $field) { // Iterasi dan clean hanya field numerik
-            $value = $request->input($field);
-            if (is_string($value)) {
-                $cleanedValue = str_replace('.', '', $value); 
-                $cleanedValue = str_replace(',', '.', $cleanedValue); 
-                $dataToValidate[$field] = is_numeric($cleanedValue) ? (float)$cleanedValue : null;
-            } elseif (is_numeric($value)) {
-                 $dataToValidate[$field] = (float)$value;
-            } else {
-                 $dataToValidate[$field] = null;
-            }
-        }
+        // DIPERBAIKI: Bersihkan data input sebelum validasi
+        $cleanedData = $this->cleanNumericInput($request->all());
 
-        $validator = Validator::make($dataToValidate, [
-            'tahun' => 'required|integer|digits:4|min:1900|max:' . (date('Y') + 5),
-            'bulan' => 'required|integer|min:1|max:12',
-            'penduduk_15_tahun_ke_atas' => 'nullable|numeric|min:0',
-            'angkatan_kerja' => 'nullable|numeric|min:0',
-            'bukan_angkatan_kerja' => 'nullable|numeric|min:0',
-            'sekolah' => 'nullable|numeric|min:0',
-            'mengurus_rumah_tangga' => 'nullable|numeric|min:0',
-            'lainnya_bukan_angkatan_kerja' => 'nullable|numeric|min:0',
-            'tingkat_partisipasi_angkatan_kerja' => 'nullable|numeric|min:0|max:100', 
-            'bekerja' => 'nullable|numeric|min:0',
-            'pengangguran_terbuka' => 'nullable|numeric|min:0',
-            'tingkat_pengangguran_terbuka' => 'nullable|numeric|min:0|max:100', 
-            'tingkat_kesempatan_kerja' => 'nullable|numeric|min:0|max:100',
+        $validator = Validator::make($cleanedData, [
+            'tahun' => 'required|integer|digits:4',
+            'bulan' => 'required|integer|between:1,12',
+            'penduduk_15_atas' => "nullable|numeric",
+            'angkatan_kerja' => "nullable|numeric",
+            'bukan_angkatan_kerja' => "nullable|numeric",
+            'sekolah' => "nullable|numeric",
+            'mengurus_rumah_tangga' => "nullable|numeric",
+            'lainnya_bak' => "nullable|numeric",
+            'bekerja' => "nullable|numeric",
+            'pengangguran_terbuka' => "nullable|numeric",
+            'tpak' => "nullable|numeric",
+            'tpt' => "nullable|numeric",
+            'tingkat_kesempatan_kerja' => "nullable|numeric",
         ]);
 
         if ($validator->fails()) {
-            return redirect()->route($this->routeNamePrefix . 'create')
+            return redirect()->route('barenbang.data-ketenagakerjaan.create')
                         ->withErrors($validator)
-                        ->withInput($request->all()); 
+                        ->withInput()
+                        ->with('error', 'Data yang dimasukkan tidak valid. Silakan periksa kembali nilai yang Anda masukkan.');
         }
 
         DataKetenagakerjaan::create($validator->validated());
@@ -134,71 +112,61 @@ class DataKetenagakerjaanController extends Controller
         return redirect()->route($this->routeNamePrefix . 'index')
                          ->with('success', 'Data Ketenagakerjaan berhasil ditambahkan.');
     }
-    
-    public function edit(DataKetenagakerjaan $dataKetenagakerjaan)
+
+    public function show($id)
     {
-        return view('data_ketenagakerjaan.edit', compact('dataKetenagakerjaan'));
+        $dataKetenagakerjaan = DataKetenagakerjaan::findOrFail($id);
+        return view('data_ketenagakerjaan.show', compact('dataKetenagakerjaan'));
     }
 
-    public function update(Request $request, DataKetenagakerjaan $dataKetenagakerjaan)
+    public function edit($id)
     {
-        $numericFields = [
-            'penduduk_15_tahun_ke_atas', 'angkatan_kerja', 'bukan_angkatan_kerja', 'sekolah', 
-            'mengurus_rumah_tangga', 'lainnya_bukan_angkatan_kerja', 'tingkat_partisipasi_angkatan_kerja', 
-            'bekerja', 'pengangguran_terbuka', 'tingkat_pengangguran_terbuka', 'tingkat_kesempatan_kerja'
-        ];
-        $dataToValidate = $request->all();
-        foreach ($numericFields as $field) {
-            $value = $request->input($field);
-            if (is_string($value)) {
-                $cleanedValue = str_replace('.', '', $value); 
-                $cleanedValue = str_replace(',', '.', $cleanedValue); 
-                $dataToValidate[$field] = is_numeric($cleanedValue) ? (float)$cleanedValue : null;
-            } elseif (is_numeric($value)) {
-                 $dataToValidate[$field] = (float)$value;
-            } else {
-                 $dataToValidate[$field] = null;
-            }
-        }
+        $dataKetenagakerjaan = DataKetenagakerjaan::findOrFail($id);
+        return view('data_ketenagakerjaan.edit', compact('dataKetenagakerjaan'));
+    }
+    
+    public function update(Request $request, $id)
+    {
+        // DIPERBAIKI: Bersihkan data input sebelum validasi
+        $cleanedData = $this->cleanNumericInput($request->all());
 
-        $validator = Validator::make($dataToValidate, [
-            'tahun' => 'required|integer|digits:4|min:1900|max:' . (date('Y') + 5),
-            'bulan' => 'required|integer|min:1|max:12',
-            'penduduk_15_tahun_ke_atas' => 'nullable|numeric|min:0',
-            'angkatan_kerja' => 'nullable|numeric|min:0',
-            'bukan_angkatan_kerja' => 'nullable|numeric|min:0',
-            'sekolah' => 'nullable|numeric|min:0',
-            'mengurus_rumah_tangga' => 'nullable|numeric|min:0',
-            'lainnya_bukan_angkatan_kerja' => 'nullable|numeric|min:0',
-            'tingkat_partisipasi_angkatan_kerja' => 'nullable|numeric|min:0|max:100',
-            'bekerja' => 'nullable|numeric|min:0',
-            'pengangguran_terbuka' => 'nullable|numeric|min:0',
-            'tingkat_pengangguran_terbuka' => 'nullable|numeric|min:0|max:100',
-            'tingkat_kesempatan_kerja' => 'nullable|numeric|min:0|max:100',
+        $validator = Validator::make($cleanedData, [
+            'tahun' => 'required|integer|digits:4',
+            'bulan' => 'required|integer|between:1,12',
+            'penduduk_15_atas' => "nullable|numeric",
+            'angkatan_kerja' => "nullable|numeric",
+            'bukan_angkatan_kerja' => "nullable|numeric",
+            'sekolah' => "nullable|numeric",
+            'mengurus_rumah_tangga' => "nullable|numeric",
+            'lainnya_bak' => "nullable|numeric",
+            'bekerja' => "nullable|numeric",
+            'pengangguran_terbuka' => "nullable|numeric",
+            'tpak' => "nullable|numeric",
+            'tpt' => "nullable|numeric",
+            'tingkat_kesempatan_kerja' => "nullable|numeric",
         ]);
 
         if ($validator->fails()) {
-            return redirect()->route($this->routeNamePrefix . 'edit', $dataKetenagakerjaan->id)
+            return redirect()->route('barenbang.data-ketenagakerjaan.edit', $id)
                         ->withErrors($validator)
-                        ->withInput($request->all());
+                        ->withInput()
+                        ->with('error', 'Data yang dimasukkan tidak valid.');
         }
 
-        $dataKetenagakerjaan->update($validator->validated());
+        $data = DataKetenagakerjaan::findOrFail($id);
+        $data->update($validator->validated());
 
-        return redirect()->route($this->routeNamePrefix . 'index')
-                         ->with('success', 'Data Ketenagakerjaan berhasil diperbarui.');
+        return redirect()->route($this->routeNamePrefix . 'index')->with('success', 'Data berhasil diperbarui.');
     }
 
-    public function destroy(DataKetenagakerjaan $dataKetenagakerjaan)
+    public function destroy($id)
     {
         try {
-            $dataKetenagakerjaan->delete();
-            return redirect()->route($this->routeNamePrefix . 'index')
-                             ->with('success', 'Data Ketenagakerjaan berhasil dihapus.');
+            $data = DataKetenagakerjaan::findOrFail($id);
+            $data->delete();
+            return redirect()->route($this->routeNamePrefix . 'index')->with('success', 'Data berhasil dihapus.');
         } catch (Exception $e) {
-            Log::error("Error deleting DataKetenagakerjaan: {$e->getMessage()}");
-            return redirect()->route($this->routeNamePrefix . 'index')
-                             ->with('error', 'Gagal menghapus data.');
+            return redirect()->route($this->routeNamePrefix . 'index')->with('error', 'Gagal menghapus data: ' . $e->getMessage());
         }
     }
 

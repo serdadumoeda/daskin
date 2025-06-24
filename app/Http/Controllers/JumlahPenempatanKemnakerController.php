@@ -77,14 +77,14 @@ class JumlahPenempatanKemnakerController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'tahun' => 'required|integer|digits:4|min:2000|max:' . (date('Y') + 5),
-            'bulan' => 'required|integer|min:1|max:12',
-            'jenis_kelamin' => ['required', 'integer', Rule::in(array_keys(JumlahPenempatanKemnaker::getJenisKelaminOptions()))],
-            'provinsi_domisili' => 'required|string|max:255',
-            'lapangan_usaha_kbli' => 'required|string|max:255',
-            'status_disabilitas' => ['required', 'integer', Rule::in(array_keys(JumlahPenempatanKemnaker::getStatusDisabilitasOptions()))],
+            'tahun' => 'nullable|integer|digits:4|min:2000|max:' . (date('Y') + 5),
+            'bulan' => 'nullable|integer|min:1|max:12',
+            'jenis_kelamin' => ['nullable', 'integer', Rule::in(array_keys(JumlahPenempatanKemnaker::getJenisKelaminOptions()))],
+            'provinsi_domisili' => 'nullable|string|max:255',
+            'lapangan_usaha_kbli' => 'nullable|string|max:255',
+            'status_disabilitas' => ['nullable', 'integer', Rule::in(array_keys(JumlahPenempatanKemnaker::getStatusDisabilitasOptions()))],
             'ragam_disabilitas' => ['nullable', Rule::requiredIf($request->status_disabilitas == 1), 'string', Rule::in(array_keys(JumlahPenempatanKemnaker::getRagamDisabilitasOptions()))],
-            'jumlah' => 'required|integer|min:0',
+            'jumlah' => 'nullable|integer|min:0',
         ];
         
         $validator = Validator::make($request->all(), $rules, [
@@ -126,14 +126,14 @@ class JumlahPenempatanKemnakerController extends Controller
     public function update(Request $request, JumlahPenempatanKemnaker $jumlahPenempatanKemnaker)
     {
          $rules = [
-            'tahun' => 'required|integer|digits:4|min:2000|max:' . (date('Y') + 5),
-            'bulan' => 'required|integer|min:1|max:12',
-            'jenis_kelamin' => ['required', 'integer', Rule::in(array_keys(JumlahPenempatanKemnaker::getJenisKelaminOptions()))],
-            'provinsi_domisili' => 'required|string|max:255',
-            'lapangan_usaha_kbli' => 'required|string|max:255',
-            'status_disabilitas' => ['required', 'integer', Rule::in(array_keys(JumlahPenempatanKemnaker::getStatusDisabilitasOptions()))],
+            'tahun' => 'nullable|integer|digits:4|min:2000|max:' . (date('Y') + 5),
+            'bulan' => 'nullable|integer|min:1|max:12',
+            'jenis_kelamin' => ['nullable', 'integer', Rule::in(array_keys(JumlahPenempatanKemnaker::getJenisKelaminOptions()))],
+            'provinsi_domisili' => 'nullable|string|max:255',
+            'lapangan_usaha_kbli' => 'nullable|string|max:255',
+            'status_disabilitas' => ['nullable', 'integer', Rule::in(array_keys(JumlahPenempatanKemnaker::getStatusDisabilitasOptions()))],
             'ragam_disabilitas' => ['nullable', Rule::requiredIf($request->status_disabilitas == 1), 'string', Rule::in(array_keys(JumlahPenempatanKemnaker::getRagamDisabilitasOptions()))],
-            'jumlah' => 'required|integer|min:0',
+            'jumlah' => 'nullable|integer|min:0',
         ];
         
         $validator = Validator::make($request->all(), $rules, [

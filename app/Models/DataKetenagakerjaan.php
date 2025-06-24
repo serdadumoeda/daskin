@@ -12,22 +12,22 @@ class DataKetenagakerjaan extends Model
     /**
      * Nama tabel yang terhubung dengan model.
      */
-    protected $table = 'data_ketenagakerjaan'; // <-- PASTIKAN INI BENAR
+    protected $table = 'data_ketenagakerjaan'; 
 
     protected $fillable = [
         'tahun',
         'bulan',
-        'penduduk_15_tahun_ke_atas', // Sesuai revisi migrasi Anda
+        'penduduk_15_atas', 
         'angkatan_kerja',
         'bukan_angkatan_kerja',    
         'sekolah',                 
         'mengurus_rumah_tangga',   
-        'lainnya_bukan_angkatan_kerja', 
-        'tingkat_partisipasi_angkatan_kerja', // Sesuai revisi migrasi Anda
+        'lainnya_bak', 
+        'tpak', 
         'bekerja',
         'pengangguran_terbuka',
-        'tingkat_pengangguran_terbuka', // Sesuai revisi migrasi Anda
-        'tingkat_kesempatan_kerja', 
+        'tpt', 
+        'tingkat_kesempatan_kerja',
     ];
 
     /**
@@ -38,18 +38,16 @@ class DataKetenagakerjaan extends Model
     protected $casts = [
         'tahun' => 'integer',
         'bulan' => 'integer',
-        'penduduk_15_tahun_ke_atas' => 'decimal:3',
+        'penduduk_15_atas' => 'decimal:3', 
         'angkatan_kerja' => 'decimal:3',
-        'bukan_angkatan_kerja' => 'decimal:3', 
-        'sekolah' => 'decimal:3',              
+        'bukan_angkatan_kerja' => 'decimal:3',
+        'sekolah' => 'decimal:3',
         'mengurus_rumah_tangga' => 'decimal:3',
-        'lainnya_bukan_angkatan_kerja' => 'decimal:3',          
-        'tingkat_partisipasi_angkatan_kerja' => 'decimal:2',
+        'lainnya_bak' => 'decimal:3', 
+        'tpak' => 'decimal:2',
         'bekerja' => 'decimal:3',
         'pengangguran_terbuka' => 'decimal:3',
-        'tingkat_pengangguran_terbuka' => 'decimal:2',
-        'tingkat_kesempatan_kerja' => 'decimal:2', 
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'tpt' => 'decimal:2',
+        'tingkat_kesempatan_kerja' => 'decimal:2',
     ];
 }

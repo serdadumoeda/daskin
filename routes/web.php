@@ -342,6 +342,7 @@ Route::prefix('binalavotas')->name('binalavotas.')->middleware(['auth'])->group(
             Route::get('/{jumlahSertifikasiKompetensi}/edit', [JumlahSertifikasiKompetensiController::class, 'edit'])->name('edit');
             Route::put('/{jumlahSertifikasiKompetensi}', [JumlahSertifikasiKompetensiController::class, 'update'])->name('update');
             Route::delete('/{jumlahSertifikasiKompetensi}', [JumlahSertifikasiKompetensiController::class, 'destroy'])->name('destroy');
+            Route::get("/downloadTemplate", [JumlahSertifikasiKompetensiController::class, 'downloadTemplate'])->name('downloadTemplate');
         });
         Route::get('/{jumlahSertifikasiKompetensi}', [JumlahSertifikasiKompetensiController::class, 'show'])->name('show')->middleware('role:' . $crudRolesBinalavotas . ',' . $readOnlyRoles);
     });
