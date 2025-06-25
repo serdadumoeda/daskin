@@ -367,12 +367,26 @@ class MainDashboardController extends Controller
             $availableYears = $availableYears->sortDesc()->values();
         }
         
+        $monthsForFilter = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+             $lastMonths = array_slice($monthsForFilter, 0, intval(date('m')) - 1);
+            $monthsForFilter = $lastMonths;
          $viewData = compact(
             'persenSelesaiBpk', 'persenSelesaiInternal', 'totalPenempatanKemenaker',
             'totalPesertaPelatihan', 'totalLulusanBekerja', 'totalRekomendasiKebijakan', 'avgIkpaKementerian',
-            'availableYears', 'selectedYear', 'selectedMonth', 'totalPerusahaanSusu', 'totalWlkpReported', 'totalLowonganPasker', 'totalRegulasi'
+            'availableYears', 'selectedYear', 'selectedMonth', 'totalPerusahaanSusu', 'totalWlkpReported', 'totalLowonganPasker', 'totalRegulasi', 'monthsForFilter'
         );
         
         return view('dashboards.main', array_merge($viewData, ['chartData' => $chartData]));
+    }
+
+    public function filterBulan(Request $request){
+        $get_tahun = $request->post('tahun');
+        $monthsForFilter = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        if($get_tahun == date('Y')){
+             $lastMonths = array_slice($monthsForFilter, 0, intval(date('m')) - 1);
+            return array('month' => $lastMonths);
+        }
+        return array('month' => $monthsForFilter);
     }
 }

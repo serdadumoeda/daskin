@@ -4,9 +4,10 @@
 
 @section('header_filters')
     <form method="GET" action="{{ route('dashboard') }}" class="flex flex-col sm:flex-row items-center gap-3 w-full">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <div class="flex-1 w-full sm:w-auto">
             <label for="tahun" class="sr-only">Tahun</label>
-            <select name="tahun" id="tahun" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+            <select name="tahun" id="tahun" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 filter_dashboard_tahun">
                 @foreach ($availableYears as $yearOption)
                     <option value="{{ $yearOption }}" {{ $selectedYear == $yearOption ? 'selected' : '' }}>{{ $yearOption }}</option>
                 @endforeach
@@ -14,9 +15,8 @@
         </div>
         <div class="flex-1 w-full sm:w-auto">
             <label for="bulan" class="sr-only">Bulan</label>
-            <select name="bulan" id="bulan" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+            <select name="bulan" id="bulan" class="form-input w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 filter_dashboard_bulan">
                 <option value="">Semua Bulan (Tahunan)</option>
-                @php $monthsForFilter = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']; @endphp
                 @foreach ($monthsForFilter as $monthKey => $monthName)
                     <option value="{{ $monthKey + 1 }}" {{ $selectedMonth == ($monthKey + 1) ? 'selected' : '' }}>{{ $monthName }}</option>
                 @endforeach
@@ -225,6 +225,38 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <script>
+
+    $(document).ready(function(){
+       $(".filter_dashboard_tahun").change(function(){
+        const csrfToken = $('meta[name="csrf-token"]').attr('content');
+         $.ajax({
+             headers: {
+                'X-CSRF-TOKEN': csrfToken
+            },
+            url : "{{ url('/') . '/dashboard/filter_bulan' }}",
+            data : {
+                tahun : $('.filter_dashboard_tahun').val()
+            },
+            type: 'POST',
+            success : function(param){
+                console.log(param);
+                $('.filter_dashboard_bulan').html('');
+                $('.filter_dashboard_bulan').append($('<option>', {
+                        text: 'Semua Bulan (Tahunan)'
+                    }));
+                param.month.map(function(k,v){
+                    $('.filter_dashboard_bulan').append($('<option>', {
+                        value: k,
+                        text: k
+                    }));
+                })
+                
+                
+                
+            }
+        })
+       })
+    })
     document.addEventListener("DOMContentLoaded", function () {
         
         // Fungsi untuk membuat chart dengan banyak seri (batang/garis)

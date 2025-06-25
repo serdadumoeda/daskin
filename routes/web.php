@@ -84,9 +84,18 @@ Route::get('/', function () {
 })->name('home');
 
 // Dashboard utama bisa diakses oleh semua role yang sudah login
-Route::get('/dashboard', [MainDashboardController::class, 'index'])
-    ->middleware(['auth', 'role:' . $readOnlyRoles . ',' . $crudRolesItjen . ',' . $crudRolesSekjen . ',' . $crudRolesBinapenta . ',' . $crudRolesBinalavotas . ',' . $crudRolesBinwasnaker . ',' . $crudRolesPhi . ',' . $crudRolesBarenbang]) // Gabungkan semua role yang mungkin
-    ->name('dashboard');
+Route::middleware(['auth', 'role:' . $readOnlyRoles . ',' . $crudRolesItjen . ',' . $crudRolesSekjen . ',' . $crudRolesBinapenta . ',' . $crudRolesBinalavotas . ',' . $crudRolesBinwasnaker . ',' . $crudRolesPhi . ',' . $crudRolesBarenbang])
+    ->group(function () {
+        // This middleware now applies to all routes inside this group
+
+        Route::get('/dashboard', [MainDashboardController::class, 'index'])->name('dashboard');
+        Route::post('/dashboard/filter_bulan', [MainDashboardController::class, 'filterBulan'])->name('filterBulanDashboard');
+        // Note: You might want to adjust the filter_bulan URL.
+        // If it's related to the dashboard, perhaps '/dashboard/filter_bulan' makes more sense.
+        // Or if you only want '/filter_bulan', then the group isn't adding a prefix here.
+        // I've assumed you want it nested under /dashboard for clarity.
+        // If not, just use '/filter_bulan' as you had.
+    });
 
 
 // --- MAIN APPLICATION ROUTES ---
