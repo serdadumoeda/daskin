@@ -478,7 +478,9 @@
         </div>
         <div id="mainContentOverlay" class="fixed inset-0 bg-black bg-opacity-25 z-20 hidden lg:hidden"></div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script>
+  
         document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('sidebar');
             const sidebarToggle = document.getElementById('sidebarToggle');
