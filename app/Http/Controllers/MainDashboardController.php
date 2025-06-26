@@ -141,23 +141,23 @@ class MainDashboardController extends Controller
 
         // --- Data untuk Kartu Ringkasan Utama Kementerian (IKU dari Permenaker) ---
         // 1. Tingkat Penyelesaian Tindak Lanjut Hasil Pemeriksaan BPK (Itjen)
-        $summaryBpk = ProgressTemuanBpk::query()
-            ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
-            ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
-            ->selectRaw('SUM(temuan_administratif_kasus) as total_temuan, SUM(tindak_lanjut_administratif_kasus) as total_tl')
-            ->first();
-        $persenSelesaiBpk = ($summaryBpk && $summaryBpk->total_temuan > 0) ? round(($summaryBpk->total_tl / $summaryBpk->total_temuan) * 100, 2) : 0;
-        if($summaryBpk && $summaryBpk->total_temuan == 0 && $summaryBpk->total_tl == 0) $persenSelesaiBpk = 100;
+        // $summaryBpk = ProgressTemuanBpk::query()
+        //     ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
+        //     ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
+        //     ->selectRaw('SUM(temuan_administratif_kasus) as total_temuan, SUM(tindak_lanjut_administratif_kasus) as total_tl')
+        //     ->first();
+        // $persenSelesaiBpk = ($summaryBpk && $summaryBpk->total_temuan > 0) ? round(($summaryBpk->total_tl / $summaryBpk->total_temuan) * 100, 2) : 0;
+        // if($summaryBpk && $summaryBpk->total_temuan == 0 && $summaryBpk->total_tl == 0) $persenSelesaiBpk = 100;
 
 
         // 2. Tingkat Penyelesaian Tindak Lanjut Hasil Pemeriksaan Internal (Itjen)
-        $summaryInternal = ProgressTemuanInternal::query()
-            ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
-            ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
-            ->selectRaw('SUM(temuan_administratif_kasus) as total_temuan, SUM(tindak_lanjut_administratif_kasus) as total_tl')
-            ->first();
-        $persenSelesaiInternal = ($summaryInternal && $summaryInternal->total_temuan > 0) ? round(($summaryInternal->total_tl / $summaryInternal->total_temuan) * 100, 2) : 0;
-        if($summaryInternal && $summaryInternal->total_temuan == 0 && $summaryInternal->total_tl == 0) $persenSelesaiInternal = 100;
+        // $summaryInternal = ProgressTemuanInternal::query()
+        //     ->when($selectedYear, fn($q) => $q->where('tahun', $selectedYear))
+        //     ->when($selectedMonth, fn($q) => $q->where('bulan', $selectedMonth))
+        //     ->selectRaw('SUM(temuan_administratif_kasus) as total_temuan, SUM(tindak_lanjut_administratif_kasus) as total_tl')
+        //     ->first();
+        // $persenSelesaiInternal = ($summaryInternal && $summaryInternal->total_temuan > 0) ? round(($summaryInternal->total_tl / $summaryInternal->total_temuan) * 100, 2) : 0;
+        // if($summaryInternal && $summaryInternal->total_temuan == 0 && $summaryInternal->total_tl == 0) $persenSelesaiInternal = 100;
 
 
         // 3. Jumlah Penempatan Tenaga Kerja Dalam Negeri (Binapenta)
@@ -213,30 +213,30 @@ class MainDashboardController extends Controller
 
         
         // Chart 1: Tren Penyelesaian Temuan BPK (Persentase Kumulatif)
-        $queryBpkChart = ProgressTemuanBpk::query()->where('tahun', $selectedYear);
-        $bpkTemuanBulanan = $this->getMonthlyTrendData(clone $queryBpkChart, 'bulan', 'temuan_administratif_kasus');
-        $bpkTlBulanan = $this->getMonthlyTrendData(clone $queryBpkChart, 'bulan', 'tindak_lanjut_administratif_kasus');
-        $kumulatifTemuanBpk = $this->calculateCumulative($bpkTemuanBulanan);
-        $kumulatifTlBpk = $this->calculateCumulative($bpkTlBulanan);
-        $chartData['penyelesaian_bpk'] = [
-            'labels' => $chartLabels,
-            'bulanan_temuan' => $bpkTemuanBulanan, // Untuk konteks jika diperlukan
-            'bulanan_tl' => $bpkTlBulanan,         // Untuk konteks jika diperlukan
-            'persentase_kumulatif' => $this->calculateCumulativePercentage($kumulatifTlBpk, $kumulatifTemuanBpk)
-        ];
+        // $queryBpkChart = ProgressTemuanBpk::query()->where('tahun', $selectedYear);
+        // $bpkTemuanBulanan = $this->getMonthlyTrendData(clone $queryBpkChart, 'bulan', 'temuan_administratif_kasus');
+        // $bpkTlBulanan = $this->getMonthlyTrendData(clone $queryBpkChart, 'bulan', 'tindak_lanjut_administratif_kasus');
+        // $kumulatifTemuanBpk = $this->calculateCumulative($bpkTemuanBulanan);
+        // $kumulatifTlBpk = $this->calculateCumulative($bpkTlBulanan);
+        // $chartData['penyelesaian_bpk'] = [
+        //     'labels' => $chartLabels,
+        //     'bulanan_temuan' => $bpkTemuanBulanan, // Untuk konteks jika diperlukan
+        //     'bulanan_tl' => $bpkTlBulanan,         // Untuk konteks jika diperlukan
+        //     'persentase_kumulatif' => $this->calculateCumulativePercentage($kumulatifTlBpk, $kumulatifTemuanBpk)
+        // ];
 
         // Chart 2: Tren Penyelesaian Temuan Internal (Persentase Kumulatif)
-        $queryInternalChart = ProgressTemuanInternal::query()->where('tahun', $selectedYear);
-        $internalTemuanBulanan = $this->getMonthlyTrendData(clone $queryInternalChart, 'bulan', 'temuan_administratif_kasus');
-        $internalTlBulanan = $this->getMonthlyTrendData(clone $queryInternalChart, 'bulan', 'tindak_lanjut_administratif_kasus');
-        $kumulatifTemuanInternal = $this->calculateCumulative($internalTemuanBulanan);
-        $kumulatifTlInternal = $this->calculateCumulative($internalTlBulanan);
-        $chartData['penyelesaian_internal'] = [
-            'labels' => $chartLabels,
-            'bulanan_temuan' => $internalTemuanBulanan,
-            'bulanan_tl' => $internalTlBulanan,
-            'persentase_kumulatif' => $this->calculateCumulativePercentage($kumulatifTlInternal, $kumulatifTemuanInternal)
-        ];
+        // $queryInternalChart = ProgressTemuanInternal::query()->where('tahun', $selectedYear);
+        // $internalTemuanBulanan = $this->getMonthlyTrendData(clone $queryInternalChart, 'bulan', 'temuan_administratif_kasus');
+        // $internalTlBulanan = $this->getMonthlyTrendData(clone $queryInternalChart, 'bulan', 'tindak_lanjut_administratif_kasus');
+        // $kumulatifTemuanInternal = $this->calculateCumulative($internalTemuanBulanan);
+        // $kumulatifTlInternal = $this->calculateCumulative($internalTlBulanan);
+        // $chartData['penyelesaian_internal'] = [
+        //     'labels' => $chartLabels,
+        //     'bulanan_temuan' => $internalTemuanBulanan,
+        //     'bulanan_tl' => $internalTlBulanan,
+        //     'persentase_kumulatif' => $this->calculateCumulativePercentage($kumulatifTlInternal, $kumulatifTemuanInternal)
+        // ];
         
         // Chart 3: Tren Penempatan Tenaga Kerja (Binapenta)
         $queryPenempatan = JumlahPenempatanKemnaker::query()
@@ -349,11 +349,17 @@ class MainDashboardController extends Controller
         ];
 
         // Ambil tahun yang tersedia untuk filter
+        // $distinctYearsQueries = [
+        //     ProgressTemuanBpk::select('tahun')->distinct(), ProgressTemuanInternal::select('tahun')->distinct(),
+        //     JumlahPenempatanKemnaker::select('tahun')->distinct(), JumlahKepesertaanPelatihan::select('tahun')->distinct(),
+        //     LulusanPolteknakerBekerja::select('tahun')->distinct(), JumlahKajianRekomendasi::select('tahun')->distinct(),
+        //     Ikpa::select('tahun')->distinct(),
+        // ];
         $distinctYearsQueries = [
-            ProgressTemuanBpk::select('tahun')->distinct(), ProgressTemuanInternal::select('tahun')->distinct(),
             JumlahPenempatanKemnaker::select('tahun')->distinct(), JumlahKepesertaanPelatihan::select('tahun')->distinct(),
-            LulusanPolteknakerBekerja::select('tahun')->distinct(), JumlahKajianRekomendasi::select('tahun')->distinct(),
-            Ikpa::select('tahun')->distinct(),
+            LulusanPolteknakerBekerja::select('tahun')->distinct(), 
+            JumlahKajianRekomendasi::select('tahun')->where('jenis_output', 2)->distinct()  // 2: Rekomendasi,
+            ,Ikpa::select('tahun')->distinct(),
         ];
         
         $availableYearsQuery = array_shift($distinctYearsQueries); 
@@ -371,8 +377,13 @@ class MainDashboardController extends Controller
 
              $lastMonths = array_slice($monthsForFilter, 0, intval(date('m')) - 1);
             $monthsForFilter = $lastMonths;
-         $viewData = compact(
-            'persenSelesaiBpk', 'persenSelesaiInternal', 'totalPenempatanKemenaker',
+        //  $viewData = compact(
+        //     'persenSelesaiBpk', 'persenSelesaiInternal', 'totalPenempatanKemenaker',
+        //     'totalPesertaPelatihan', 'totalLulusanBekerja', 'totalRekomendasiKebijakan', 'avgIkpaKementerian',
+        //     'availableYears', 'selectedYear', 'selectedMonth', 'totalPerusahaanSusu', 'totalWlkpReported', 'totalLowonganPasker', 'totalRegulasi', 'monthsForFilter'
+        // );
+
+        $viewData = compact('totalPenempatanKemenaker',
             'totalPesertaPelatihan', 'totalLulusanBekerja', 'totalRekomendasiKebijakan', 'avgIkpaKementerian',
             'availableYears', 'selectedYear', 'selectedMonth', 'totalPerusahaanSusu', 'totalWlkpReported', 'totalLowonganPasker', 'totalRegulasi', 'monthsForFilter'
         );
