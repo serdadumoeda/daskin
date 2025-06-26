@@ -24,6 +24,8 @@
     {{-- Jika ingin menggunakan Font Awesome seperti contoh, uncomment baris berikut dan pastikan sudah terinstall --}}
     {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+
 
 
     <style>
