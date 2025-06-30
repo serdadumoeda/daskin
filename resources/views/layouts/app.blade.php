@@ -24,6 +24,8 @@
     {{-- Jika ingin menggunakan Font Awesome seperti contoh, uncomment baris berikut dan pastikan sudah terinstall --}}
     {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+
 
 
     <style>
@@ -478,7 +480,9 @@
         </div>
         <div id="mainContentOverlay" class="fixed inset-0 bg-black bg-opacity-25 z-20 hidden lg:hidden"></div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script>
+  
         document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('sidebar');
             const sidebarToggle = document.getElementById('sidebarToggle');
